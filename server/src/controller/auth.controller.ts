@@ -109,4 +109,31 @@ export class UserAuthController {
         .json(new ApiResponse(200, "You have been logged out successfully"));
     }
   );
+
+  public static ForgotPassword = AsyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+      const { email, newPassword } = req.body;
+      if (!email || !newPassword)
+        throw new ApiError(400, "Email and password are required");
+
+      const user = await db.user.findFirst({
+        where: { email },
+      });
+
+      if (!user) throw new ApiError(404, "User not found");
+
+      const hashedPassword = await AuthServices.hashPassword(newPassword);
+
+      await db.user.update({
+        where: {
+          email,
+        },
+        data: {
+          password: hashedPassword,
+        },
+      });
+
+      res.json(new ApiResponse(201, "Password changes successfully"));
+    }
+  );
 }
