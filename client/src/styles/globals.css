@@ -16,7 +16,7 @@
   .app {
     height: 100vh;
     width: 100%;
-    @apply font-lexend text-sm;
+    @apply font-lexend text-base;
   }
 
   h1 {
@@ -162,4 +162,8 @@
 
 @utility center {
   @apply flex items-center justify-center;
+}
+
+@utility root {
+  @apply flex min-h-screen w-full flex-col;
 }
