@@ -1,0 +1,47 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id              String    @id @default(cuid())
+    name            String?
+    email           String?   @unique
+    password        String
+    phoneNumber     String
+    isTermsAccepted Boolean   @default(false) @map("Terms&conditions")
+    profileImage    String?
+    userAddress     Address[]
+    Session         Session?
+
+    @@map("Users")
+}
+
+model Session {
+    id         String   @id @default(cuid())
+    sessionKey String   @unique
+    expiresAt  DateTime
+    createdAt  DateTime @default(now())
+
+    userId String @unique
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Address {
+    id        String   @id @default(cuid())
+    address   String
+    city      String
+    state     String?
+    country   String
+    pincode   String
+    note      String?
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    userId String
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
