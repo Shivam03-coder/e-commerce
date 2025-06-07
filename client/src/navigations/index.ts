@@ -2,8 +2,7 @@ const useAppLinks = () => {
   const basePath = `/admin`;
 
   return {
-    dashboard: basePath,
-    products: `${basePath}/products`,
+    products: `${basePath}/`,
     orders: `${basePath}/orders`,
     customers: `${basePath}/customers`,
     reports: `${basePath}/reports`,

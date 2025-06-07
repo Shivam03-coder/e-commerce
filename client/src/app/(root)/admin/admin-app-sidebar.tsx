@@ -33,12 +33,6 @@ export default function AdminAppSidebar() {
 
   const items = [
     {
-      title: "Home",
-      url: links?.dashboard,
-      icon: Home,
-      tooltip: "View your overview and statistics",
-    },
-    {
       title: "Products",
       url: links?.products,
       icon: Package,
