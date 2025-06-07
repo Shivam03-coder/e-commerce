@@ -37,6 +37,7 @@ export class AdminController {
         !size ||
         !price ||
         !tags ||
+        !salePrice ||
         inventory === undefined
       ) {
         res.status(400);
@@ -56,7 +57,7 @@ export class AdminController {
       GlobalUtils.validateEnum("material", material, MaterialType);
       GlobalUtils.validateEnum("size", size, SockSize);
 
-      const pr = await db.product.create({
+      await db.product.create({
         data: {
           title,
           description,
@@ -71,8 +72,6 @@ export class AdminController {
           inventory: parseInt(inventory),
         },
       });
-
-      console.log(pr);
 
       res.status(201).json(new ApiResponse(200, "Product added succesfully"));
     }
@@ -131,8 +130,6 @@ export class AdminController {
         },
       });
 
-      console.log(products);
-
       res.json(
         new ApiResponse(200, "Products fetched succesfully", { products })
       );
@@ -160,7 +157,67 @@ export class AdminController {
     }
   );
 
-  public static editProductDeatails = AsyncHandler(
-    async (req: Request, res: Response): Promise<void> => {}
+  public static updateProductDetails = AsyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+      const { id } = req.params;
+      console.log(id);
+      const {
+        title,
+        description,
+        category,
+        productImage,
+        material,
+        size,
+        price,
+        salePrice,
+        inStock,
+        inventory,
+        tags,
+      } = req.body;
+
+      if (
+        !title ||
+        !description ||
+        !category ||
+        !productImage ||
+        !material ||
+        !size ||
+        !price ||
+        !tags ||
+        inventory === undefined ||
+        !salePrice
+      )
+        throw new Error("Missing required fields");
+
+      if (price <= 0) throw new Error("Price must be greater than 0");
+      if (inventory < 0) throw new Error("Inventory cannot be negative");
+
+      GlobalUtils.validateEnum("category", category, ProductCategory);
+      GlobalUtils.validateEnum("material", material, MaterialType);
+      GlobalUtils.validateEnum("size", size, SockSize);
+
+      await db.product.update({
+        where: {
+          id: parseInt(id),
+        },
+        data: {
+          title,
+          description,
+          category,
+          tags: JSON.stringify(tags),
+          productImage,
+          material,
+          size,
+          price: parseFloat(price),
+          salePrice: parseFloat(price),
+          inStock: inStock !== undefined ? inStock : inventory > 0,
+          inventory: parseInt(inventory),
+        },
+      });
+
+      res
+        .status(201)
+        .json(new ApiResponse(200, "Product updated successfully"));
+    }
   );
 }

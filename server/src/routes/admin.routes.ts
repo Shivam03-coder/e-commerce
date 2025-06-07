@@ -9,7 +9,7 @@ adminRouter
   .post("/product", AdminController.addProducts)
   .get("/product/details", AdminController.getProducts)
   .delete("/product/:id", requireAuth(), AdminController.deleteProduct)
-  .patch("/product", requireAuth(), AdminController.editProductDeatails)
+  .patch("/product/:id", requireAuth(), AdminController.updateProductDetails)
   .post("/product/url", requireAuth(),upload.single("productImage"), AdminController.getProductImageUrl);
 
 export default adminRouter;

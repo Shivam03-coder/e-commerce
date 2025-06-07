@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,7 +12,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -29,31 +28,57 @@ import {
   type AddProductSchemaType,
 } from "@/schema/product.schema";
 import UploadProductImage from "./upload-product-image";
-import { useAddProductsMutation } from "@/apis/admin-api";
+import { useUpdateProductsMutation } from "@/apis/admin-api";
 import { useAppToasts } from "@/hooks/use-app-toast";
 import Spinner from "@/components/global/spinner";
 import type { EditProductProps } from "@/types/global";
+import { X } from "lucide-react"; // Import the X icon for delete button
+import Image from "next/image";
 
-export default function ProductForm({
+export default function EditProductForm({
   onClose,
+  products,
 }: {
   onClose: (v: boolean) => void;
+  products: EditProductProps;
 }) {
-  const [addProduct, { isLoading }] = useAddProductsMutation();
+  const [updateProduct, { isLoading }] = useUpdateProductsMutation();
+  const [productImage, setProductImage] = useState<string>(
+    products.productImage || "",
+  );
   const form = useForm<AddProductSchemaType>({
     resolver: zodResolver(addProductSchema),
     defaultValues: {
-      tags: ["best"],
+      title: products.title,
+      tags: JSON.parse(products.tags as string),
+      category: products.category,
+      description: products.description,
+      inStock: products.inStock,
+      inventory: products.inventory.toString(),
+      material: products.material,
+      price: products.price.toString(),
+      productImage: products.productImage,
+      salePrice: products.salePrice.toString(),
+      size: products.size,
     },
   });
 
   const { ErrorToast, SuccessToast } = useAppToasts();
 
+  const handleDeleteImage = () => {
+    setProductImage("");
+    form.setValue("productImage", "");
+  };
+
   async function onSubmit(values: AddProductSchemaType) {
+    console.log("🚀 ~ onSubmit ~ values:", values)
     try {
-      const res = await addProduct(values).unwrap();
+      const res = await updateProduct({
+        product: values,
+        productId: parseInt(products.id),
+      }).unwrap();
       if (res.status === "success") {
-        SuccessToast({ title: "Product added successfully" });
+        SuccessToast({ title: "Product updated successfully" });
         form.reset();
         onClose(false);
       } else {
@@ -81,13 +106,40 @@ export default function ProductForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Product Image</FormLabel>
-              <FormControl></FormControl>
-              <UploadProductImage setfileUrl={form.setValue} />
+              <FormControl>
+                {productImage ? (
+                  <div className="relative">
+                    <div className="center mx-auto h-full w-full">
+                      <Image
+                        src={productImage}
+                        alt="Product image"
+                        width={300}
+                        height={400}
+                      />
+                    </div>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      className="absolute top-2 right-2"
+                      onClick={handleDeleteImage}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <UploadProductImage
+                    setfileUrl={(url: string) => {
+                      setProductImage(url);
+                      form.setValue("productImage", url);
+                    }}
+                  />
+                )}
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-
         <FormField
           control={form.control}
           name="title"
@@ -277,7 +329,7 @@ export default function ProductForm({
           )}
         />
         <Button className="w-full" type="submit">
-          {isLoading ? <Spinner /> : "CREATE"}
+          {isLoading ? <Spinner /> : "UPDATE"}
         </Button>
       </form>
     </Form>

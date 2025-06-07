@@ -13,7 +13,8 @@ import {
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import type { ProductsDataType } from "@/types/globa";
+import type { ProductsDataType } from "@/types/global";
+import EditProductBtn from "./edit-product-button";
 
 export const productTableColumns: ColumnDef<ProductsDataType>[] = [
   {
@@ -23,7 +24,7 @@ export const productTableColumns: ColumnDef<ProductsDataType>[] = [
         checked={table.getIsAllPageRowsSelected()}
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
-        className="ml-5 "
+        className="ml-5"
       />
     ),
     cell: ({ row }) => (
@@ -52,7 +53,7 @@ export const productTableColumns: ColumnDef<ProductsDataType>[] = [
       return (
         <Link
           href={`/products/${productId}`}
-          className="text-black rounded-2xl bg-blue-200 p-2 hover:text-dark uppercase transition"
+          className="hover:text-dark rounded-2xl bg-blue-200 p-2 text-black uppercase transition"
         >
           {title}
         </Link>
@@ -153,6 +154,20 @@ export const productTableColumns: ColumnDef<ProductsDataType>[] = [
     enableHiding: false,
     cell: ({ row }) => {
       const product = row.original;
+      const data = {
+        id: product.id,
+        title: product.title,
+        description: product.description,
+        category: product.category,
+        productImage: product.productImage,
+        material: product.material,
+        size: product.size,
+        tags: product.tags as string,
+        price: product.price,
+        salePrice: product.salePrice!,
+        inStock: product.inStock,
+        inventory: product.inventory,
+      };
 
       return (
         <DropdownMenu>
@@ -161,17 +176,9 @@ export const productTableColumns: ColumnDef<ProductsDataType>[] = [
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="bg-white" align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuContent className="bg-white p-3" align="end">
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(product.id)}
-            >
-              Copy product ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View product</DropdownMenuItem>
-            <DropdownMenuItem>Edit details</DropdownMenuItem>
+            <EditProductBtn products={data} />
           </DropdownMenuContent>
         </DropdownMenu>
       );

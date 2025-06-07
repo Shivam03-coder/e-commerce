@@ -1,4 +1,4 @@
-import type { ProductsDataType } from "@/types/globa";
+import type { ProductsDataType } from "@/types/global";
 import type { ApiResponse } from "./api";
 
 export interface ProductListType extends ApiResponse {

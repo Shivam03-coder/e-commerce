@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const addProductSchema = z.object({
+  id: z.string().optional(),
   productImage: z.string(),
   title: z.string().min(1).min(2).max(30),
   description: z.string().min(10).max(300),

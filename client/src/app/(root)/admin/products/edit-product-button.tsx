@@ -8,28 +8,30 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Plus } from "lucide-react";
+import { Pencil, Plus } from "lucide-react";
 import ProductForm from "./add-prodcuts-form";
 import { useState } from "react";
+import type { EditProductProps } from "@/types/global";
+import EditProductForm from "./edit-product-form";
 
-function AddProductsBtn() {
+function EditProductBtn({ products }: { products: EditProductProps }) {
   const [open, setOpen] = useState<boolean>(false);
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button size={"sm"} variant="default">
-          <Plus /> Add Product
-        </Button>
+        <button className="flex items-center gap-x-2 text-sm">
+          <Pencil size={17} /> Edit Product
+        </button>
       </SheetTrigger>
-      <SheetContent className="h-full rounded-2xl max-w-[580px] min-w-[500px] overflow-y-scroll bg-white px-7 py-6">
+      <SheetContent className="h-full max-w-[580px] min-w-[500px] overflow-y-scroll rounded-2xl bg-white px-7 py-6">
         <SheetHeader className="mb-3 hidden">
           <SheetTitle>Create Product</SheetTitle>
           <SheetDescription></SheetDescription>
         </SheetHeader>
-        <ProductForm onClose={setOpen} />
+        <EditProductForm products={products} onClose={setOpen} />
       </SheetContent>
     </Sheet>
   );
 }
 
-export default AddProductsBtn;
+export default EditProductBtn;

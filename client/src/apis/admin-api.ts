@@ -15,6 +15,18 @@ const AdminServices = ApiServices.injectEndpoints({
       invalidatesTags: [{ type: "Product", id: "LIST" }],
     }),
 
+    updateProducts: build.mutation<
+      ApiResponse,
+      { productId: number; product: AddProductSchemaType }
+    >({
+      query: ({ product, productId }) => ({
+        url: `/admin/product/${productId}`,
+        method: "PATCH",
+        body: product,
+      }),
+      invalidatesTags: [{ type: "Product", id: "LIST" }],
+    }),
+
     deleteProducts: build.mutation<ApiResponse, { id: string }>({
       query: ({ id }) => ({
         url: `/admin/product/${id}`,
@@ -56,4 +68,5 @@ export const {
   useGetProductImageUrlMutation,
   useGetProductsQuery,
   useDeleteProductsMutation,
+  useUpdateProductsMutation,
 } = AdminServices;

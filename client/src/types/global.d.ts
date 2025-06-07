@@ -25,3 +25,18 @@ export interface ProductsDataType {
     Review: number;
   };
 }
+
+export interface EditProductProps {
+  id: string;
+  title: string;
+  description: string;
+  category: ProductCategory;
+  productImage: string;
+  material: MaterialType;
+  size: SockSize;
+  tags: string;
+  price: number;
+  salePrice: number;
+  inStock: boolean;
+  inventory: number;
+}

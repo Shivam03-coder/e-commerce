@@ -1,6 +1,6 @@
 "use client";
 
-import type { ProductsDataType } from "@/types/globa";
+import type { ProductsDataType } from "@/types/global";
 import { productTableColumns } from "./product-list-table-cols";
 import { TableShell } from "@/components/global/table-shell";
 import { TableToolbar } from "@/components/global/table-toolbar";

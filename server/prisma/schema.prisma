@@ -51,8 +51,8 @@ model Address {
 
 model Product {
     id           Int             @id @default(autoincrement())
-    title        String
-    description  String
+    title        String          @db.VarChar(600)
+    description  String          @db.VarChar(600)
     category     ProductCategory
     productImage String
     material     MaterialType
