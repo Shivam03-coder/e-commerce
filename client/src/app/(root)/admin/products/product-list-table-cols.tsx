@@ -46,14 +46,13 @@ export const productTableColumns: ColumnDef<ProductsDataType>[] = [
       </Button>
     ),
     cell: ({ row }) => {
-      const router = useRouter();
       const title = row.getValue("title") as string;
       const productId = row.original.id;
 
       return (
         <Link
           href={`/products/${productId}`}
-          className="lowercase text-primary underline transition hover:text-dark"
+          className="text-black rounded-2xl bg-blue-200 p-2 hover:text-dark uppercase transition"
         >
           {title}
         </Link>
@@ -69,7 +68,7 @@ export const productTableColumns: ColumnDef<ProductsDataType>[] = [
     ),
     cell: ({ row }) => {
       const category = row.getValue("category") as string;
-      return <span>{category.split('_').join(' ')}</span>;
+      return <span>{category.split("_").join(" ")}</span>;
     },
   },
   {
@@ -89,7 +88,11 @@ export const productTableColumns: ColumnDef<ProductsDataType>[] = [
     ),
     cell: ({ row }) => {
       const size = row.getValue("size") as string;
-      return <span>{size.split('_').join('-')}</span>;
+      return (
+        <div className="rounded-full bg-amber-400 text-center">
+          {size.split("_").join("-")}
+        </div>
+      );
     },
   },
   {
@@ -103,7 +106,7 @@ export const productTableColumns: ColumnDef<ProductsDataType>[] = [
       const price = parseFloat(row.getValue("price"));
       const formatted = new Intl.NumberFormat("en-US", {
         style: "currency",
-        currency: "USD",
+        currency: "INR",
       }).format(price);
       return <span>{formatted}</span>;
     },
@@ -119,7 +122,7 @@ export const productTableColumns: ColumnDef<ProductsDataType>[] = [
       const salePrice = parseFloat(row.getValue("salePrice") || "0");
       const formatted = new Intl.NumberFormat("en-US", {
         style: "currency",
-        currency: "USD",
+        currency: "INR",
       }).format(salePrice);
       return <span>{salePrice > 0 ? formatted : "-"}</span>;
     },
@@ -141,14 +144,6 @@ export const productTableColumns: ColumnDef<ProductsDataType>[] = [
     header: ({ column }) => (
       <Button variant="ghost" onClick={() => column.toggleSorting()}>
         Inventory <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-  },
-  {
-    accessorKey: "_count.Review",
-    header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting()}>
-        Reviews <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
   },

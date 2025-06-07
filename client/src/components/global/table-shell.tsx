@@ -103,7 +103,7 @@ export function TableShell<TData, TValue>({
   });
 
   return (
-    <div className="mainCard relative min-h-[800px] rounded shadow-lg transition-colors dark:bg-gray-800">
+    <div className="mainCard relative min-h-[800px] rounded  transition-colors dark:bg-gray-800">
       {/* Controls Section */}
       <div className="flex flex-col gap-4 px-6 py-4">
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
@@ -216,12 +216,12 @@ export function TableShell<TData, TValue>({
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow
                     key={headerGroup.id}
-                    className="bg-primary/20 font-lexend text-primary"
+                    className="bg-primary/10 font-lexend text-black"
                   >
                     {headerGroup.headers.map((header) => (
                       <TableHead
                         key={header.id}
-                        className="text-primary py-3 text-sm font-semibold"
+                        className="text-black py-3 text-sm font-semibold"
                         style={{ width: header.getSize() }}
                       >
                         {header.isPlaceholder
