@@ -7,7 +7,6 @@
     "dev": "NODE_OPTIONS=--no-deprecation tsx watch src/server.ts",
     "start": "node -r module-alias/register dist/server.js",
     "build": "tsc",
-    "generate:docs": "tsx src/scripts/generate-swagger.ts",
     "prisma:merge": "ts-node src/db/merge-prisma.ts",
     "prisma:generate": "pnpm run prisma:merge && prisma generate",
     "prisma:migrate": "pnpm run prisma:merge && prisma migrate dev",

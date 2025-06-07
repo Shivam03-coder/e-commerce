@@ -1,5 +1,4 @@
 import React from "react";
-import ProductsFilter from "./_shop-header/products-filter";
 
 export default function ProductPage() {
   return (

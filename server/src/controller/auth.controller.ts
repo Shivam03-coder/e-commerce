@@ -1,6 +1,7 @@
 import { db } from "@src/db";
 import { GlobalUtils } from "@src/global";
 import AuthServices from "@src/services/auth";
+import { getAuthUser } from "@src/utils/get-auth-user";
 import {
   ApiError,
   ApiResponse,
@@ -9,7 +10,7 @@ import {
 import { Request, Response } from "express";
 
 export class UserAuthController {
-  public static UserSignup = AsyncHandler(
+  public static userSignup = AsyncHandler(
     async (req: Request, res: Response): Promise<void> => {
       const {
         name,
@@ -62,7 +63,7 @@ export class UserAuthController {
     }
   );
 
-  public static UserSignin = AsyncHandler(
+  public static userSignin = AsyncHandler(
     async (req: Request, res: Response): Promise<void> => {
       const { email, password } = req.body;
 
@@ -101,7 +102,7 @@ export class UserAuthController {
     }
   );
 
-  public static UserLogout = AsyncHandler(
+  public static userLogout = AsyncHandler(
     async (req: Request, res: Response): Promise<void> => {
       res.clearCookie("sessionToken");
       res
@@ -110,7 +111,7 @@ export class UserAuthController {
     }
   );
 
-  public static ForgotPassword = AsyncHandler(
+  public static forgotPassword = AsyncHandler(
     async (req: Request, res: Response): Promise<void> => {
       const { email, newPassword } = req.body;
       if (!email || !newPassword)
@@ -134,6 +135,26 @@ export class UserAuthController {
       });
 
       res.json(new ApiResponse(201, "Password changes successfully"));
+    }
+  );
+
+  public static authenticatedUserInfo = AsyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+      const { id } = getAuthUser(req);
+      const user = await db.user.findFirst({
+        where: { id },
+      });
+
+      if (!user) throw new ApiError(404, "User not found");
+
+      res.json(
+        new ApiResponse(201, "User data fetched succesfully", {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          phoneNumber: user.phoneNumber,
+        })
+      );
     }
   );
 }

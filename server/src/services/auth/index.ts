@@ -9,7 +9,6 @@ import { GlobalUtils } from "@src/global";
 
 export interface SessionUser {
   id: string;
-  role: "ADMIN" | "CLIENT" | "MEMBER" | "COREMEMBER";
 }
 
 class AuthServices {
@@ -78,7 +77,6 @@ class AuthServices {
           select: {
             id: true,
             email: true,
-            role: true,
           },
         },
       },
@@ -99,7 +97,6 @@ class AuthServices {
 
     return {
       id: session.user.id,
-      role: session.user.role,
     };
   };
 }

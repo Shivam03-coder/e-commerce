@@ -1,5 +1,5 @@
 import React from "react";
-import ShopsHeader from "./_shop-header/shops-header";
+import ShopsHeader from "./shops-header";
 
 export default function ShopsRootLayout({
   children,

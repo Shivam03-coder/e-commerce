@@ -11,8 +11,8 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (sessionToken && (pathname === "/sign-in" || pathname === "/sign-up")) {
-    console.log("✅ Logged in. Redirecting to /shops");
-    return NextResponse.redirect(new URL("/shops", request.url));
+    console.log("✅ Logged in. Redirecting to /admin");
+    return NextResponse.redirect(new URL("/admin", request.url));
   }
 
   if (!sessionToken && pathname.startsWith("/shops")) {
@@ -24,5 +24,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/sign-in", "/sign-up", "/shops/:path*"],
+  matcher: ["/sign-in", "/sign-up", "/shops/:path*", "/admin/:path*"],
 };

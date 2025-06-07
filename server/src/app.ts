@@ -1,4 +1,3 @@
-// src/app.ts
 import cors from "cors";
 import express, {
   Application,
@@ -11,8 +10,6 @@ import morgan from "morgan";
 import helmet from "helmet";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
-import swaggerUi from "swagger-ui-express";
-import swaggerDocument from "@src/scripts/swagger-output.json";
 import { Server } from "http";
 import { appEnvConfigs } from "./configs";
 import { ApiError } from "./utils/server-functions";
@@ -32,16 +29,12 @@ class App {
   private readonly app: Application;
   private server?: Server;
   private readonly port: number;
-  private readonly serveSwagger: boolean;
 
   constructor(options?: AppOptions) {
     this.app = express();
     this.port = options?.port || Number(appEnvConfigs.PORT) || 3000;
-    this.serveSwagger = options?.serveSwagger ?? true;
-
     this.initializeMiddlewares();
     this.initializeRoutes();
-    this.initializeSwaggerUI();
     this.initializeErrorHandler();
   }
 
@@ -56,7 +49,7 @@ class App {
         allowedHeaders: ["Content-Type", "Authorization"],
       })
     );
-    this.app.use(morgan("combined"));
+    this.app.use(morgan("common"));
     this.app.use(express.json());
     this.app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
     this.app.use(cookieParser());
@@ -73,17 +66,6 @@ class App {
     this.app.get("/health", (_req: Request, res: Response) => {
       res.status(200).json({ status: "healthy" });
     });
-  }
-
-  private initializeSwaggerUI(): void {
-    if (this.serveSwagger) {
-      this.app.use(
-        "/api-docs",
-        swaggerUi.serve,
-        swaggerUi.setup(swaggerDocument)
-      );
-      console.log(`📄 Swagger UI available at /api-docs`);
-    }
   }
 
   private initializeErrorHandler(): void {

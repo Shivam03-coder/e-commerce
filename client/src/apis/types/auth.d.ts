@@ -3,7 +3,8 @@ import type { ApiResponse } from "./api";
 export interface UserType extends ApiResponse {
   result: {
     id: string;
-    userName: string;
+    name: string;
     email: string;
+    phoneNumber: string;
   };
 }
