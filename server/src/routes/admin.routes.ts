@@ -10,6 +10,8 @@ adminRouter
   .get("/product/details", AdminController.getProducts)
   .delete("/product/:id", requireAuth(), AdminController.deleteProduct)
   .patch("/product/:id", requireAuth(), AdminController.updateProductDetails)
-  .post("/product/url", requireAuth(),upload.single("productImage"), AdminController.getProductImageUrl);
+  .post("/product/url", requireAuth(),upload.single("productImage"), AdminController.getProductImageUrl)
+  .get("/customer/details" , requireAuth() , AdminController.getCustomerDetails)
+   .delete("/customer/:id", requireAuth(), AdminController.deleteCustomer)
 
 export default adminRouter;

@@ -220,4 +220,49 @@ export class AdminController {
         .json(new ApiResponse(200, "Product updated successfully"));
     }
   );
+
+  public static getCustomerDetails = AsyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+      const customer = await db.user.findMany({
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phoneNumber: true,
+          userAddress: {
+            select: {
+              city: true,
+              state: true,
+            },
+          },
+        },
+      });
+      res
+        .status(201)
+        .json(
+          new ApiResponse(200, "Product updated successfully", { customer })
+        );
+    }
+  );
+
+  public static deleteCustomer = AsyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+      const { id } = req.params;
+
+      const customer = await db.user.findUnique({
+        where: {
+          id,
+        },
+      });
+
+      if (!customer) throw new ApiError(401, "Customer not found");
+
+      await db.user.delete({
+        where: {
+          id: customer.id,
+        },
+      });
+      res.json(new ApiResponse(200, "Customer deleted succesfully"));
+    }
+  );
 }

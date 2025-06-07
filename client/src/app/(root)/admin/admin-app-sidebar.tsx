@@ -53,12 +53,6 @@ export default function AdminAppSidebar() {
       icon: Users,
       tooltip: "Manage customer accounts",
     },
-    {
-      title: "Reports",
-      url: links?.reports,
-      icon: BarChart,
-      tooltip: "View sales and business reports",
-    },
   ];
 
   if (!Mount) return null;

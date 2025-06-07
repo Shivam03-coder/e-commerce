@@ -40,3 +40,14 @@ export interface EditProductProps {
   inStock: boolean;
   inventory: number;
 }
+
+interface CustomerType {
+  id: string;
+  name: string;
+  email: string;
+  phoneNumber: string;
+  userAddress: {
+    city: string;
+    state: string;
+  };
+}

@@ -1,7 +1,11 @@
 import ApiServices from "@/store/api-service";
 import type { ApiResponse } from "./types/api";
 import type { AddProductSchemaType } from "@/schema/product.schema";
-import type { ProductImageUrlType, ProductListType } from "./types/admin";
+import type {
+  CustomerListType,
+  ProductImageUrlType,
+  ProductListType,
+} from "./types/admin";
 
 const AdminServices = ApiServices.injectEndpoints({
   endpoints: (build) => ({
@@ -60,6 +64,23 @@ const AdminServices = ApiServices.injectEndpoints({
             ]
           : [{ type: "Product", id: "LIST" }],
     }),
+
+    getCustomerList: build.query<CustomerListType, void>({
+      query: () => ({
+        url: "/admin/customer/details",
+        method: "GET",
+      }),
+      providesTags: [{ type: "Customer", id: "LIST" }],
+    }),
+
+    deleteCustomer: build.mutation<ApiResponse, { id: string }>({
+      query: ({ id }) => ({
+        url: `/admin/customer/${id}`,
+        method: "DELETE",
+      }),
+
+      invalidatesTags: [{ type: "Customer", id: "LIST" }],
+    }),
   }),
 });
 
@@ -69,4 +90,6 @@ export const {
   useGetProductsQuery,
   useDeleteProductsMutation,
   useUpdateProductsMutation,
+  useGetCustomerListQuery,
+  useDeleteCustomerMutation,
 } = AdminServices;

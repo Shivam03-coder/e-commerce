@@ -1,9 +1,12 @@
-import React from 'react'
+"use client";
+
+import { useGetCustomerListQuery } from "@/apis/admin-api";
+import CustomerListTable from "./customer-table-list";
 
 const CustomersPage = () => {
-  return (
-    <div>CustomersPage</div>
-  )
-}
+  const { data } = useGetCustomerListQuery();
+  console.log("🚀 ~ CustomersPage ~ data:", data)
+  return <CustomerListTable data={data?.result.customer || []} />;
+};
 
-export default CustomersPage
+export default CustomersPage;
