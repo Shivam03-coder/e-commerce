@@ -1,14 +1,6 @@
 "use client";
 import React from "react";
-import {
-  Home,
-  PlusCircleIcon,
-  UserCircle,
-  Files,
-  Package,
-  ShoppingCart,
-  BarChart,
-} from "lucide-react";
+import { Home, Package, ShoppingCart, BarChart } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -41,7 +33,7 @@ export default function AdminAppSidebar() {
 
   const items = [
     {
-      title: "Dashboard",
+      title: "Home",
       url: links?.dashboard,
       icon: Home,
       tooltip: "View your overview and statistics",
@@ -106,7 +98,7 @@ export default function AdminAppSidebar() {
                         <SidebarMenuButton asChild>
                           <Link href={item.url}>
                             <item.icon />
-                            <span className="text-primary">{item.title}</span>
+                            <span className="text-black">{item.title}</span>
                           </Link>
                         </SidebarMenuButton>
                       </TooltipTrigger>
