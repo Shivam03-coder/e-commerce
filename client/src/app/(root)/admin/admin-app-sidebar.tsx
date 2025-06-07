@@ -11,6 +11,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 
 import { Link } from "next-view-transitions";
@@ -30,6 +31,7 @@ export default function AdminAppSidebar() {
   const links = useAppLinks();
   const Mount = useIsMounted();
   if (!links || Object.values(links).some((link) => !link)) return null;
+  const { state } = useSidebar();
 
   const items = [
     {
