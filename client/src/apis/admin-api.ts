@@ -21,11 +21,21 @@ const AdminServices = ApiServices.injectEndpoints({
       }),
     }),
 
-    getProducts: build.mutation<ProductListType, void>({
+    getProducts: build.query<ProductListType, void>({
       query: () => ({
-        url: "/admin/product",
-        method: "POST",
+        url: "/admin/product/details",
+        method: "GET",
       }),
+      providesTags: (res) =>
+        res
+          ? [
+              ...res.result.products.map(({ id }) => ({
+                type: "Product" as const,
+                id,
+              })),
+              { type: "Product", id: "LIST" },
+            ]
+          : [{ type: "Product", id: "LIST" }],
     }),
   }),
 });
@@ -33,5 +43,5 @@ const AdminServices = ApiServices.injectEndpoints({
 export const {
   useAddProductsMutation,
   useGetProductImageUrlMutation,
-  useGetProductsMutation,
+  useGetProductsQuery,
 } = AdminServices;

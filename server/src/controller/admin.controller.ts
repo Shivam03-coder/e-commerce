@@ -131,6 +131,8 @@ export class AdminController {
         },
       });
 
+      console.log(products);
+
       res.json(
         new ApiResponse(200, "Products fetched succesfully", { products })
       );
