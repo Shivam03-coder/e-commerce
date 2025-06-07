@@ -3,6 +3,7 @@ import type { ApiResponse } from "./types/api";
 import type { AddProductSchemaType } from "@/schema/product.schema";
 import type {
   CustomerListType,
+  ProductFeaturedType,
   ProductImageUrlType,
   ProductListType,
 } from "./types/admin";
@@ -81,6 +82,31 @@ const AdminServices = ApiServices.injectEndpoints({
 
       invalidatesTags: [{ type: "Customer", id: "LIST" }],
     }),
+
+    createFeaturedPoster: build.mutation<ApiResponse, { imageUrl: string }>({
+      query: ({ imageUrl }) => ({
+        url: "/admin/featured/product",
+        method: "POST",
+        body: imageUrl,
+      }),
+      invalidatesTags: [{ type: "Featured", id: "LIST" }],
+    }),
+
+    getFeaturedProduct: build.query<ProductFeaturedType, void>({
+      query: () => ({
+        url: "/admin/featured/product",
+        method: "GET",
+      }),
+      providesTags: [{ type: "Featured", id: "LIST" }],
+    }),
+
+    deleteFeaturedProduct: build.mutation<ApiResponse, { id: string }>({
+      query: ({ id }) => ({
+        url: `/featured/product/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: [{ type: "Featured", id: "LIST" }],
+    }),
   }),
 });
 
@@ -92,4 +118,7 @@ export const {
   useUpdateProductsMutation,
   useGetCustomerListQuery,
   useDeleteCustomerMutation,
+  useCreateFeaturedPosterMutation,
+  useDeleteFeaturedProductMutation,
+  useGetFeaturedProductQuery,
 } = AdminServices;

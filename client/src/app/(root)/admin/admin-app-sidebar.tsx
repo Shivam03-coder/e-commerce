@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Home, Package, ShoppingCart, BarChart } from "lucide-react";
+import { Home, Package, ShoppingCart, BarChart, Feather } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -39,6 +39,12 @@ export default function AdminAppSidebar() {
       url: links?.products,
       icon: Package,
       tooltip: "Manage your product catalog",
+    },
+    {
+      title: "Featured",
+      url: links?.featured,
+      icon: Feather,
+      tooltip: "Manage your featured catalog",
     },
 
     {

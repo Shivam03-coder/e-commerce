@@ -6,6 +6,7 @@ const useAppLinks = () => {
     orders: `${basePath}/orders`,
     customers: `${basePath}/customers`,
     reports: `${basePath}/reports`,
+    featured: `${basePath}/featured`,
   };
 };
 

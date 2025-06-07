@@ -17,3 +17,10 @@ export interface ProductImageUrlType extends ApiResponse {
     url: string;
   };
 }
+
+export interface ProductFeaturedType extends ApiResponse {
+  result: {
+    id: string;
+    images: string;
+  }[];
+}

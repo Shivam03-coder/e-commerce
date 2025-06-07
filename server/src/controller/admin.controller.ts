@@ -265,4 +265,43 @@ export class AdminController {
       res.json(new ApiResponse(200, "Customer deleted succesfully"));
     }
   );
+
+  public static createFeaturedPoster = AsyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+      const { imageUrl } = req.body;
+
+      await db.featuredProducts.create({
+        data: {
+          images: imageUrl,
+        },
+      });
+      res.json(new ApiResponse(200, "Featured Poster Created succesfully"));
+    }
+  );
+  public static deleteFeaturedPoster = AsyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+      const { id } = req.params;
+
+      await db.featuredProducts.delete({
+        where: {
+          id,
+        },
+      });
+      res.json(new ApiResponse(200, "Featured Poster deleted succesfully"));
+    }
+  );
+
+  public static getFeaturedProduct = AsyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+      const product = await db.featuredProducts.findMany({
+        select: {
+          id: true,
+          images: true,
+        },
+      });
+      res.json(
+        new ApiResponse(200, "Featured Poster deleted succesfully", product)
+      );
+    }
+  );
 }
