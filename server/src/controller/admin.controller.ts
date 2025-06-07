@@ -1,7 +1,12 @@
 import { MaterialType, ProductCategory, SockSize } from "@prisma/client";
 import { db } from "@src/db";
 import { GlobalUtils } from "@src/global";
-import { ApiResponse, AsyncHandler } from "@src/utils/server-functions";
+import CloudinaryService from "@src/services/cloudinary";
+import {
+  ApiError,
+  ApiResponse,
+  AsyncHandler,
+} from "@src/utils/server-functions";
 import { Request, Response } from "express";
 
 export class AdminController {
@@ -18,9 +23,10 @@ export class AdminController {
         salePrice,
         inStock,
         inventory,
-        featured,
         tags,
       } = req.body;
+
+      console.log(req.body);
 
       if (
         !title ||
@@ -50,23 +56,51 @@ export class AdminController {
       GlobalUtils.validateEnum("material", material, MaterialType);
       GlobalUtils.validateEnum("size", size, SockSize);
 
-      await db.product.create({
+      const pr = await db.product.create({
         data: {
           title,
           description,
           category,
-          tags,
+          tags: JSON.stringify(tags),
           productImage,
           material,
           size,
-          price,
-          salePrice,
+          price: parseFloat(price),
+          salePrice: parseFloat(price),
           inStock: inStock !== undefined ? inStock : inventory > 0,
-          inventory,
+          inventory: parseInt(inventory),
         },
       });
 
+      console.log(pr);
+
       res.status(201).json(new ApiResponse(200, "Product added succesfully"));
+    }
+  );
+
+  public static getProductImageUrl = AsyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+      try {
+        const imageUrl = await GlobalUtils.getImageUrl(req);
+
+        if (!imageUrl) {
+          throw new ApiError(400, "Failed to generate image URL");
+        }
+
+        console.log("🚀 ~ getProductImageUrl ~ imageUrl:", imageUrl);
+
+        res.status(201).json(
+          new ApiResponse(201, "File URL generated successfully", {
+            url: imageUrl,
+          })
+        );
+      } catch (error) {
+        console.error("❌ Error generating image URL:", error);
+        throw new ApiError(
+          500,
+          "Internal server error while generating file URL"
+        );
+      }
     }
   );
 

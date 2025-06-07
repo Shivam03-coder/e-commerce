@@ -1,9 +1,9 @@
-import React from 'react'
+"use client";
+
+import ProductsListTable from "./product-list-table";
 
 const ProductsPage = () => {
-  return (
-    <div>ProductsPage</div>
-  )
-}
+  return <ProductsListTable data={[]} />;
+};
 
-export default ProductsPage
+export default ProductsPage;

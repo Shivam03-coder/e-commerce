@@ -7,19 +7,12 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { CloudUpload, Paperclip } from "lucide-react";
-import {
-  FileInput,
-  FileUploader,
-  FileUploaderContent,
-  FileUploaderItem,
-} from "@/components/ui/file-upload";
+
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -35,29 +28,43 @@ import {
   addProductSchema,
   type AddProductSchemaType,
 } from "@/schema/product.schema";
+import UploadProductImage from "./upload-product-image";
+import { useAddProductsMutation } from "@/apis/admin-api";
+import { useAppToasts } from "@/hooks/use-app-toast";
+import Spinner from "@/components/global/spinner";
 
-export default function MyForm() {
-  const [files, setFiles] = useState<File[] | null>(null);
-
-  const dropZoneConfig = {
-    maxFiles: 5,
-    maxSize: 1024 * 1024 * 4,
-    multiple: true,
-  };
-
+export default function ProductForm({
+  onClose,
+}: {
+  onClose: (v: boolean) => void;
+}) {
+  const [addProduct, { isLoading }] = useAddProductsMutation();
   const form = useForm<AddProductSchemaType>({
     resolver: zodResolver(addProductSchema),
     defaultValues: {
-      tags: ["test"],
+      tags: ["best"],
     },
   });
 
-  function onSubmit(values: AddProductSchemaType) {
+  const { ErrorToast, SuccessToast } = useAppToasts();
+
+  async function onSubmit(values: AddProductSchemaType) {
     try {
-      console.log(values);
+      const res = await addProduct(values).unwrap();
+      if (res.status === "success") {
+        SuccessToast({ title: "Product added successfully" });
+        form.reset();
+        onClose(false);
+      } else {
+        ErrorToast({
+          title: res.message || "Something went wrong",
+        });
+      }
     } catch (error) {
       console.error("Form submission error", error);
-      toast.error("Failed to submit the form. Please try again.");
+      ErrorToast({
+        title: "Failed to submit the form. Please try again.",
+      });
     }
   }
 
@@ -65,7 +72,7 @@ export default function MyForm() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="mx-auto max-w-3xl space-y-8 py-10"
+        className="max-w-[540px] text-sm space-y-8 pb-5"
       >
         <FormField
           control={form.control}
@@ -73,41 +80,8 @@ export default function MyForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Product Image</FormLabel>
-              <FormControl>
-                <FileUploader
-                  value={files}
-                  onValueChange={setFiles}
-                  dropzoneOptions={dropZoneConfig}
-                  className="bg-background relative rounded-lg p-2"
-                >
-                  <FileInput
-                    id="fileInput"
-                    className="outline-1 outline-slate-500 outline-dashed"
-                  >
-                    <div className="flex w-full flex-col items-center justify-center p-8">
-                      <CloudUpload className="h-10 w-10 text-gray-500" />
-                      <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
-                        <span className="font-semibold">Click to upload</span>
-                        &nbsp; or drag and drop
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        SVG, PNG, JPG or GIF
-                      </p>
-                    </div>
-                  </FileInput>
-                  <FileUploaderContent>
-                    {files &&
-                      files.length > 0 &&
-                      files.map((file, i) => (
-                        <FileUploaderItem key={i} index={i}>
-                          <Paperclip className="h-4 w-4 stroke-current" />
-                          <span>{file.name}</span>
-                        </FileUploaderItem>
-                      ))}
-                  </FileUploaderContent>
-                </FileUploader>
-              </FormControl>
-
+              <FormControl></FormControl>
+              <UploadProductImage setfileUrl={form.setValue} />
               <FormMessage />
             </FormItem>
           )}
@@ -122,7 +96,6 @@ export default function MyForm() {
               <FormControl>
                 <Input placeholder="NOKS SOCKS" type="text" {...field} />
               </FormControl>
-
               <FormMessage />
             </FormItem>
           )}
@@ -132,7 +105,7 @@ export default function MyForm() {
           control={form.control}
           name="description"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="w-full">
               <FormLabel>Description</FormLabel>
               <FormControl>
                 <Textarea
@@ -151,18 +124,19 @@ export default function MyForm() {
           control={form.control}
           name="category"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="w-full">
               <FormLabel>Category</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
+                <FormControl className="w-full">
                   <SelectTrigger>
                     <SelectValue placeholder="Select a category ." />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="m@example.com">m@example.com</SelectItem>
-                  <SelectItem value="m@google.com">m@google.com</SelectItem>
-                  <SelectItem value="m@support.com">m@support.com</SelectItem>
+                  <SelectItem value="HALF_SOCKS">HALF SOCKS</SelectItem>
+                  <SelectItem value="NO_SHOW_SOCKS">NO SHOW SOCKS</SelectItem>
+                  <SelectItem value="ANKLE_SOCKS">ANKLE SOCKS</SelectItem>
+                  <SelectItem value="CREW_SOCKS">CREW SOCKS</SelectItem>
                 </SelectContent>
               </Select>
 
@@ -170,7 +144,6 @@ export default function MyForm() {
             </FormItem>
           )}
         />
-
         <FormField
           control={form.control}
           name="material"
@@ -178,15 +151,14 @@ export default function MyForm() {
             <FormItem>
               <FormLabel>Material</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
+                <FormControl className="w-full">
                   <SelectTrigger>
                     <SelectValue placeholder="Select a material ." />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="m@example.com">m@example.com</SelectItem>
-                  <SelectItem value="m@google.com">m@google.com</SelectItem>
-                  <SelectItem value="m@support.com">m@support.com</SelectItem>
+                  <SelectItem value="COTTON">COTTON</SelectItem>
+                  <SelectItem value="BAMBOO">BAMBOO</SelectItem>
                 </SelectContent>
               </Select>
 
@@ -202,15 +174,17 @@ export default function MyForm() {
             <FormItem>
               <FormLabel>Size</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
+                <FormControl className="w-full">
                   <SelectTrigger>
                     <SelectValue placeholder="Select a size." />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="m@example.com">m@example.com</SelectItem>
-                  <SelectItem value="m@google.com">m@google.com</SelectItem>
-                  <SelectItem value="m@support.com">m@support.com</SelectItem>
+                  <SelectItem value="ONE_SIZE">ONE SIZE</SelectItem>
+                  <SelectItem value="XS_S">XS S</SelectItem>
+                  <SelectItem value="S_M">SM</SelectItem>
+                  <SelectItem value="M_L">ML</SelectItem>
+                  <SelectItem value="L_XL">LXL</SelectItem>
                 </SelectContent>
               </Select>
 
@@ -277,7 +251,6 @@ export default function MyForm() {
                   placeholder="Enter your tags"
                 />
               </FormControl>
-              <FormDescription>Add tags.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -286,7 +259,7 @@ export default function MyForm() {
           control={form.control}
           name="inStock"
           render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-y-0 space-x-3 rounded-md border p-4">
+            <FormItem className="flex flex-row items-start space-y-0 space-x-3">
               <FormControl>
                 <Checkbox
                   // @ts-ignore
@@ -302,7 +275,9 @@ export default function MyForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button className="w-full" type="submit">
+          {isLoading ? <Spinner /> : "CREATE"}
+        </Button>
       </form>
     </Form>
   );

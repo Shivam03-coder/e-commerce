@@ -7,9 +7,9 @@ export const addProductSchema = z.object({
   category: z.string(),
   material: z.string(),
   size: z.string(),
-  price: z.number().min(0).max(10000000),
-  salePrice: z.number().min(0).max(1000),
-  inventory: z.number(),
+  price: z.string().min(0).max(10000000),
+  salePrice: z.string().min(0).max(100000),
+  inventory: z.string(),
   tags: z.array(z.string()).nonempty("Please at least one item"),
   inStock: z.unknown(),
 });

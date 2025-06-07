@@ -34,6 +34,7 @@ export class GlobalUtils {
 
   public static getImageUrl = async (req: Request): Promise<string | null> => {
     try {
+      console.log(req.file?.path);
       if (req.file?.path) {
         const uploadedImage = await CloudinaryService.uploadImages(
           req.file.path

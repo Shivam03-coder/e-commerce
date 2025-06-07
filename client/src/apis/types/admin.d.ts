@@ -1,0 +1,12 @@
+import type { ProductsDataType } from "@/types/globa";
+import type { ApiResponse } from "./api";
+
+export interface ProductListType extends ApiResponse {
+  result: ProductsDataType[];
+}
+
+export interface ProductImageUrlType extends ApiResponse {
+  result: {
+    url: string;
+  };
+}

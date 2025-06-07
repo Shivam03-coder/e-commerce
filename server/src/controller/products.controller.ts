@@ -59,14 +59,6 @@ export class ProductController {
         filter.inStock = inStock === "true";
       }
 
-      if (featured !== undefined) {
-        filter.featured = featured === "true";
-      }
-
-      if (bestSeller !== undefined) {
-        filter.bestSeller = bestSeller === "true";
-      }
-
       const skip = (Number(page) - 1) * Number(limit);
       const take = Number(limit);
 
