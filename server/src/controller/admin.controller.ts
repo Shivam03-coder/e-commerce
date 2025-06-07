@@ -139,12 +139,25 @@ export class AdminController {
     }
   );
 
-  public static getProductbyId = AsyncHandler(
-    async (req: Request, res: Response): Promise<void> => {}
-  );
-
   public static deleteProduct = AsyncHandler(
-    async (req: Request, res: Response): Promise<void> => {}
+    async (req: Request, res: Response): Promise<void> => {
+      const { id } = req.params;
+
+      const product = await db.product.findUnique({
+        where: {
+          id: parseInt(id),
+        },
+      });
+
+      if (!product) throw new ApiError(401, "Product not found");
+
+      await db.product.delete({
+        where: {
+          id: product.id,
+        },
+      });
+      res.json(new ApiResponse(200, "Product deleted succesfully"));
+    }
   );
 
   public static editProductDeatails = AsyncHandler(

@@ -23,7 +23,7 @@ export const productTableColumns: ColumnDef<ProductsDataType>[] = [
         checked={table.getIsAllPageRowsSelected()}
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
-        className="ml-5"
+        className="ml-5 "
       />
     ),
     cell: ({ row }) => (
