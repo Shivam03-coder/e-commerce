@@ -1,0 +1,17 @@
+import { z } from "zod";
+
+export const addProductSchema = z.object({
+  productImage: z.string(),
+  title: z.string().min(1).min(2).max(30),
+  description: z.string().min(10).max(300),
+  category: z.string(),
+  material: z.string(),
+  size: z.string(),
+  price: z.number().min(0).max(10000000),
+  salePrice: z.number().min(0).max(1000),
+  inventory: z.number(),
+  tags: z.array(z.string()).nonempty("Please at least one item"),
+  inStock: z.unknown(),
+});
+
+export type AddProductSchemaType = z.infer<typeof addProductSchema>;

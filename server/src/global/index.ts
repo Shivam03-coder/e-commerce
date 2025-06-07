@@ -17,7 +17,7 @@ export class GlobalUtils {
       ...options,
     });
   };
-  
+
   public static setMultipleCookies = (
     res: Response,
     cookies: {
@@ -61,4 +61,22 @@ export class GlobalUtils {
   ) => {
     cookieNames.forEach((name) => res.clearCookie(name));
   };
+
+  /**
+   * Private method to validate enum values
+   * @param fieldName Name of the field for error messages
+   * @param value Value to check
+   * @param enumType Enum to validate against
+   * @throws Error if value is not valid
+   */
+
+  public static validateEnum(
+    fieldName: string,
+    value: string,
+    enumType: Record<string, unknown>
+  ): void {
+    if (!Object.values(enumType).includes(value)) {
+      throw new Error(`Invalid ${fieldName} value`);
+    }
+  }
 }
