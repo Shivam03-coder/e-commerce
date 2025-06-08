@@ -182,13 +182,9 @@ export class ShopController {
         },
       });
 
-      res.status(200).json(
-        new ApiResponse(200, "Product added to cart successfully", {
-          productId: numericProductId,
-          quantity: parsedQuantity,
-          cartId: cart.id,
-        })
-      );
+      res
+        .status(200)
+        .json(new ApiResponse(200, "Product added to cart successfully"));
     }
   );
 }

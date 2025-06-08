@@ -24,14 +24,15 @@ const UserProfile = ({ name }: { name: string }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="flex items-center space-x-2">
+        <div className="flex cursor-pointer items-center space-x-2">
           <Avatar className="h-8 w-8">
             <AvatarFallback className="bg-primary border border-blue-500 text-white">
               {name}
             </AvatarFallback>
           </Avatar>
-        </button>
+        </div>
       </DropdownMenuTrigger>
+
       <DropdownMenuContent className="textDark font-lexend dark:bg-primary mr-9 bg-white">
         <DropdownMenuItem>
           <LogOut />

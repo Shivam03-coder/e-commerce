@@ -2,17 +2,41 @@
 import React from "react";
 import { ShoppingCart, Star, Package } from "lucide-react";
 import type { ProductsDataType } from "@/types/global";
+import { useAddToCartMutation } from "@/apis/shop-api";
+import { useAppToasts } from "@/hooks/use-app-toast";
+import { Button } from "@/components/ui/button";
+import Spinner from "@/components/global/spinner";
 
 interface ProductCardProps {
   product: ProductsDataType;
 }
-
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const parsedTags = JSON.parse(product.tags as string);
   const hasDiscount = product.price !== product.salePrice;
   const discountPercentage = hasDiscount
     ? Math.round(((product.price - product.salePrice!) / product.price) * 100)
     : 0;
+
+  const [addToCart, { isLoading }] = useAddToCartMutation();
+  const { ErrorToast, SuccessToast } = useAppToasts();
+
+  const handleAddToCart = async (productId: string, quantity: string) => {
+    try {
+      const resp = await addToCart({ productId, quantity }).unwrap();
+      SuccessToast({
+        title: "Item added to cart",
+        description:
+          "The product has been successfully added to your shopping cart",
+      });
+    } catch (error) {
+      ErrorToast({
+        title: "Failed to add item to cart",
+        description: "There was an error while adding the product to your cart",
+      });
+      console.log("Error adding to cart:", error);
+      throw error;
+    }
+  };
 
   const getCategoryColor = (category: string) => {
     switch (category) {
@@ -116,11 +140,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-2xl font-bold text-gray-900">
-             ₹ {product.salePrice!}
+              ₹ {product.salePrice!}
             </span>
             {hasDiscount && (
               <span className="text-lg text-gray-500 line-through">
-              ₹  {product.price}
+                ₹ {product.price}
               </span>
             )}
           </div>
@@ -153,13 +177,20 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </div>
 
         {/* Add to Cart Button */}
-        <button
-          disabled={!product.inStock}
+        <Button
+          disabled={!product.inStock || isLoading}
+          onClick={() => handleAddToCart(product.id, "1")}
           className="bg-primary/70 hover:bg-primary flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 font-medium text-black transition-colors duration-200 disabled:cursor-not-allowed disabled:bg-gray-400"
         >
-          <ShoppingCart className="h-5 w-5" />
-          {product.inStock ? "Add to Cart" : "Out of Stock"}
-        </button>
+          {isLoading ? (
+            <Spinner />
+          ) : (
+            <>
+              <ShoppingCart className="h-5 w-5" />
+              {product.inStock ? "Add to Cart" : "Out of Stock"}
+            </>
+          )}
+        </Button>
       </div>
     </div>
   );

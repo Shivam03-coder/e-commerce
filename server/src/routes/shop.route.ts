@@ -6,6 +6,6 @@ const shopRouter = Router();
 
 shopRouter
   .get("/product/details", requireAuth(), ShopController.getAllProductDetails)
-  .get("/product/cart", requireAuth(), ShopController.addToCart);
+  .post("/product/cart", requireAuth(), ShopController.addToCart);
 
 export default shopRouter;

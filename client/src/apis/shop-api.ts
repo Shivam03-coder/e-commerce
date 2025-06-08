@@ -21,16 +21,20 @@ const ShopServices = ApiServices.injectEndpoints({
           : [{ type: "Product", id: "LIST" }],
     }),
 
-    // addToCart: build.mutation<
-    //   ApiResponse,
-    //   { productId: string; quantity: string }
-    // >({
-    //   query: () => ({
-    //     url: "/shop/product/cart",
-    //     method: "POST",
-    //   }),
-    // }),
+    addToCart: build.mutation<
+      ApiResponse,
+      { productId: string; quantity: string }
+    >({
+      query: ({ productId, quantity }) => ({
+        url: `/shop/product/cart?productId=${productId}&quantity=${quantity}`,
+        method: "POST",
+      }),
+      invalidatesTags: () => [
+        { type: "Carts", id: "LIST" },
+        { type: "Product", id: "LIST" },
+      ],
+    }),
   }),
 });
 
-export const { useGetProductDetailsQuery } = ShopServices;
+export const { useGetProductDetailsQuery, useAddToCartMutation } = ShopServices;
