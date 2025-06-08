@@ -1,8 +1,9 @@
-import React from "react";
+"use client";
+import { useGetProductDetailsQuery } from "@/apis/shop-api";
+import ProductView from "./product-view";
+import type { ProductsDataType } from "@/types/global";
 
 export default function ProductPage() {
-  return (
-    <main className="grid grid-cols-1 gap-6 md:grid-cols-[300px_1fr]">
-    </main>
-  );
+  const { data } = useGetProductDetailsQuery();
+  return <ProductView products={data?.result.products as ProductsDataType[]} />;
 }
