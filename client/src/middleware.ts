@@ -11,11 +11,11 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (sessionToken && (pathname === "/sign-in" || pathname === "/sign-up")) {
-    console.log("✅ Logged in. Redirecting to /admin");
-    return NextResponse.redirect(new URL("/admin", request.url));
+    console.log("✅ Logged in. Redirecting to /shop");
+    return NextResponse.redirect(new URL("/shop", request.url));
   }
 
-  if (!sessionToken && pathname.startsWith("/shops")) {
+  if (!sessionToken && pathname.startsWith("/shop")) {
     console.log("🚨 No credentials. Redirecting to /sign-in");
     return NextResponse.redirect(new URL("/sign-in", request.url));
   }

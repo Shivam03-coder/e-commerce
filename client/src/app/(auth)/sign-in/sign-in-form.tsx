@@ -43,7 +43,7 @@ export default function SignInForm() {
           title: message,
         });
         form.reset();
-        router.push("/admin");
+        router.push("/shop");
       } else if (status === "failed") {
         ErrorToast({
           title: message,
