@@ -61,11 +61,9 @@ const ProductView: React.FC<ProductGridProps> = ({ products }) => {
 
   return (
     <div className="mx-auto w-full px-4 sm:px-6 lg:px-8">
-      {/* Filters and Search */}
-      <Card className="mb-8 p-6">
-        <div className="flex flex-col items-center gap-4 lg:flex-row">
-          {/* Search */}
-          <div className="relative min-w-0 flex-1">
+      <Card className="mb-8 border-none p-6 shadow-none">
+        <div className="flex flex-col items-center justify-between gap-4 lg:flex-row">
+          <div className="relative max-w-md flex-1">
             <div className="relative">
               <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
               <Input
@@ -77,74 +75,67 @@ const ProductView: React.FC<ProductGridProps> = ({ products }) => {
               />
             </div>
           </div>
+          <div className="flex items-center justify-between gap-x-2">
+            {/* Category Filter */}
+            <div className="flex w-full items-center gap-2 lg:w-auto">
+              <Label htmlFor="category" className="flex items-center gap-2">
+                <Filter className="text-muted-foreground h-4 w-4" />
+                <span className="sr-only">Category</span>
+              </Label>
+              <Select
+                value={selectedCategory}
+                onValueChange={setSelectedCategory}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((category) => (
+                    <SelectItem key={category} value={category}>
+                      {category === "ALL"
+                        ? "All Categories"
+                        : category.replace("_", " ")}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          {/* Category Filter */}
-          <div className="flex w-full items-center gap-2 lg:w-auto">
-            <Label htmlFor="category" className="flex items-center gap-2">
-              <Filter className="text-muted-foreground h-4 w-4" />
-              <span className="sr-only">Category</span>
-            </Label>
-            <Select
-              value={selectedCategory}
-              onValueChange={setSelectedCategory}
+            {/* Sort */}
+            <div className="w-full lg:w-auto">
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="name">Name</SelectItem>
+                  <SelectItem value="price-low">Price: Low to High</SelectItem>
+                  <SelectItem value="price-high">Price: High to Low</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* View Mode Toggle */}
+            <ToggleGroup
+              type="single"
+              value={viewMode}
+              onValueChange={(value: "grid" | "list") => {
+                if (value) setViewMode(value);
+              }}
+              variant="outline"
+              className="ml-auto"
             >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((category) => (
-                  <SelectItem key={category} value={category}>
-                    {category === "ALL"
-                      ? "All Categories"
-                      : category.replace("_", " ")}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              <ToggleGroupItem value="grid" aria-label="Grid view">
+                <Grid className="h-4 w-4" />
+              </ToggleGroupItem>
+              <ToggleGroupItem value="list" aria-label="List view">
+                <List className="h-4 w-4" />
+              </ToggleGroupItem>
+            </ToggleGroup>
           </div>
-
-          {/* Sort */}
-          <div className="w-full lg:w-auto">
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="name">Name</SelectItem>
-                <SelectItem value="price-low">Price: Low to High</SelectItem>
-                <SelectItem value="price-high">Price: High to Low</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* View Mode Toggle */}
-          <ToggleGroup
-            type="single"
-            value={viewMode}
-            onValueChange={(value: "grid" | "list") => {
-              if (value) setViewMode(value);
-            }}
-            variant="outline"
-            className="ml-auto"
-          >
-            <ToggleGroupItem value="grid" aria-label="Grid view">
-              <Grid className="h-4 w-4" />
-            </ToggleGroupItem>
-            <ToggleGroupItem value="list" aria-label="List view">
-              <List className="h-4 w-4" />
-            </ToggleGroupItem>
-          </ToggleGroup>
         </div>
       </Card>
 
-      {/* Results Count */}
-      <div className="mb-6">
-        <p className="text-muted-foreground text-sm">
-          Showing {filteredProducts?.length} of {products?.length} products
-        </p>
-      </div>
-
-      {/* Products Grid */}
       {filteredProducts?.length > 0 ? (
         <div
           className={`mb-12 grid gap-6 ${

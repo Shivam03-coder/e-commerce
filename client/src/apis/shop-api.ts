@@ -1,5 +1,6 @@
 import ApiServices from "@/store/api-service";
 import type { ProductListType } from "./types/admin";
+import type { ApiResponse } from "./types/api";
 
 const ShopServices = ApiServices.injectEndpoints({
   endpoints: (build) => ({
@@ -19,6 +20,16 @@ const ShopServices = ApiServices.injectEndpoints({
             ]
           : [{ type: "Product", id: "LIST" }],
     }),
+
+    // addToCart: build.mutation<
+    //   ApiResponse,
+    //   { productId: string; quantity: string }
+    // >({
+    //   query: () => ({
+    //     url: "/shop/product/cart",
+    //     method: "POST",
+    //   }),
+    // }),
   }),
 });
 

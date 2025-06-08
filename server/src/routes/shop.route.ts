@@ -5,6 +5,7 @@ import { ShopController } from "@src/controller/shop.controller";
 const shopRouter = Router();
 
 shopRouter
-  .get("/product/details",requireAuth(), ShopController.getAllProductDetails)
+  .get("/product/details", requireAuth(), ShopController.getAllProductDetails)
+  .get("/product/cart", requireAuth(), ShopController.addToCart);
 
 export default shopRouter;

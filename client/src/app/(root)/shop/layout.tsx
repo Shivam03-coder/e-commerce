@@ -1,5 +1,6 @@
 import React from "react";
 import ShopsHeader from "./shops-header";
+import Footer from "./footer";
 
 export default function ShopsRootLayout({
   children,
@@ -8,6 +9,7 @@ export default function ShopsRootLayout({
     <main className="root">
       <ShopsHeader />
       {children}
+      <Footer />
     </main>
   );
 }

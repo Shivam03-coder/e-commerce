@@ -3,7 +3,6 @@ import { ShoppingCart, User, ShoppingBag } from "lucide-react";
 import Image from "next/image";
 import AppImages from "@/constants/images";
 import sockCategories from "@/constants/socks-category";
-import ProductsFilter from "./products-filter";
 
 const ShopsHeader = () => {
   return (
@@ -14,27 +13,8 @@ const ShopsHeader = () => {
           <Image alt="app-logo" src={AppImages.logo} width={120} height={50} />
         </div>
 
-        {/* SOCK CATEGORIES */}
-        <div className="hidden items-center space-x-7 md:flex">
-          {sockCategories.map((category, index) => (
-            <div key={index} className="group relative">
-              <a
-                href="#"
-                className="hover:text-primary flex items-center text-sm font-medium transition-colors"
-              >
-                {category.icon}
-                {category.name}
-              </a>
-              <button className="absolute top-0 -right-6 hidden h-full items-center group-hover:flex">
-                <ShoppingBag className="hover:text-primary h-4 w-4 text-gray-500" />
-              </button>
-            </div>
-          ))}
-        </div>
-
         {/* ICONS */}
         <div className="flex items-center space-x-6">
-          <ProductsFilter />
           <button className="relative">
             <ShoppingCart className="h-5 w-5" />
             <span className="bg-primary absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full text-xs text-white">
