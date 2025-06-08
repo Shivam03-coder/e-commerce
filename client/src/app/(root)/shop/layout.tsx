@@ -1,6 +1,7 @@
 import React from "react";
 import ShopsHeader from "./shops-header";
 import Footer from "./footer";
+import PaginationSection from "./pagination";
 
 export default function ShopsRootLayout({
   children,
@@ -9,7 +10,9 @@ export default function ShopsRootLayout({
     <main className="root">
       <ShopsHeader />
       {children}
-      <Footer />
+      <section className="py-4">
+        <PaginationSection />
+      </section>
     </main>
   );
 }

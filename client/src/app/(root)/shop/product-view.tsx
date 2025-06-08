@@ -61,9 +61,10 @@ const ProductView: React.FC<ProductGridProps> = ({ products }) => {
 
   return (
     <div className="mx-auto w-full px-4 sm:px-6 lg:px-8">
-      <Card className="mb-8 border-none p-6 shadow-none">
-        <div className="flex flex-col items-center justify-between gap-4 lg:flex-row">
-          <div className="relative max-w-md flex-1">
+      <Card className="mb-8 border-none p-4 shadow-none sm:p-6">
+        <div className="flex flex-col items-stretch gap-4 lg:flex-row lg:items-center lg:justify-between">
+          {/* Search Input - Full width on mobile, constrained on larger screens */}
+          <div className="w-full lg:max-w-md lg:flex-1">
             <div className="relative">
               <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
               <Input
@@ -71,14 +72,26 @@ const ProductView: React.FC<ProductGridProps> = ({ products }) => {
                 placeholder="Search products..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
+                className="w-full pl-10"
               />
             </div>
           </div>
-          <div className="flex items-center justify-between gap-x-2">
-            {/* Category Filter */}
-            <div className="flex w-full items-center gap-2 lg:w-auto">
-              <Label htmlFor="category" className="flex items-center gap-2">
+
+          {/* Filters Row - Stacked on mobile, inline on larger screens */}
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-x-2">
+            {/* Category Filter - Full width on mobile, auto width on larger screens */}
+            <div className="flex w-full items-center gap-2 sm:w-auto">
+              <Label
+                htmlFor="category"
+                className="flex items-center gap-2 sm:hidden"
+              >
+                <Filter className="text-muted-foreground h-4 w-4" />
+                <span>Category</span>
+              </Label>
+              <Label
+                htmlFor="category"
+                className="hidden items-center gap-2 sm:flex"
+              >
                 <Filter className="text-muted-foreground h-4 w-4" />
                 <span className="sr-only">Category</span>
               </Label>
@@ -86,7 +99,7 @@ const ProductView: React.FC<ProductGridProps> = ({ products }) => {
                 value={selectedCategory}
                 onValueChange={setSelectedCategory}
               >
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger className="w-full sm:w-[180px]">
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -101,21 +114,20 @@ const ProductView: React.FC<ProductGridProps> = ({ products }) => {
               </Select>
             </div>
 
-            {/* Sort */}
-            <div className="w-full lg:w-auto">
+            <div className="w-full sm:w-auto">
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger className="w-full sm:w-[180px]">
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="name">Name</SelectItem>
+                  <SelectItem value="name">Sort By</SelectItem>
                   <SelectItem value="price-low">Price: Low to High</SelectItem>
                   <SelectItem value="price-high">Price: High to Low</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            {/* View Mode Toggle */}
+            {/* View Mode Toggle - Align right on all screens */}
             <ToggleGroup
               type="single"
               value={viewMode}
