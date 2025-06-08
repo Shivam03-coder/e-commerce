@@ -1,6 +1,7 @@
 "use client";
 import AppImages from "@/constants/images";
 import { Home, ShoppingBag, Heart, Info, Mail, Menu, X } from "lucide-react";
+import { Link } from "next-view-transitions";
 import Image from "next/image";
 import React, { useState } from "react";
 
@@ -8,14 +9,14 @@ const NavigationBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
   const navItems = [
-    { href: "#", label: "Home", icon: <Home className="h-5 w-5" /> },
+    { href: "/", label: "Home", icon: <Home className="h-5 w-5" /> },
     {
-      href: "#products",
+      href: "/shop",
       label: "Products",
       icon: <ShoppingBag className="h-5 w-5" />,
     },
-    { href: "#about", label: "About", icon: <Info className="h-5 w-5" /> },
-    { href: "#contact", label: "Contact", icon: <Mail className="h-5 w-5" /> },
+    { href: "/about", label: "About", icon: <Info className="h-5 w-5" /> },
+    { href: "/contact", label: "Contact", icon: <Mail className="h-5 w-5" /> },
   ];
 
   return (
@@ -37,14 +38,14 @@ const NavigationBar = () => {
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-8">
               {navItems.map((item) => (
-                <a
+                <Link
                   key={item.href}
                   href={item.href}
                   className="hover:text-primary flex items-center px-3 py-2 text-sm font-medium text-gray-600 transition-colors"
                 >
                   <span className="mr-2">{item.icon}</span>
                   {item.label}
-                </a>
+                </Link>
               ))}
             </div>
           </div>
@@ -76,14 +77,14 @@ const NavigationBar = () => {
         <div className="border-t border-gray-100 bg-white md:hidden">
           <div className="space-y-1 px-2 pt-2 pb-3">
             {navItems.map((item) => (
-              <a
+              <Link
                 key={item.href}
                 href={item.href}
                 className="hover:text-primary flex items-center px-3 py-2 text-gray-600"
               >
                 <span className="mr-2">{item.icon}</span>
                 {item.label}
-              </a>
+              </Link>
             ))}
             <button className="bg-primary mt-4 flex w-full items-center justify-center rounded-md px-3 py-2 font-medium text-white">
               <ShoppingBag className="mr-2 h-5 w-5" />

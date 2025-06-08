@@ -24,15 +24,15 @@ const About = () => {
             {/* Icon Highlights */}
             <div className="flex items-center space-x-10">
               <div className="text-center">
-                <Users className="mx-auto mb-2 h-8 w-8 text-blue-500" />
+                <Users className="mx-auto mb-2 h-8 w-8 text-primary" />
                 <div className="text-sm text-gray-600">Team of 25+</div>
               </div>
               <div className="text-center">
-                <Heart className="mx-auto mb-2 h-8 w-8 text-blue-500" />
+                <Heart className="mx-auto mb-2 h-8 w-8 text-primary" />
                 <div className="text-sm text-gray-600">Made with Love</div>
               </div>
               <div className="text-center">
-                <Shield className="mx-auto mb-2 h-8 w-8 text-blue-500" />
+                <Shield className="mx-auto mb-2 h-8 w-8 text-primary" />
                 <div className="text-sm text-gray-600">Quality Guaranteed</div>
               </div>
             </div>

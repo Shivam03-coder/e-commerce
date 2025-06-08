@@ -9,7 +9,6 @@ import Footer from "./footer";
 function App() {
   return (
     <div className="min-h-screen bg-green-50">
-      <NavigationBar />
       <HeroSection />
       <FeatureSection />
       <ProductsSection />
