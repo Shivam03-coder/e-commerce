@@ -79,3 +79,13 @@ interface OrdersType {
   total: number;
   products: Product[];
 }
+
+export interface ReviewListItem {
+  message: string;
+  createdAt: string;
+  stars: number;
+  user: {
+    email: string;
+    name: string;
+  };
+}

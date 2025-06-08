@@ -106,7 +106,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       </div>
 
       {/* Content Section */}
-      <div  onClick={() => handleNaviagte(parseInt(product.id))} className="p-5 cursor-pointer">
+      <div
+        onClick={() => handleNaviagte(parseInt(product.id))}
+        className="cursor-pointer p-5"
+      >
         {/* Title */}
         <h3 className="mb-2 line-clamp-2 text-lg font-semibold text-gray-900">
           {product.title}
@@ -186,7 +189,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         {/* Add to Cart Button */}
         <Button
           disabled={!product.inStock || isLoading}
-          onClick={() => handleAddToCart(product.id, "1")}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleAddToCart(product.id, "1");
+          }}
           className="bg-primary/70 hover:bg-primary flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 font-medium text-black transition-colors duration-200 disabled:cursor-not-allowed disabled:bg-gray-400"
         >
           {isLoading ? (

@@ -1,6 +1,7 @@
 import ApiServices from "@/store/api-service";
 import type { ProductListType, ProductType } from "./types/admin";
 import type { ApiResponse } from "./types/api";
+import type { ReviewListItemType } from "./types/shop";
 
 const ShopServices = ApiServices.injectEndpoints({
   endpoints: (build) => ({
@@ -42,6 +43,29 @@ const ShopServices = ApiServices.injectEndpoints({
         { type: "Product", id: "LIST" },
       ],
     }),
+
+    addReview: build.mutation<
+      ApiResponse,
+      { productId: number; message: string; stars: number }
+    >({
+      query: ({ productId, message, stars }) => ({
+        url: `/shop/product/review/${productId}`,
+        method: "POST",
+        body: {
+          message,
+          stars,
+        },
+      }),
+      invalidatesTags: [{ type: "Review", id: "LIST" }],
+    }),
+
+    getReview: build.query<ReviewListItemType, { productId: number }>({
+      query: ({ productId }) => ({
+        url: `/shop/product/review/${productId}`,
+        method: "GET",
+      }),
+      providesTags: [{ type: "Review", id: "LIST" }],
+    }),
   }),
 });
 
@@ -49,4 +73,6 @@ export const {
   useGetProductDetailsQuery,
   useAddToCartMutation,
   useGetProductDetailsByIdQuery,
+  useAddReviewMutation,
+  useGetReviewQuery,
 } = ShopServices;

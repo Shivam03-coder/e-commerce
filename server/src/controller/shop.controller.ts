@@ -175,4 +175,48 @@ export class ShopController {
         .json(new ApiResponse(200, "Product added to cart successfully"));
     }
   );
+
+  public static addReview = AsyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+      const { productId } = req.params;
+      const { id: userId } = getAuthUser(req);
+      const { message, stars } = req.body;
+
+      await db.review.create({
+        data: {
+          productId: parseInt(productId),
+          message,
+          stars,
+          userId,
+        },
+      });
+
+      res.json(new ApiResponse(201, "Review created successfully"));
+    }
+  );
+
+  public static getAllReview = AsyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+      const { productId } = req.params;
+
+      const review = await db.review.findMany({
+        where: {
+          productId: parseInt(productId),
+        },
+        select: {
+          message: true,
+          createdAt: true,
+          stars: true,
+          user: {
+            select: {
+              email: true,
+              name: true,
+            },
+          },
+        },
+      });
+
+      res.json(new ApiResponse(201, "Review created successfully", review));
+    }
+  );
 }

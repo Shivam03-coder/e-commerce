@@ -1,9 +1,16 @@
 "use client";
-import { useGetProductDetailsByIdQuery } from "@/apis/shop-api";
+import {
+  useAddToCartMutation,
+  useGetProductDetailsByIdQuery,
+} from "@/apis/shop-api";
 import React, { use } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { ArrowUpLeftFromSquareIcon, ShoppingCart } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowUpLeftFromSquareIcon,
+  ShoppingCart,
+} from "lucide-react";
 import { useAppToasts } from "@/hooks/use-app-toast";
 import Spinner from "@/components/global/spinner";
 import Review from "./review";
@@ -21,6 +28,8 @@ const ProductDetails = ({ params }: ProductDetailsProps) => {
     productId: productid,
   });
   const { ErrorToast, SuccessToast } = useAppToasts();
+  const [addToCart, { isLoading: isProductAddingToCart }] =
+    useAddToCartMutation();
 
   if (isLoading)
     return (
@@ -34,27 +43,32 @@ const ProductDetails = ({ params }: ProductDetailsProps) => {
   const product = data.result.product;
   const tags = JSON.parse(product.tags || "[]") as string[];
 
-  const handleAddToCart = async () => {
+  const handleAddToCart = async (productId: string, quantity: string) => {
     try {
-      // You'll need to implement or import addToCart mutation
-      // const resp = await addToCart({ productId: product.id.toString(), quantity: "1" }).unwrap();
+      const resp = await addToCart({ productId, quantity }).unwrap();
       SuccessToast({
-        title: "Added to cart",
-        description: `${product.title} has been added to your cart`,
+        title: "Item added to cart",
+        description:
+          "The product has been successfully added to your shopping cart",
       });
-    } catch (err) {
+    } catch (error) {
       ErrorToast({
-        title: "Error",
-        description: "Failed to add item to cart",
+        title: "Failed to add item to cart",
+        description: "There was an error while adding the product to your cart",
       });
+      console.log("Error adding to cart:", error);
+      throw error;
     }
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <Link href={"/shop"}>
-        <ArrowUpLeftFromSquareIcon />
-      </Link>
+      <Button asChild variant="ghost" className="my-5 gap-2 bg-green-200">
+        <Link href="/shop">
+          <ArrowLeft className="h-4 w-4" />
+          <span>Back to Shop</span>
+        </Link>
+      </Button>
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         {/* Product Image */}
         <div className="overflow-hidden rounded-lg bg-white">
@@ -120,7 +134,7 @@ const ProductDetails = ({ params }: ProductDetailsProps) => {
           )}
 
           <Button
-            onClick={handleAddToCart}
+            onClick={() => handleAddToCart(productid.toString(), "1")}
             disabled={!product.inStock}
             className="bg-primary hover:bg-primary-dark flex w-full items-center gap-2 rounded-lg px-6 py-3 text-white md:w-auto"
           >
