@@ -1,5 +1,5 @@
 import ApiServices from "@/store/api-service";
-import type { ProductListType } from "./types/admin";
+import type { ProductListType, ProductType } from "./types/admin";
 import type { ApiResponse } from "./types/api";
 
 const ShopServices = ApiServices.injectEndpoints({
@@ -21,6 +21,14 @@ const ShopServices = ApiServices.injectEndpoints({
           : [{ type: "Product", id: "LIST" }],
     }),
 
+    getProductDetailsById: build.query<ProductType, { productId: number }>({
+      query: ({ productId }) => ({
+        url: `/shop/product/details/${productId}`,
+        method: "GET",
+      }),
+      providesTags: [{ type: "Product", id: "LIST" }],
+    }),
+
     addToCart: build.mutation<
       ApiResponse,
       { productId: string; quantity: string }
@@ -37,4 +45,8 @@ const ShopServices = ApiServices.injectEndpoints({
   }),
 });
 
-export const { useGetProductDetailsQuery, useAddToCartMutation } = ShopServices;
+export const {
+  useGetProductDetailsQuery,
+  useAddToCartMutation,
+  useGetProductDetailsByIdQuery,
+} = ShopServices;

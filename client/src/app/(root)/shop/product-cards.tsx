@@ -6,6 +6,8 @@ import { useAddToCartMutation } from "@/apis/shop-api";
 import { useAppToasts } from "@/hooks/use-app-toast";
 import { Button } from "@/components/ui/button";
 import Spinner from "@/components/global/spinner";
+import { useTransitionRouter } from "next-view-transitions";
+import useAppLinks from "@/navigations";
 
 interface ProductCardProps {
   product: ProductsDataType;
@@ -13,13 +15,14 @@ interface ProductCardProps {
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const parsedTags = JSON.parse(product.tags as string);
   const hasDiscount = product.price !== product.salePrice;
+  const router = useTransitionRouter();
   const discountPercentage = hasDiscount
     ? Math.round(((product.price - product.salePrice!) / product.price) * 100)
     : 0;
 
   const [addToCart, { isLoading }] = useAddToCartMutation();
   const { ErrorToast, SuccessToast } = useAppToasts();
-
+  const links = useAppLinks();
   const handleAddToCart = async (productId: string, quantity: string) => {
     try {
       const resp = await addToCart({ productId, quantity }).unwrap();
@@ -36,6 +39,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       console.log("Error adding to cart:", error);
       throw error;
     }
+  };
+
+  const handleNaviagte = (id: number) => {
+    router.push(`${links.shop}/${id}`);
   };
 
   const getCategoryColor = (category: string) => {
@@ -99,7 +106,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       </div>
 
       {/* Content Section */}
-      <div className="p-5">
+      <div  onClick={() => handleNaviagte(parseInt(product.id))} className="p-5 cursor-pointer">
         {/* Title */}
         <h3 className="mb-2 line-clamp-2 text-lg font-semibold text-gray-900">
           {product.title}

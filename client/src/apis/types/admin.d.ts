@@ -10,6 +10,11 @@ export interface ProductListType extends ApiResponse {
     products: ProductsDataType[];
   };
 }
+export interface ProductType extends ApiResponse {
+  result: {
+    product: ProductsDataType;
+  };
+}
 export interface CustomerListType extends ApiResponse {
   result: {
     customer: CustomerType[];

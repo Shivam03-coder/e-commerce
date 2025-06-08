@@ -92,7 +92,7 @@ model CartItem {
 model Review {
     id       String  @id @default(cuid())
     userName String?
-    starts   Int     @default(0)
+    stars   Int     @default(0)
     message  String?
 
     productId Int

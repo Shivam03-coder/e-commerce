@@ -10,9 +10,6 @@ export default function ShopsRootLayout({
     <main className="root">
       <ShopsHeader />
       {children}
-      <section className="py-4">
-        <PaginationSection />
-      </section>
     </main>
   );
 }
