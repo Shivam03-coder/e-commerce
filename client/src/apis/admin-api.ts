@@ -3,6 +3,7 @@ import type { ApiResponse } from "./types/api";
 import type { AddProductSchemaType } from "@/schema/product.schema";
 import type {
   CustomerListType,
+  OrdersListType,
   ProductFeaturedType,
   ProductImageUrlType,
   ProductListType,
@@ -112,6 +113,14 @@ const AdminServices = ApiServices.injectEndpoints({
       }),
       invalidatesTags: [{ type: "Featured", id: "LIST" }],
     }),
+
+    getOrdersDetails: build.query<OrdersListType, void>({
+      query: () => ({
+        url: "/admin/orders/details",
+        method: "GET",
+      }),
+      providesTags: [{ type: "Orders", id: "LIST" }],
+    }),
   }),
 });
 
@@ -126,4 +135,5 @@ export const {
   useDeleteFeaturedProductMutation,
   useGetFeaturedProductQuery,
   useCreateFeaturedProductMutation,
+  useGetOrdersDetailsQuery,
 } = AdminServices;

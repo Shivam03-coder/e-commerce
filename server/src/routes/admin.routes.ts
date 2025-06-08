@@ -12,9 +12,10 @@ adminRouter
   .patch("/product/:id", requireAuth(), AdminController.updateProductDetails)
   .post("/product/url", requireAuth(),upload.single("productImage"), AdminController.getProductImageUrl)
   .get("/customer/details" , requireAuth() , AdminController.getCustomerDetails)
-   .delete("/customer/:id", requireAuth(), AdminController.deleteCustomer)
-   .get("/featured/product", requireAuth(), AdminController.getFeaturedProduct)
-   .post("/featured/product", requireAuth(), AdminController.createFeaturedProduct)
-   .delete("/featured/product/:id", requireAuth(), AdminController.deleteFeaturedProduct)
+  .delete("/customer/:id", requireAuth(), AdminController.deleteCustomer)
+  .get("/featured/product", requireAuth(), AdminController.getFeaturedProduct)
+  .post("/featured/product", requireAuth(), AdminController.createFeaturedProduct)
+  .delete("/featured/product/:id", requireAuth(), AdminController.deleteFeaturedProduct)
+  .get("/orders/details" , requireAuth(),AdminController.getOrdersDetails)
 
 export default adminRouter;

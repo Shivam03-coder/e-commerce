@@ -1,4 +1,8 @@
-import type { CustomerType, ProductsDataType } from "@/types/global";
+import type {
+  CustomerType,
+  OrdersType,
+  ProductsDataType,
+} from "@/types/global";
 import type { ApiResponse } from "./api";
 
 export interface ProductListType extends ApiResponse {
@@ -23,4 +27,8 @@ export interface ProductFeaturedType extends ApiResponse {
     id: string;
     featuredProductImage: string;
   }[];
+}
+
+export interface OrdersListType extends ApiResponse {
+  result: OrdersType[];
 }

@@ -279,6 +279,7 @@ export class AdminController {
       res.json(new ApiResponse(200, "Featured Poster Created succesfully"));
     }
   );
+
   public static deleteFeaturedProduct = AsyncHandler(
     async (req: Request, res: Response): Promise<void> => {
       const { id } = req.params;
@@ -301,6 +302,67 @@ export class AdminController {
       });
       res.json(
         new ApiResponse(200, "Featured Poster deleted succesfully", product)
+      );
+    }
+  );
+
+  public static getOrdersDetails = AsyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+      const orders = await db.order.findMany({
+        select: {
+          id: true,
+          customer: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+          cart: {
+            select: {
+              items: {
+                select: {
+                  quantity: true,
+                  product: {
+                    select: {
+                      id: true,
+                      title: true,
+                      price: true,
+                      productImage: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+          orderStatus: true,
+          orderDate: true,
+          paymentStatus: true,
+          totalAmount: true,
+        },
+        orderBy: {
+          orderDate: "desc",
+        },
+      });
+
+      const formattedOrders = orders.map((order) => ({
+        id: order.id,
+        customer: order.customer,
+        status: order.orderStatus,
+        paymentStatus: order.paymentStatus,
+        date: order.orderDate,
+        total: order.totalAmount,
+        products: order.cart.items.map((item) => ({
+          id: item.product.id,
+          name: item.product.title,
+          price: item.product.price,
+          image: item.product.productImage,
+          quantity: item.quantity,
+        })),
+      }));
+
+      res.json(
+        new ApiResponse(200, "Orders fetched successfully", formattedOrders)
       );
     }
   );

@@ -41,13 +41,41 @@ export interface EditProductProps {
   inventory: number;
 }
 
-interface CustomerType {
+export type OrderStatus =
+  | "PENDING"
+  | "PROCESSING"
+  | "SHIPPED"
+  | "DELIVERED"
+  | "CANCELLED"
+  | "RETURNED";
+
+export type PaymentStatus =
+  | "PENDING"
+  | "COMPLETED"
+  | "FAILED"
+  | "REFUNDED"
+  | "PARTIALLY_REFUNDED";
+
+interface Customer {
   id: string;
   name: string;
   email: string;
-  phoneNumber: string;
-  userAddress: {
-    city: string;
-    state: string;
-  };
+}
+
+interface Product {
+  id: number;
+  name: string;
+  price: string;
+  image: string;
+  quantity: string;
+}
+
+interface OrdersType {
+  id: string;
+  customer: Customer;
+  status: OrderStatus;
+  paymentStatus: PaymentStatus;
+  date: string;
+  total: number;
+  products: Product[];
 }

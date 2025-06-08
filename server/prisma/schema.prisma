@@ -29,9 +29,8 @@ model Session {
     sessionKey String   @unique
     expiresAt  DateTime
     createdAt  DateTime @default(now())
-
-    userId String @unique
-    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId     String   @unique
+    user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Address {
@@ -96,7 +95,7 @@ model Review {
     starts   Int     @default(0)
     message  String?
 
-    productId Int     @unique
+    productId Int
     product   Product @relation(fields: [productId], references: [id])
 
     userId String
@@ -124,9 +123,8 @@ model Order {
     payerId         String?
     orderDate       DateTime      @default(now())
     orderUpdateDate DateTime      @updatedAt
-
-    customerId String
-    customer   User   @relation(fields: [customerId], references: [id])
+    customerId      String
+    customer        User          @relation(fields: [customerId], references: [id])
 }
 
 // ================ ENUMS ===============
