@@ -266,22 +266,22 @@ export class AdminController {
     }
   );
 
-  public static createFeaturedPoster = AsyncHandler(
+  public static createFeaturedProduct = AsyncHandler(
     async (req: Request, res: Response): Promise<void> => {
-      const { imageUrl } = req.body;
+      console.log(req.body);
+      const { featuredProductImage } = req.body;
 
       await db.featuredProducts.create({
         data: {
-          images: imageUrl,
+          featuredProductImage,
         },
       });
       res.json(new ApiResponse(200, "Featured Poster Created succesfully"));
     }
   );
-  public static deleteFeaturedPoster = AsyncHandler(
+  public static deleteFeaturedProduct = AsyncHandler(
     async (req: Request, res: Response): Promise<void> => {
       const { id } = req.params;
-
       await db.featuredProducts.delete({
         where: {
           id,
@@ -296,7 +296,7 @@ export class AdminController {
       const product = await db.featuredProducts.findMany({
         select: {
           id: true,
-          images: true,
+          featuredProductImage: true,
         },
       });
       res.json(

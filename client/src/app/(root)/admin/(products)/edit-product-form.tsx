@@ -1,9 +1,8 @@
 "use client";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import {
   Form,
   FormControl,
@@ -71,7 +70,7 @@ export default function EditProductForm({
   };
 
   async function onSubmit(values: AddProductSchemaType) {
-    console.log("🚀 ~ onSubmit ~ values:", values)
+    console.log("🚀 ~ onSubmit ~ values:", values);
     try {
       const res = await updateProduct({
         product: values,

@@ -13,7 +13,8 @@ adminRouter
   .post("/product/url", requireAuth(),upload.single("productImage"), AdminController.getProductImageUrl)
   .get("/customer/details" , requireAuth() , AdminController.getCustomerDetails)
    .delete("/customer/:id", requireAuth(), AdminController.deleteCustomer)
-   .post("/featured/product", requireAuth(), AdminController.createFeaturedPoster)
-   .delete("/featured/product/:id", requireAuth(), AdminController.deleteCustomer)
+   .get("/featured/product", requireAuth(), AdminController.getFeaturedProduct)
+   .post("/featured/product", requireAuth(), AdminController.createFeaturedProduct)
+   .delete("/featured/product/:id", requireAuth(), AdminController.deleteFeaturedProduct)
 
 export default adminRouter;

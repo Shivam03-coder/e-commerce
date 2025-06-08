@@ -21,6 +21,6 @@ export interface ProductImageUrlType extends ApiResponse {
 export interface ProductFeaturedType extends ApiResponse {
   result: {
     id: string;
-    images: string;
+    featuredProductImage: string;
   }[];
 }

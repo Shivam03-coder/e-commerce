@@ -15,4 +15,9 @@ export const addProductSchema = z.object({
   inStock: z.unknown(),
 });
 
+export const featuredProductSchema = z.object({
+  featuredProductImage: z.string(),
+});
+
 export type AddProductSchemaType = z.infer<typeof addProductSchema>;
+export type FeaturedProductSchemaType = z.infer<typeof featuredProductSchema>;
