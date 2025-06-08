@@ -1,5 +1,6 @@
 import adminRouter from "./admin.routes";
 import authRouter from "./auth.routes";
+import shopRouter from "./shop.route";
 
 export default [
   {
@@ -9,5 +10,9 @@ export default [
   {
     path: "admin",
     router: adminRouter,
+  },
+  {
+    path: "shop",
+    router: shopRouter,
   },
 ];

@@ -1,17 +1,12 @@
 import { Prisma } from "@prisma/client";
 import { GlobalUtils } from "@src/global";
-import AuthServices from "@src/services/auth";
-import {
-  ApiError,
-  ApiResponse,
-  AsyncHandler,
-} from "@src/utils/server-functions";
+import { ApiResponse, AsyncHandler } from "@src/utils/server-functions";
 import { Request, Response } from "express";
 import { ProductCategory, MaterialType, SockSize } from "@prisma/client"; // Enums
 import { db } from "@src/db";
 
-export class ProductController {
-  public static getAllProducts = AsyncHandler(
+export class ShopController {
+  public static getAllProductDetails = AsyncHandler(
     async (req: Request, res: Response): Promise<void> => {
       const {
         category,
@@ -20,16 +15,13 @@ export class ProductController {
         minPrice,
         maxPrice,
         inStock,
-        featured,
-        bestSeller,
-        sortBy = "createdAt", // default sorting field
-        sortOrder = "desc", // default sort order
         page = 1,
         limit = 10,
       } = req.query;
 
       const filter: Prisma.ProductWhereInput = {};
 
+      // Only apply filters if the corresponding query parameters are provided
       if (category) {
         GlobalUtils.validateEnum(
           "category",
@@ -62,18 +54,37 @@ export class ProductController {
       const skip = (Number(page) - 1) * Number(limit);
       const take = Number(limit);
 
-      const orderBy: Prisma.ProductOrderByWithRelationInput = {
-        [sortBy as string]: sortOrder === "asc" ? "asc" : "desc",
-      };
-
       const products = await db.product.findMany({
-        where: filter,
-        orderBy,
+        where: Object.keys(filter).length === 0 ? undefined : filter,
+        orderBy: {
+          createdAt: "desc",
+        },
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          category: true,
+          tags: true,
+          productImage: true,
+          material: true,
+          size: true,
+          price: true,
+          salePrice: true,
+          inStock: true,
+          inventory: true,
+          _count: {
+            select: {
+              Review: true,
+            },
+          },
+        },
         skip,
         take,
       });
 
-      const total = await db.product.count({ where: filter });
+      const total = await db.product.count({
+        where: Object.keys(filter).length === 0 ? undefined : filter,
+      });
 
       res.status(200).json(
         new ApiResponse(200, "Products fetched successfully", {
