@@ -7,6 +7,7 @@ import Spinner from "@/components/global/spinner";
 
 export default function ProductPage() {
   const { data, isLoading } = useGetProductDetailsQuery();
+  console.log("🚀 ~ ProductPage ~ data:", data)
 
   if (isLoading) {
     return (
