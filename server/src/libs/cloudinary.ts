@@ -1,11 +1,13 @@
-import { appEnvConfigs } from "@src/configs";
+import { envs } from "@src/configs/envs.config";
+import { ValidationError } from "@src/utils/error.utils";
 import { v2 as cloudinary } from "cloudinary";
+import { Request } from "express";
 import { promises as fs } from "fs";
 
 cloudinary.config({
-  cloud_name: appEnvConfigs.CLOUDINARY_CLOUD_NAME,
-  api_key: appEnvConfigs.CLOUDINARY_API_KEY,
-  api_secret: appEnvConfigs.CLOUDINARY_API_SECRET,
+  cloud_name: envs.CLOUDINARY_CLOUD_NAME,
+  api_key: envs.CLOUDINARY_API_KEY,
+  api_secret: envs.CLOUDINARY_API_SECRET,
 });
 
 type ImagePath = string | string[];
@@ -16,11 +18,11 @@ class CloudinaryService {
     attempt = 1
   ): Promise<string | null> {
     try {
-      await fs.access(imagePath); // Ensure file exists
+      await fs.access(imagePath);
 
       const uploadResponse = await cloudinary.uploader.upload(imagePath, {
         resource_type: "auto",
-        timeout: 120000, // SDK-level timeout
+        timeout: 120000,
       });
 
       return uploadResponse.secure_url;
@@ -45,7 +47,6 @@ class CloudinaryService {
 
       return null;
     } finally {
-      // Clean up local file regardless of success/failure
       try {
         await fs.unlink(imagePath);
       } catch (err) {
@@ -54,7 +55,7 @@ class CloudinaryService {
     }
   }
 
-  public static async uploadImages(
+  private static async uploadImages(
     imagePaths: ImagePath
   ): Promise<string | string[] | null> {
     if (!imagePaths || (Array.isArray(imagePaths) && imagePaths.length === 0)) {
@@ -78,6 +79,27 @@ class CloudinaryService {
       return null;
     }
   }
+
+  public static getImageUrl = async (req: Request): Promise<string | null> => {
+    try {
+      console.log(req.file?.path);
+      if (req.file?.path) {
+        const uploadedImage = await this.uploadImages(req.file.path);
+
+        if (!uploadedImage) {
+          throw new ValidationError("Image upload failed");
+        }
+
+        return uploadedImage as string;
+      }
+
+      return null;
+    } catch (error: any) {
+      throw new ValidationError(
+        error.message || "An error occurred while uploading the image"
+      );
+    }
+  };
 }
 
 export default CloudinaryService;

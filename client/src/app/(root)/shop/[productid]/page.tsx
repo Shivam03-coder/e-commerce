@@ -125,7 +125,7 @@ const ProductDetails = ({ params }: ProductDetailsProps) => {
               {tags.map((tag, index) => (
                 <span
                   key={index}
-                  className="rounded-full bg-gray-100 px-3 py-1 text-sm"
+                  className="rounded-full bg-yellow-300 px-3 py-1 text-sm"
                 >
                   {tag}
                 </span>

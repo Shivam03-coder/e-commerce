@@ -1,14 +1,14 @@
 import { Router } from "express";
-import { UserAuthController } from "@src/controller/auth.controller";
+import { AuthController } from "@src/controller/auth.controller";
 import { requireAuth } from "@src/middleware/auth.middleware";
 
 const authRouter = Router();
 
 authRouter
-  .post("/sign-up", UserAuthController.userSignup)
-  .post("/sign-in", UserAuthController.userSignin)
-  .post("/logout", requireAuth(), UserAuthController.userLogout)
-  .post("/forgot-password", requireAuth(), UserAuthController.forgotPassword)
-  .get("/userinfo", requireAuth(), UserAuthController.authenticatedUserInfo);
+  .post("/sign-up", AuthController.userSignupHandler)
+  .post("/sign-in", AuthController.userSigninHandler)
+  .post("/logout", requireAuth, AuthController.userLogoutHandler)
+  .post("/forgot-password", requireAuth, AuthController.forgotPasswordHandler)
+  .get("/userinfo", requireAuth, AuthController.authenticatedUserInfoHandler);
 
 export default authRouter;

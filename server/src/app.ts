@@ -1,7 +1,7 @@
 import cors from "cors";
 import express, {
   Application,
-  NextFunction,
+  ErrorRequestHandler,
   Request,
   Response,
   Router,
@@ -11,13 +11,12 @@ import helmet from "helmet";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import { Server } from "http";
-import { appEnvConfigs } from "./configs";
-import { ApiError } from "./utils/server-functions";
+import { envs } from "./configs/envs.config";
 import routes from "./routes/index.routes";
+import { errorMiddleware } from "./middleware/error.middleware";
 
 interface AppOptions {
   port?: number;
-  serveSwagger?: boolean;
 }
 
 interface Route {
@@ -32,27 +31,30 @@ class App {
 
   constructor(options?: AppOptions) {
     this.app = express();
-    this.port = options?.port || Number(appEnvConfigs.PORT) || 3000;
+    this.port = options?.port || Number(envs.PORT) || 3000;
     this.initializeMiddlewares();
     this.initializeRoutes();
-    this.initializeErrorHandler();
   }
 
   private initializeMiddlewares(): void {
     this.app.use(helmet());
     this.app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
+
+    this.app.use(morgan("common"));
+
+    this.app.use(express.json());
+    this.app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
+    this.app.use(cookieParser());
+
     this.app.use(
       cors({
-        origin: appEnvConfigs.NEXT_APP_URI,
+        origin: envs.CLIENT_APP_URI,
         credentials: true,
         methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Authorization"],
       })
     );
-    this.app.use(morgan("common"));
-    this.app.use(express.json());
-    this.app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
-    this.app.use(cookieParser());
+
     this.app.enable("trust proxy");
   }
 
@@ -64,45 +66,50 @@ class App {
     });
 
     this.app.get("/health", (_req: Request, res: Response) => {
-      res.status(200).json({ status: "healthy" });
+      res.status(200).json({
+        status: "healthy",
+        version: envs.VERSION,
+      });
     });
-  }
 
-  private initializeErrorHandler(): void {
-    this.app.use((err: ApiError, _req: any, res: any, _next: NextFunction) => {
-      if (err instanceof ApiError) {
-        return res.json({
-          code: err.code,
-          status: "failed",
-          message: err.message,
-        });
-      }
+    this.app.use((_req: Request, res: Response) => {
+      res.status(404).json({ message: "Not Found" });
     });
-  }
 
-  public listen(): Promise<void> {
+    this.app.use(errorMiddleware);
+  }
+  public async listen(): Promise<void> {
     return new Promise((resolve) => {
       this.server = this.app.listen(this.port, () => {
-        console.log(`🚀 Server running on http://localhost:${this.port}`);
+        console.log(`
+🚀 Server launched successfully!
+🔗 Local: http://localhost:${this.port}
+
+Health Check: http://localhost:${this.port}/health
+        `);
         resolve();
       });
     });
   }
 
-  public close(): Promise<void> {
-    return new Promise((resolve, reject) => {
+  public async close(): Promise<void> {
+    try {
       if (this.server) {
-        this.server.close((err) => {
-          if (err) {
-            return reject(err);
-          }
-          console.log("Server closed");
-          resolve();
+        await new Promise<void>((resolve, reject) => {
+          this.server?.close((err) => {
+            if (err) {
+              console.error("Error closing server:", err);
+              return reject(err);
+            }
+            console.log("🛑 Express server closed");
+            resolve();
+          });
         });
-      } else {
-        resolve();
       }
-    });
+    } catch (error) {
+      console.error("Error during shutdown:", error);
+      throw error;
+    }
   }
 
   public getAppInstance(): Application {

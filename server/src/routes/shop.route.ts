@@ -5,10 +5,10 @@ import { ShopController } from "@src/controller/shop.controller";
 const shopRouter = Router();
 
 shopRouter
-  .get("/product/details", requireAuth(), ShopController.getAllProductDetails)
-  .post("/product/cart", requireAuth(), ShopController.addToCart)
-  .get("/product/details/:productId", requireAuth(), ShopController.getProductDetailsById)
-  .post("/product/review/:productId", requireAuth(), ShopController.addReview)
-  .get("/product/review/:productId", requireAuth(), ShopController.getAllReview);
+  .get("/product/details", requireAuth, ShopController.getAllProductDetailsHandler)
+  .post("/product/cart", requireAuth, ShopController.addToCartHandler)
+  .get("/product/details/:productId", requireAuth, ShopController.getProductDetailsByIdHandler)
+  .post("/product/review/:productId", requireAuth, ShopController.addReviewHandler)
+  .get("/product/review/:productId", requireAuth, ShopController.getAllReviewHandler);
 
 export default shopRouter;

@@ -6,16 +6,16 @@ import { AdminController } from "@src/controller/admin.controller";
 const adminRouter = Router();
 
 adminRouter
-  .post("/product", AdminController.addProducts)
-  .get("/product/details", AdminController.getProducts)
-  .delete("/product/:id", requireAuth(), AdminController.deleteProduct)
-  .patch("/product/:id", requireAuth(), AdminController.updateProductDetails)
-  .post("/product/url", requireAuth(),upload.single("productImage"), AdminController.getProductImageUrl)
-  .get("/customer/details" , requireAuth() , AdminController.getCustomerDetails)
-  .delete("/customer/:id", requireAuth(), AdminController.deleteCustomer)
-  .get("/featured/product", requireAuth(), AdminController.getFeaturedProduct)
-  .post("/featured/product", requireAuth(), AdminController.createFeaturedProduct)
-  .delete("/featured/product/:id", requireAuth(), AdminController.deleteFeaturedProduct)
-  .get("/orders/details" , requireAuth(),AdminController.getOrdersDetails)
+  .post("/product", AdminController.addProductsHandler)
+  .get("/product/details", AdminController.getOrdersDetailsHandler)
+  .delete("/product/:id", requireAuth, AdminController.deleteProductHandler)
+  .patch("/product/:id", requireAuth, AdminController.updateProductDetailsHandler)
+  .post("/product/url", requireAuth,upload.single("productImage"), AdminController.getProductImageUrlHandler)
+  .get("/customer/details" , requireAuth , AdminController.getCustomerDetailsHandler)
+  .delete("/customer/:id", requireAuth, AdminController.deleteCustomerHandler)
+  .get("/featured/product", requireAuth, AdminController.getFeaturedProductHandler)
+  .post("/featured/product", requireAuth, AdminController.createFeaturedProductHandler)
+  .delete("/featured/product/:id", requireAuth, AdminController.deleteFeaturedProductHandler)
+  .get("/orders/details" , requireAuth,AdminController.getOrdersDetailsHandler)
 
 export default adminRouter;

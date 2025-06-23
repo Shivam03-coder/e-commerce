@@ -1,22 +1,18 @@
 import { Response } from "express";
-import { appEnvConfigs } from "./configs";
-import { ApiResponse } from "./utils/server-functions";
 import App from "./app";
+import { envs } from "./configs/envs.config";
 const appInstance = new App();
 const expressApp = appInstance.getAppInstance();
-import "module-alias/register";
 
-(() => {
+(async () => {
   try {
     expressApp.get("/", (_req, res: Response) => {
-      res.json(
-        new ApiResponse(
-          200,
-          "Welcome to the server developed by Shivam Anand 🚀"
-        )
-      );
+      res
+        .status(200)
+        .json("Welcome to the server developed by Shivam Anand 🚀");
     });
-    const port = appEnvConfigs.PORT || 3000;
+
+    const port = envs.PORT || 3000;
     const server = expressApp.listen(port, () => {
       console.log(`✅ Server started at http://localhost:${port}`);
     });
