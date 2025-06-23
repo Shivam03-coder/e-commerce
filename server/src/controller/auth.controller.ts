@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { ApiResponse, AsyncHandler, getAuth } from "@src/utils/api.utils";
 import AuthHelper from "@src/helpers/auth.helper";
 import AuthServices from "@src/services/auth.service";
+import { AuthError } from "@src/utils/error.utils";
 
 export class AuthController {
   static userSignupHandler = AsyncHandler(
@@ -82,6 +83,22 @@ export class AuthController {
       const { userId } = await getAuth(req);
       const userInfo = await AuthServices.getUserInfo(userId);
       res.json(new ApiResponse("User data fetched successfully", userInfo));
+    }
+  );
+
+  static refreshTokenHandler = AsyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+      const refreshToken = req.cookies.refreshToken;
+
+      if (!refreshToken) {
+        throw new AuthError("Refresh token is missing. Please log in again.");
+      }
+
+      await AuthHelper.decodeToken(res, refreshToken);
+
+      res
+        .status(200)
+        .json(new ApiResponse("Access token refreshed successfully."));
     }
   );
 }

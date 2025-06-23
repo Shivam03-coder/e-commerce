@@ -9,6 +9,7 @@ authRouter
   .post("/sign-in", AuthController.userSigninHandler)
   .post("/logout", requireAuth, AuthController.userLogoutHandler)
   .post("/forgot-password", requireAuth, AuthController.forgotPasswordHandler)
-  .get("/userinfo", requireAuth, AuthController.authenticatedUserInfoHandler);
+  .get("/userinfo", requireAuth, AuthController.authenticatedUserInfoHandler)
+  .get("/refresh", requireAuth, AuthController.refreshTokenHandler);
 
 export default authRouter;
