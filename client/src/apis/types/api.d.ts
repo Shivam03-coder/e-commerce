@@ -1,5 +1,4 @@
 export interface ApiResponse {
-  code: number;
-  status: "success" | "failed";
+  status: "success" | "failed" | "error";
   message: string;
 }
