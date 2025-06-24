@@ -6,20 +6,6 @@ import { ValidationError } from "@src/utils/error.utils";
 import { GlobalUtils } from "@src/utils/global.utils";
 
 export class AdminService {
-  private static validateEnums({
-    category,
-    material,
-    size,
-  }: {
-    category: string;
-    material: string;
-    size: string;
-  }) {
-    GlobalUtils.validateEnum("category", category, ProductCategory);
-    GlobalUtils.validateEnum("material", material, MaterialType);
-    GlobalUtils.validateEnum("size", size, SockSize);
-  }
-
   static async addProduct(productData: ProductType) {
     const {
       title,
@@ -27,7 +13,7 @@ export class AdminService {
       category,
       productImage,
       material,
-      size,
+      sizeStock,
       price,
       salePrice,
       inStock,
@@ -35,9 +21,7 @@ export class AdminService {
       tags,
     } = productData;
 
-    this.validateEnums({ category, material, size });
-
-    return await db.product.create({
+    const product = await db.product.create({
       data: {
         title,
         description,
@@ -45,13 +29,24 @@ export class AdminService {
         tags: JSON.stringify(tags),
         productImage,
         material,
-        size,
         price,
         salePrice,
         inStock: inStock !== undefined ? inStock : inventory > 0,
         inventory,
       },
     });
+
+    if (Array.isArray(sizeStock) && sizeStock.length > 0) {
+      await db.sizeStock.createMany({
+        data: sizeStock.map((item) => ({
+          size: item.size,
+          stock: item.stock,
+          productId: product.id,
+        })),
+      });
+    }
+
+    return product;
   }
 
   static async getProducts() {
@@ -67,11 +62,11 @@ export class AdminService {
         tags: true,
         productImage: true,
         material: true,
-        size: true,
+        sizeStocks: true,
+        inventory: true,
         price: true,
         salePrice: true,
         inStock: true,
-        inventory: true,
         _count: {
           select: {
             Review: true,
@@ -93,24 +88,24 @@ export class AdminService {
     });
   }
 
-  static async updateProduct(id: number, productData: ProductType) {
-    const {
-      title,
-      description,
-      category,
-      productImage,
-      material,
-      size,
-      price,
-      salePrice,
-      inStock,
-      inventory,
-      tags,
-    } = productData;
+static async updateProduct(id: number, productData: ProductType) {
+  const {
+    title,
+    description,
+    category,
+    productImage,
+    material,
+    price,
+    salePrice,
+    inStock,
+    inventory,
+    tags,
+    sizeStock,
+  } = productData;
 
-    this.validateEnums({ category, material, size });
-
-    return await db.product.update({
+  return await db.$transaction(async (tx) => {
+    // 1. Update the product
+    const updatedProduct = await tx.product.update({
       where: { id },
       data: {
         title,
@@ -119,14 +114,32 @@ export class AdminService {
         tags: JSON.stringify(tags),
         productImage,
         material,
-        size,
         price,
         salePrice,
         inStock: inStock !== undefined ? inStock : inventory > 0,
         inventory,
       },
     });
-  }
+
+    // 2. Remove existing sizeStock entries
+    await tx.sizeStock.deleteMany({
+      where: { productId: id },
+    });
+
+    // 3. Add updated sizeStock entries
+    if (Array.isArray(sizeStock) && sizeStock.length > 0) {
+      await tx.sizeStock.createMany({
+        data: sizeStock.map((item) => ({
+          productId: id,
+          size: item.size,
+          stock: item.stock,
+        })),
+      });
+    }
+
+    return updatedProduct;
+  });
+}
 
   static async getCustomers() {
     return await db.user.findMany({

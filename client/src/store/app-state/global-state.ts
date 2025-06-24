@@ -1,21 +1,22 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
-interface initialStateTypes {
-  isSheetEditiorOpen: boolean;
+interface InitialStateTypes {
+  totalItemsInCart: number;
 }
 
-const initialState: initialStateTypes = {
-  isSheetEditiorOpen: false,
+const initialState: InitialStateTypes = {
+  totalItemsInCart: 0,
 };
 
 export const globalState = createSlice({
   name: "app-state",
   initialState,
   reducers: {
-    setIsSheetEditiorOpen: (state) => {
-      state.isSheetEditiorOpen = !state.isSheetEditiorOpen;
+    setTotalItemsInCart: (state, action: PayloadAction<number>) => {
+      state.totalItemsInCart = action.payload;
     },
   },
 });
 
-export const { setIsSheetEditiorOpen } = globalState.actions;
+export const { setTotalItemsInCart } = globalState.actions;
+export default globalState.reducer;

@@ -6,7 +6,7 @@ const cartRouter = Router();
 
 cartRouter
   .get("/details", requireAuth, CartController.getCartItemsHandler)
-  .post("/increase", requireAuth, CartController.increaseItemHandler)
-  .post("/remove", requireAuth, CartController.removeItemFormCartHandler);
+  .post("/increase/:productId", requireAuth, CartController.increaseItemHandler)
+  .post("/remove/:productId", requireAuth, CartController.removeItemFormCartHandler);
 
 export default cartRouter;

@@ -47,16 +47,24 @@ model Product {
     category     ProductCategory
     productImage String
     material     MaterialType
-    size         SockSize
-    tags         String?
+    tags         String
     price        Float
     salePrice    Float?
     inStock      Boolean         @default(true)
     inventory    Int
     createdAt    DateTime        @default(now())
     updatedAt    DateTime        @updatedAt
+    sizeStocks   SizeStock[]
     CartItem     CartItem[]
     Review       Review[]
+}
+
+model SizeStock {
+    id        String   @id @default(cuid())
+    product   Product  @relation(fields: [productId], references: [id])
+    productId Int
+    size      SockSize
+    stock     Int
 }
 
 model Cart {

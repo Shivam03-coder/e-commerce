@@ -11,11 +11,10 @@ export class AdminController {
         category,
         productImage,
         material,
-        size,
+        sizeStock,
         price,
         salePrice,
         inStock,
-        inventory,
         tags,
       } = req.body;
 
@@ -25,11 +24,10 @@ export class AdminController {
         !category ||
         !productImage ||
         !material ||
-        !size ||
+        !sizeStock ||
         !price ||
         !tags ||
-        !salePrice ||
-        inventory === undefined
+        !salePrice
       ) {
         res.status(400);
         throw new Error("Missing required fields");
@@ -40,10 +38,9 @@ export class AdminController {
         throw new Error("Price must be greater than 0");
       }
 
-      if (inventory < 0) {
-        res.status(400);
-        throw new Error("Inventory cannot be negative");
-      }
+      const inventory = Array.isArray(sizeStock)
+        ? sizeStock.reduce((total, item) => total + Number(item.stock || 0), 0)
+        : 0;
 
       await AdminService.addProduct({
         title,
@@ -51,11 +48,11 @@ export class AdminController {
         category,
         productImage,
         material,
-        size,
+        sizeStock,
         price: parseFloat(price),
         salePrice: parseFloat(salePrice),
         inStock,
-        inventory: parseInt(inventory),
+        inventory,
         tags,
       });
 
@@ -100,11 +97,10 @@ export class AdminController {
         category,
         productImage,
         material,
-        size,
+        sizeStock,
         price,
         salePrice,
         inStock,
-        inventory,
         tags,
       } = req.body;
 
@@ -114,17 +110,23 @@ export class AdminController {
         !category ||
         !productImage ||
         !material ||
-        !size ||
+        !sizeStock ||
         !price ||
         !tags ||
-        inventory === undefined ||
         !salePrice
       ) {
+        res.status(400);
         throw new Error("Missing required fields");
       }
 
-      if (price <= 0) throw new Error("Price must be greater than 0");
-      if (inventory < 0) throw new Error("Inventory cannot be negative");
+      if (price <= 0) {
+        res.status(400);
+        throw new Error("Price must be greater than 0");
+      }
+
+      const inventory = Array.isArray(sizeStock)
+        ? sizeStock.reduce((total, item) => total + Number(item.stock || 0), 0)
+        : 0;
 
       await AdminService.updateProduct(parseInt(id), {
         title,
@@ -132,12 +134,12 @@ export class AdminController {
         category,
         productImage,
         material,
-        size,
         price: parseFloat(price),
         salePrice: parseFloat(salePrice),
         inStock,
         inventory: parseInt(inventory),
         tags,
+        sizeStock,
       });
 
       res.status(201).json(new ApiResponse("Product updated successfully"));

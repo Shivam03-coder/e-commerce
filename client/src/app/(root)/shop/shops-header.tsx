@@ -6,10 +6,14 @@ import AppImages from "@/constants/images";
 import HeaderSettings from "@/components/global/header-settings";
 import { useTransitionRouter } from "next-view-transitions";
 import useAppLinks from "@/navigations";
+import { useAppSelector } from "@/store";
 
 const ShopsHeader = () => {
   const router = useTransitionRouter();
   const navs = useAppLinks();
+
+  const { totalItemsInCart } = useAppSelector((state) => state.account);
+
   return (
     <header className="bg-background sticky top-0 z-40 w-full">
       <nav className="flex items-center justify-between px-8 py-4">
@@ -20,10 +24,13 @@ const ShopsHeader = () => {
 
         {/* ICONS */}
         <div className="flex items-center space-x-6">
-          <button onClick={() => router.push(navs.cart)} className="relative">
+          <button
+            onClick={() => router.push(navs.cart)}
+            className="relative cursor-pointer"
+          >
             <ShoppingCart className="h-5 w-5" />
             <span className="bg-primary absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full text-xs text-white">
-              0
+              {totalItemsInCart || 0}
             </span>
           </button>
 

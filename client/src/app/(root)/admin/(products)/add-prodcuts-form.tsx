@@ -1,6 +1,4 @@
 "use client";
-import { useState } from "react";
-import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -32,7 +30,6 @@ import UploadProductImage from "./upload-product-image";
 import { useAddProductsMutation } from "@/apis/admin-api";
 import { useAppToasts } from "@/hooks/use-app-toast";
 import Spinner from "@/components/global/spinner";
-import type { EditProductProps } from "@/types/global";
 
 export default function ProductForm({
   onClose,
@@ -44,29 +41,31 @@ export default function ProductForm({
     resolver: zodResolver(addProductSchema),
     defaultValues: {
       tags: ["best"],
+      sizeStock: [],
     },
   });
 
   const { ErrorToast, SuccessToast } = useAppToasts();
 
   async function onSubmit(values: AddProductSchemaType) {
-    try {
-      const res = await addProduct(values).unwrap();
-      if (res.status === "success") {
-        SuccessToast({ title: "Product added successfully" });
-        form.reset();
-        onClose(false);
-      } else {
-        ErrorToast({
-          title: res.message || "Something went wrong",
-        });
-      }
-    } catch (error) {
-      console.error("Form submission error", error);
-      ErrorToast({
-        title: "Failed to submit the form. Please try again.",
-      });
-    }
+    console.log("🚀 ~ onSubmit ~ values:", values);
+    // try {
+    //   const res = await addProduct(values).unwrap();
+    //   if (res.status === "success") {
+    //     SuccessToast({ title: "Product added successfully" });
+    //     form.reset();
+    //     onClose(false);
+    //   } else {
+    //     ErrorToast({
+    //       title: res.message || "Something went wrong",
+    //     });
+    //   }
+    // } catch (error) {
+    //   console.error("Form submission error", error);
+    //   ErrorToast({
+    //     title: "Failed to submit the form. Please try again.",
+    //   });
+    // }
   }
 
   return (
@@ -145,6 +144,7 @@ export default function ProductForm({
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name="material"
@@ -170,25 +170,104 @@ export default function ProductForm({
 
         <FormField
           control={form.control}
-          name="size"
+          name="sizeStock"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Size</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl className="w-full">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a size." />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="ONE_SIZE">ONE SIZE</SelectItem>
-                  <SelectItem value="XS_S">XS S</SelectItem>
-                  <SelectItem value="S_M">SM</SelectItem>
-                  <SelectItem value="M_L">ML</SelectItem>
-                  <SelectItem value="L_XL">LXL</SelectItem>
-                </SelectContent>
-              </Select>
+              <FormLabel>Size & Stock</FormLabel>
+              <FormControl>
+                <div className="space-y-2">
+                  {field.value?.map((item, index) => (
+                    <div
+                      key={index}
+                      className="bg-muted flex w-fit items-center justify-between gap-2 rounded-full border px-4 py-1"
+                    >
+                      <span className="font-medium">{item.size}</span>
 
+                      <div className="flex items-center gap-1">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="h-6 w-6 p-0"
+                          onClick={() => {
+                            const updated = [...field.value];
+                            if (updated[index]!.stock > 0) {
+                              updated[index]!.stock -= 1;
+                              field.onChange(updated);
+                            }
+                          }}
+                        >
+                          -
+                        </Button>
+
+                        <Input
+                          type="number"
+                          className="h-6 w-12 px-1 py-0 text-center"
+                          value={item.stock}
+                          min={0}
+                          onChange={(e) => {
+                            const updated = [...field.value];
+                            updated[index]!.stock = Number(e.target.value);
+                            field.onChange(updated);
+                          }}
+                        />
+
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="h-6 w-6 p-0"
+                          onClick={() => {
+                            const updated = [...field.value];
+                            updated[index]!.stock += 1;
+                            field.onChange(updated);
+                          }}
+                        >
+                          +
+                        </Button>
+                      </div>
+
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={() => {
+                          const updated = field.value.filter(
+                            (_, i) => i !== index,
+                          );
+                          field.onChange(updated);
+                        }}
+                      >
+                        ×
+                      </Button>
+                    </div>
+                  ))}
+
+                  {/* Add Size Dropdown */}
+                  <Select
+                    onValueChange={(val) => {
+                      if (!field.value?.some((i) => i.size === val)) {
+                        field.onChange([
+                          ...field.value,
+                          { size: val, stock: 0 },
+                        ]);
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select sizes" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ONE_SIZE">ONE SIZE</SelectItem>
+                      <SelectItem value="XS_S">XS_S</SelectItem>
+                      <SelectItem value="S_M">S_M</SelectItem>
+                      <SelectItem value="M_L">M_L</SelectItem>
+                      <SelectItem value="L_XL">L_XL</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
@@ -217,21 +296,6 @@ export default function ProductForm({
               <FormLabel>Sale Price</FormLabel>
               <FormControl>
                 <Input placeholder="shadcn" type="number" {...field} />
-              </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="inventory"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Inventory</FormLabel>
-              <FormControl>
-                <Input placeholder="0" type="number" {...field} />
               </FormControl>
 
               <FormMessage />

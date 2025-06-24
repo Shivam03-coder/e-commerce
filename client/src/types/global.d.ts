@@ -41,6 +41,15 @@ export interface EditProductProps {
   inventory: number;
 }
 
+export interface CartItemType {
+  productId: string;
+  name: string;
+  image: string;
+  price: number;
+  quantity: number;
+  size: string;
+}
+
 export type OrderStatus =
   | "PENDING"
   | "PROCESSING"

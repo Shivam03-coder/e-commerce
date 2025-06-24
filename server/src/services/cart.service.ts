@@ -68,7 +68,7 @@ class CartService {
 
     const cartItems = carts.flatMap((cart) =>
       cart.items.map((item) => ({
-        id: item.product.id.toString(),
+        productId: item.product.id.toString(),
         name: item.product.title,
         price: item.product.price,
         quantity: item.quantity,

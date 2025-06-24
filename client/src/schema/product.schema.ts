@@ -1,18 +1,28 @@
 import { z } from "zod";
 
 export const addProductSchema = z.object({
-  id: z.string().optional(),
+  title: z.string().min(1),
+  description: z.string(),
+  category: z.enum([
+    "HALF_SOCKS",
+    "NO_SHOW_SOCKS",
+    "ANKLE_SOCKS",
+    "CREW_SOCKS",
+  ]),
+  material: z.enum(["COTTON", "BAMBOO"]),
   productImage: z.string(),
-  title: z.string().min(1).min(2).max(30),
-  description: z.string().min(10).max(300),
-  category: z.string(),
-  material: z.string(),
-  size: z.string(),
-  price: z.string().min(0).max(10000000),
-  salePrice: z.string().min(0).max(100000),
-  inventory: z.string(),
-  tags: z.array(z.string()).nonempty("Please at least one item"),
-  inStock: z.unknown(),
+  price: z.string(),
+  salePrice: z.string().optional(),
+  inStock: z.boolean(),
+  tags: z.array(z.string()),
+  sizeStock: z
+    .array(
+      z.object({
+        size: z.string(),
+        stock: z.number().min(0),
+      }),
+    )
+    .min(1, "At least one size-stock pair is required"),
 });
 
 export const featuredProductSchema = z.object({
