@@ -8,6 +8,7 @@ const useAppLinks = () => {
     reports: `${basePath}/reports`,
     featured: `${basePath}/featured`,
     shop: `/shop`,
+    cart: `/shop/cart`,
   };
 };
 
