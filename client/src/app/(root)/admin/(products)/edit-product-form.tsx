@@ -49,7 +49,7 @@ export default function EditProductForm({
     resolver: zodResolver(addProductSchema),
     defaultValues: {
       title: products.title,
-      tags: JSON.parse(products.tags as string),
+      tags: products.tags.split(","),
       category: products.category,
       description: products.description,
       inStock: products.inStock,

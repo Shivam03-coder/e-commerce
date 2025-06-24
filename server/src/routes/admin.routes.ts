@@ -7,7 +7,7 @@ const adminRouter = Router();
 
 adminRouter
   .post("/product", AdminController.addProductsHandler)
-  .get("/product/details", AdminController.getOrdersDetailsHandler)
+  .get("/product/details", AdminController.getProductsHandler)
   .delete("/product/:id", requireAuth, AdminController.deleteProductHandler)
   .patch("/product/:id", requireAuth, AdminController.updateProductDetailsHandler)
   .post("/product/url", requireAuth,upload.single("productImage"), AdminController.getProductImageUrlHandler)
