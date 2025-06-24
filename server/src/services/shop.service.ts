@@ -191,26 +191,4 @@ export class ShopService {
       throw new DatabaseError("Failed to fetch reviews");
     }
   }
-
-  static async getCartItems(userId: string) {
-    const cartItems = db.cart.findMany({
-      where: {
-        userId,
-      },
-      select: {
-        items: {
-          select: {
-            product: {
-              select: {
-                id: true,
-                title: true,
-                price: true,
-                productImage: true,
-              },
-            },
-          },
-        },
-      },
-    });
-  }
 }

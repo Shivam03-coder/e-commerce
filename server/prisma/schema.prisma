@@ -61,7 +61,7 @@ model Product {
 
 model Cart {
     id     String     @id @default(cuid())
-    userId String
+    userId String     @unique
     user   User       @relation(fields: [userId], references: [id])
     items  CartItem[]
     Order  Order[]
