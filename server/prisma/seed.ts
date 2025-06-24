@@ -7,117 +7,208 @@ import {
 
 const prisma = new PrismaClient();
 
-async function main() {
-  await prisma.product.createMany({
-    data: [
-      {
-        title: "Daily Comfort Socks",
-        description: "Soft cotton socks designed for everyday comfort and durability.",
-        category: ProductCategory.CREW_SOCKS,
-        productImage: "https://res.cloudinary.com/ddggctwjl/image/upload/v1750747620/s2gxn76mstoztiargkry.png",
-        material: MaterialType.COTTON,
-        size: SockSize.ONE_SIZE,
-        price: 11,
-        salePrice: 9,
-        inStock: true,
-        inventory: 110,
-        tags: "daily,comfort,crew",
-      },
-      {
-        title: "Summer Stripe Socks",
-        description: "Bright and colorful striped socks perfect for summer outings.",
-        category: ProductCategory.CREW_SOCKS,
-        productImage: "https://res.cloudinary.com/ddggctwjl/image/upload/v1750747620/s2gxn76mstoztiargkry.png",
-        material: MaterialType.COTTON,
-        size: SockSize.S_M,
-        price: 13,
-        salePrice: 10,
-        inStock: true,
-        inventory: 90,
-        tags: "summer,stripe,colorful",
-      },
-      {
-        title: "Runner's Ankle Socks",
-        description: "Low-cut socks crafted for running and sports performance.",
-        category: ProductCategory.ANKLE_SOCKS,
-        productImage: "https://res.cloudinary.com/ddggctwjl/image/upload/v1750747620/s2gxn76mstoztiargkry.png",
-        material: MaterialType.COTTON,
-        size: SockSize.M_L,
-        price: 16,
-        salePrice: 13,
-        inStock: true,
-        inventory: 95,
-        tags: "running,ankle,sport",
-      },
-      {
-        title: "Nature Bamboo Socks",
-        description: "Sustainable and eco-friendly bamboo socks with a smooth finish.",
-        category: ProductCategory.CREW_SOCKS,
-        productImage: "https://res.cloudinary.com/ddggctwjl/image/upload/v1750747620/s2gxn76mstoztiargkry.png",
-        material: MaterialType.BAMBOO,
-        size: SockSize.L_XL,
-        price: 14,
-        salePrice: 12,
-        inStock: true,
-        inventory: 80,
-        tags: "bamboo,nature,eco",
-      },
-      {
-        title: "Tiny Feet Cartoon Socks",
-        description: "Fun and playful cartoon-themed socks for kids.",
-        category: ProductCategory.HALF_SOCKS,
-        productImage: "https://res.cloudinary.com/ddggctwjl/image/upload/v1750747620/s2gxn76mstoztiargkry.png",
-        material: MaterialType.COTTON,
-        size: SockSize.XS_S,
-        price: 7,
-        salePrice: 5,
-        inStock: true,
-        inventory: 180,
-        tags: "kids,cartoon,fun",
-      },
-      {
-        title: "Pro Circulation Socks",
-        description: "Engineered compression socks for better blood flow and recovery.",
-        category: ProductCategory.CREW_SOCKS,
-        productImage: "https://res.cloudinary.com/ddggctwjl/image/upload/v1750747620/s2gxn76mstoztiargkry.png",
-        material: MaterialType.COTTON,
-        size: SockSize.M_L,
-        price: 26,
-        salePrice: 21,
-        inStock: true,
-        inventory: 65,
-        tags: "compression,recovery,health",
-      },
-      {
-        title: "Stealth No Show Socks",
-        description: "Invisible design perfect for loafers and dress shoes.",
-        category: ProductCategory.NO_SHOW_SOCKS,
-        productImage: "https://res.cloudinary.com/ddggctwjl/image/upload/v1750747620/s2gxn76mstoztiargkry.png",
-        material: MaterialType.COTTON,
-        size: SockSize.S_M,
-        price: 10,
-        salePrice: 8,
-        inStock: true,
-        inventory: 140,
-        tags: "stealth,invisible,low",
-      },
-      {
-        title: "Zen Toe Socks",
-        description: "Five-toe socks designed for maximum flexibility and yoga sessions.",
-        category: ProductCategory.CREW_SOCKS,
-        productImage: "https://res.cloudinary.com/ddggctwjl/image/upload/v1750747620/s2gxn76mstoztiargkry.png",
-        material: MaterialType.COTTON,
-        size: SockSize.M_L,
-        price: 15,
-        salePrice: 12,
-        inStock: true,
-        inventory: 50,
-        tags: "toe,yoga,flex",
-      },
-    ],
-  });
+const generateRandomPrice = (base: number) => {
+  return base + Math.floor(Math.random() * 10);
+};
 
-  console.log("🧦 Seeded updated socks data!");
+const generateRandomSalePrice = (price: number) => {
+  return Math.random() > 0.3 ? price - Math.floor(Math.random() * 5) : null;
+};
+
+const generateSizeStocks = () => {
+  const sizes = [
+    SockSize.ONE_SIZE,
+    SockSize.XS_S,
+    SockSize.S_M,
+    SockSize.M_L,
+    SockSize.L_XL
+  ];
+  
+  return sizes.map(size => ({
+    size,
+    stock: Math.floor(Math.random() * 50) + 10 // Stock between 10-60
+  }));
+};
+
+const products = [
+  // Crew Socks (8 items)
+  {
+    title: "Classic Cotton Crew",
+    description: "Timeless crew socks made from premium cotton for all-day comfort.",
+    category: ProductCategory.CREW_SOCKS,
+    material: MaterialType.COTTON,
+    tags: "classic,crew,cotton"
+  },
+  {
+    title: "Bamboo Bliss Crew",
+    description: "Eco-friendly crew socks made from sustainable bamboo fibers.",
+    category: ProductCategory.CREW_SOCKS,
+    material: MaterialType.BAMBOO,
+    tags: "bamboo,eco,crew"
+  },
+  {
+    title: "Athletic Performance Crew",
+    description: "Moisture-wicking crew socks designed for athletes.",
+    category: ProductCategory.CREW_SOCKS,
+    material: MaterialType.COTTON,
+    tags: "athletic,sport,performance"
+  },
+  {
+    title: "Striped Casual Crew",
+    description: "Fun striped crew socks for everyday wear.",
+    category: ProductCategory.CREW_SOCKS,
+    material: MaterialType.COTTON,
+    tags: "striped,casual,colorful"
+  },
+  {
+    title: "Merino Wool Hiker",
+    description: "Warm merino wool crew socks for outdoor adventures.",
+    category: ProductCategory.CREW_SOCKS,
+    material: MaterialType.COTTON,
+    tags: "wool,hiking,warm"
+  },
+  {
+    title: "No Show Liner Crew",
+    description: "Ultra-low profile crew socks that stay hidden.",
+    category: ProductCategory.CREW_SOCKS,
+    material: MaterialType.COTTON,
+    tags: "liner,hidden,low"
+  },
+  {
+    title: "Compression Recovery Crew",
+    description: "Medical-grade compression crew socks for recovery.",
+    category: ProductCategory.CREW_SOCKS,
+    material: MaterialType.COTTON,
+    tags: "compression,recovery,medical"
+  },
+  {
+    title: "Holiday Pattern Crew",
+    description: "Festive crew socks with seasonal designs.",
+    category: ProductCategory.CREW_SOCKS,
+    material: MaterialType.COTTON,
+    tags: "holiday,festive,seasonal"
+  },
+
+  // Ankle Socks (4 items)
+  {
+    title: "Running Pro Ankle",
+    description: "Performance ankle socks with arch support.",
+    category: ProductCategory.ANKLE_SOCKS,
+    material: MaterialType.COTTON,
+    tags: "running,athletic,ankle"
+  },
+  {
+    title: "No Show Essential Ankle",
+    description: "Basic ankle socks that disappear in shoes.",
+    category: ProductCategory.ANKLE_SOCKS,
+    material: MaterialType.COTTON,
+    tags: "essential,hidden,ankle"
+  },
+  {
+    title: "Gym Trainer Ankle",
+    description: "Cushioned ankle socks for weight training.",
+    category: ProductCategory.ANKLE_SOCKS,
+    material: MaterialType.COTTON,
+    tags: "gym,training,cushioned"
+  },
+  {
+    title: "Breathable Mesh Ankle",
+    description: "Lightweight ankle socks with mesh ventilation.",
+    category: ProductCategory.ANKLE_SOCKS,
+    material: MaterialType.COTTON,
+    tags: "breathable,mesh,light"
+  },
+
+  // No Show Socks (4 items)
+  {
+    title: "Ultra Low No Show",
+    description: "Deep no show socks that never slip.",
+    category: ProductCategory.NO_SHOW_SOCKS,
+    material: MaterialType.COTTON,
+    tags: "ultra,hidden,low"
+  },
+  {
+    title: "Grip Sole No Show",
+    description: "No show socks with silicone grips to stay in place.",
+    category: ProductCategory.NO_SHOW_SOCKS,
+    material: MaterialType.COTTON,
+    tags: "grip,secure,no-show"
+  },
+  {
+    title: "Luxury Linen No Show",
+    description: "Premium no show socks made with linen blend.",
+    category: ProductCategory.NO_SHOW_SOCKS,
+    material: MaterialType.COTTON,
+    tags: "linen,luxury,premium"
+  },
+  {
+    title: "Invisible Liner No Show",
+    description: "Thin no show socks for dress shoes.",
+    category: ProductCategory.NO_SHOW_SOCKS,
+    material: MaterialType.COTTON,
+    tags: "invisible,liner,formal"
+  },
+
+  // Half Socks (4 items)
+  {
+    title: "Mini Loafer Half",
+    description: "Half socks designed for loafers and boat shoes.",
+    category: ProductCategory.HALF_SOCKS,
+    material: MaterialType.COTTON,
+    tags: "loafer,mini,half"
+  },
+  {
+    title: "Kids Colorful Half",
+    description: "Fun half socks for children with bright colors.",
+    category: ProductCategory.HALF_SOCKS,
+    material: MaterialType.COTTON,
+    tags: "kids,colorful,half"
+  },
+  {
+    title: "Breathable Toe Half",
+    description: "Half socks with toe ventilation.",
+    category: ProductCategory.HALF_SOCKS,
+    material: MaterialType.COTTON,
+    tags: "breathable,toe,half"
+  },
+  {
+    title: "Ballet Flat Half",
+    description: "Ultra low half socks for ballet flats.",
+    category: ProductCategory.HALF_SOCKS,
+    material: MaterialType.COTTON,
+    tags: "ballet,flat,half"
+  }
+];
+
+async function main() {
+  // Clear existing data
+  await prisma.sizeStock.deleteMany();
+  await prisma.product.deleteMany();
+
+  // Create products with size stocks
+  for (const product of products) {
+    const basePrice = generateRandomPrice(8);
+    const salePrice = generateRandomSalePrice(basePrice);
+    const sizeStocks = generateSizeStocks();
+    
+    const totalInventory = sizeStocks.reduce((sum, item) => sum + item.stock, 0);
+
+    await prisma.product.create({
+      data: {
+        ...product,
+        productImage: "https://res.cloudinary.com/ddggctwjl/image/upload/v1750747620/s2gxn76mstoztiargkry.png",
+        price: basePrice,
+        salePrice,
+        inStock: true,
+        inventory: totalInventory,
+        sizeStocks: {
+          create: sizeStocks
+        }
+      }
+    });
+  }
+
+  console.log("🧦 Successfully seeded 20 realistic sock products with size stocks!");
 }
 
 main()

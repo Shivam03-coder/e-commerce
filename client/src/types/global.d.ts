@@ -8,35 +8,42 @@ export type MaterialType = "COTTON" | "BAMBOO";
 
 export type SockSize = "ONE_SIZE" | "XS_S" | "S_M" | "M_L" | "L_XL";
 
-export interface ProductsDataType {
+export interface SizeStock {
   id: string;
+  productId: number;
+  size: SockSize;
+  stock: number;
+}
+
+export interface ProductsDataType {
+  id: number;
   title: string;
   description: string;
   category: ProductCategory;
-  tags: string;
+  tags: string[];
   productImage: string;
   material: MaterialType;
-  size: SockSize;
   price: number;
   salePrice?: number;
   inStock: boolean;
   inventory: number;
-  _count: {
+  sizeStocks: SizeStock[];
+  _count?: {
     Review: number;
   };
 }
 
 export interface EditProductProps {
-  id: string;
+  id: number;
   title: string;
   description: string;
   category: ProductCategory;
   productImage: string;
   material: MaterialType;
-  size: SockSize;
-  tags: string;
+  sizeStocks: SizeStock[];
+  tags: string[];
   price: number;
-  salePrice: number;
+  salePrice?: number;
   inStock: boolean;
   inventory: number;
 }

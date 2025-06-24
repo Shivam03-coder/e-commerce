@@ -11,20 +11,27 @@ export const addProductSchema = z.object({
   ]),
   material: z.enum(["COTTON", "BAMBOO"]),
   productImage: z.string(),
-  price: z.string(),
-  salePrice: z.string().optional(),
+  price: z.string().refine((val) => !isNaN(parseFloat(val)), {
+    message: "Price must be a number",
+  }),
+  salePrice: z
+    .string()
+    .refine((val) => !val || !isNaN(parseFloat(val)), {
+      message: "Sale price must be a number",
+    })
+    .optional(),
   inStock: z.boolean(),
+  inventory: z.number().min(0).optional(), // Add this line
   tags: z.array(z.string()),
   sizeStock: z
     .array(
       z.object({
         size: z.string(),
         stock: z.number().min(0),
-      }),
+      })
     )
     .min(1, "At least one size-stock pair is required"),
 });
-
 export const featuredProductSchema = z.object({
   featuredProductImage: z.string(),
 });

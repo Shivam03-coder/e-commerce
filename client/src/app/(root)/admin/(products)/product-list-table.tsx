@@ -24,7 +24,7 @@ function ProductsListTable({ data }: { data: ProductsDataType[] }) {
     }
 
     try {
-      const res = await deleteProduct({ id }).unwrap();
+      const res = await deleteProduct({ id : id.toString() }).unwrap();
       if (res.status === "success") {
         SuccessToast({
           title: "Product deleted successfully",

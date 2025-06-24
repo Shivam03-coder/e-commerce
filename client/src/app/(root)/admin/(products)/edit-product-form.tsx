@@ -31,7 +31,7 @@ import { useUpdateProductsMutation } from "@/apis/admin-api";
 import { useAppToasts } from "@/hooks/use-app-toast";
 import Spinner from "@/components/global/spinner";
 import type { EditProductProps } from "@/types/global";
-import { X } from "lucide-react"; // Import the X icon for delete button
+import { X } from "lucide-react";
 import Image from "next/image";
 
 export default function EditProductForm({
@@ -45,20 +45,32 @@ export default function EditProductForm({
   const [productImage, setProductImage] = useState<string>(
     products.productImage || "",
   );
+
+  // Parse tags if they're stored as string
+  const initialTags =
+    typeof products.tags === "string"
+      ? JSON.parse(products.tags)
+      : Array.isArray(products.tags)
+        ? products.tags
+        : [];
+
   const form = useForm<AddProductSchemaType>({
     resolver: zodResolver(addProductSchema),
     defaultValues: {
       title: products.title,
-      tags: products.tags.split(","),
+      tags: initialTags,
       category: products.category,
       description: products.description,
       inStock: products.inStock,
-      inventory: products.inventory.toString(),
+      inventory: products.inventory,
       material: products.material,
       price: products.price.toString(),
       productImage: products.productImage,
-      salePrice: products.salePrice.toString(),
-      size: products.size,
+      salePrice: products?.salePrice?.toString() || undefined,
+      sizeStock: products.sizeStocks?.map((item) => ({
+        size: item.size,
+        stock: item.stock,
+      })) || [{ size: "", stock: 0 }],
     },
   });
 
@@ -70,12 +82,18 @@ export default function EditProductForm({
   };
 
   async function onSubmit(values: AddProductSchemaType) {
-    console.log("🚀 ~ onSubmit ~ values:", values);
     try {
       const res = await updateProduct({
-        product: values,
-        productId: parseInt(products.id),
+        product: {
+          ...values,
+          sizeStock: values.sizeStock.map((item) => ({
+            size: item.size,
+            stock: item.stock,
+          })),
+        },
+        productId: products.id,
       }).unwrap();
+
       if (res.status === "success") {
         SuccessToast({ title: "Product updated successfully" });
         form.reset();
@@ -99,6 +117,7 @@ export default function EditProductForm({
         onSubmit={form.handleSubmit(onSubmit)}
         className="max-w-[540px] space-y-8 pb-5 text-sm"
       >
+        {/* Product Image Field */}
         <FormField
           control={form.control}
           name="productImage"
@@ -114,6 +133,7 @@ export default function EditProductForm({
                         alt="Product image"
                         width={300}
                         height={400}
+                        className="object-contain"
                       />
                     </div>
                     <Button
@@ -139,6 +159,8 @@ export default function EditProductForm({
             </FormItem>
           )}
         />
+
+        {/* Title Field */}
         <FormField
           control={form.control}
           name="title"
@@ -153,6 +175,7 @@ export default function EditProductForm({
           )}
         />
 
+        {/* Description Field */}
         <FormField
           control={form.control}
           name="description"
@@ -166,12 +189,12 @@ export default function EditProductForm({
                   {...field}
                 />
               </FormControl>
-
               <FormMessage />
             </FormItem>
           )}
         />
 
+        {/* Category Field */}
         <FormField
           control={form.control}
           name="category"
@@ -181,7 +204,7 @@ export default function EditProductForm({
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl className="w-full">
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a category ." />
+                    <SelectValue placeholder="Select a category" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -191,11 +214,12 @@ export default function EditProductForm({
                   <SelectItem value="CREW_SOCKS">CREW SOCKS</SelectItem>
                 </SelectContent>
               </Select>
-
               <FormMessage />
             </FormItem>
           )}
         />
+
+        {/* Material Field */}
         <FormField
           control={form.control}
           name="material"
@@ -205,7 +229,7 @@ export default function EditProductForm({
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl className="w-full">
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a material ." />
+                    <SelectValue placeholder="Select a material" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -213,38 +237,120 @@ export default function EditProductForm({
                   <SelectItem value="BAMBOO">BAMBOO</SelectItem>
                 </SelectContent>
               </Select>
-
               <FormMessage />
             </FormItem>
           )}
         />
 
+        {/* Size & Stock Field */}
         <FormField
           control={form.control}
-          name="size"
+          name="sizeStock"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Size</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl className="w-full">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a size." />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="ONE_SIZE">ONE SIZE</SelectItem>
-                  <SelectItem value="XS_S">XS S</SelectItem>
-                  <SelectItem value="S_M">SM</SelectItem>
-                  <SelectItem value="M_L">ML</SelectItem>
-                  <SelectItem value="L_XL">LXL</SelectItem>
-                </SelectContent>
-              </Select>
+              <FormLabel>Size & Stock</FormLabel>
+              <FormControl>
+                <div className="space-y-2">
+                  {field.value?.map((item, index) => (
+                    <div
+                      key={index}
+                      className="bg-muted flex w-fit items-center justify-between gap-2 rounded-full border px-4 py-1"
+                    >
+                      <span className="font-medium">
+                        {item.size.split("_").join("-")}
+                      </span>
 
+                      <div className="flex items-center gap-1">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="h-6 w-6 p-0"
+                          onClick={() => {
+                            const updated = [...field.value];
+                            if (updated[index]!.stock > 0) {
+                              updated[index]!.stock -= 1;
+                              field.onChange(updated);
+                            }
+                          }}
+                        >
+                          -
+                        </Button>
+
+                        <Input
+                          type="number"
+                          className="h-6 w-12 px-1 py-0 text-center"
+                          value={item.stock}
+                          min={0}
+                          onChange={(e) => {
+                            const updated = [...field.value];
+                            updated[index]!.stock = Number(e.target.value);
+                            field.onChange(updated);
+                          }}
+                        />
+
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="h-6 w-6 p-0"
+                          onClick={() => {
+                            const updated = [...field.value];
+                            updated[index]!.stock += 1;
+                            field.onChange(updated);
+                          }}
+                        >
+                          +
+                        </Button>
+                      </div>
+
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={() => {
+                          const updated = field.value.filter(
+                            (_, i) => i !== index,
+                          );
+                          field.onChange(updated);
+                        }}
+                      >
+                        ×
+                      </Button>
+                    </div>
+                  ))}
+
+                  {/* Add Size Dropdown */}
+                  <Select
+                    onValueChange={(val) => {
+                      if (!field.value?.some((i) => i.size === val)) {
+                        field.onChange([
+                          ...field.value,
+                          { size: val, stock: 0 },
+                        ]);
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select sizes" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ONE_SIZE">ONE-SIZE</SelectItem>
+                      <SelectItem value="XS_S">XS-S</SelectItem>
+                      <SelectItem value="S_M">SM</SelectItem>
+                      <SelectItem value="M_L">ML</SelectItem>
+                      <SelectItem value="L_XL">LXL</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
+        {/* Price Field */}
         <FormField
           control={form.control}
           name="price"
@@ -252,14 +358,19 @@ export default function EditProductForm({
             <FormItem>
               <FormLabel>Price</FormLabel>
               <FormControl>
-                <Input placeholder="0.00000" type="number" {...field} />
+                <Input
+                  placeholder="0.00"
+                  type="number"
+                  {...field}
+                  onChange={(e) => field.onChange(Number(e.target.value))}
+                />
               </FormControl>
-
               <FormMessage />
             </FormItem>
           )}
         />
 
+        {/* Sale Price Field */}
         <FormField
           control={form.control}
           name="salePrice"
@@ -267,29 +378,19 @@ export default function EditProductForm({
             <FormItem>
               <FormLabel>Sale Price</FormLabel>
               <FormControl>
-                <Input placeholder="shadcn" type="number" {...field} />
+                <Input
+                  placeholder="0.00"
+                  type="number"
+                  {...field}
+                  onChange={(e) => field.onChange(Number(e.target.value))}
+                />
               </FormControl>
-
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="inventory"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Inventory</FormLabel>
-              <FormControl>
-                <Input placeholder="0" type="number" {...field} />
-              </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
+        {/* Tags Field */}
         <FormField
           control={form.control}
           name="tags"
@@ -307,6 +408,8 @@ export default function EditProductForm({
             </FormItem>
           )}
         />
+
+        {/* In Stock Field */}
         <FormField
           control={form.control}
           name="inStock"
@@ -314,20 +417,19 @@ export default function EditProductForm({
             <FormItem className="flex flex-row items-start space-y-0 space-x-3">
               <FormControl>
                 <Checkbox
-                  // @ts-ignore
                   checked={field.value}
                   onCheckedChange={field.onChange}
                 />
               </FormControl>
               <div className="space-y-1 leading-none">
                 <FormLabel>Available in Stock</FormLabel>
-
                 <FormMessage />
               </div>
             </FormItem>
           )}
         />
-        <Button className="w-full" type="submit">
+
+        <Button className="w-full" type="submit" disabled={isLoading}>
           {isLoading ? <Spinner /> : "UPDATE"}
         </Button>
       </form>

@@ -81,17 +81,20 @@ export const productTableColumns: ColumnDef<ProductsDataType>[] = [
     ),
   },
   {
-    accessorKey: "size",
-    header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting()}>
-        Size <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
+    accessorKey: "sizeStocks",
+    header: "Sizes & Stock",
     cell: ({ row }) => {
-      const size = row.getValue("size") as string;
+      const sizeStocks = row.original.sizeStocks;
       return (
-        <div className="rounded-full bg-amber-400 text-center">
-          {size.split("_").join("-")}
+        <div className="space-y-1">
+          {sizeStocks.map((item, index) => (
+            <div key={index} className="flex items-center justify-between gap-2">
+              <span className="rounded-full bg-amber-400 px-2 py-1 text-xs">
+                {item.size.split("_").join("-")}
+              </span>
+              <span className="text-sm">({item.stock})</span>
+            </div>
+          ))}
         </div>
       );
     },
@@ -137,7 +140,15 @@ export const productTableColumns: ColumnDef<ProductsDataType>[] = [
     ),
     cell: ({ row }) => {
       const inStock = row.getValue("inStock") as boolean;
-      return <span>{inStock ? "Yes" : "No"}</span>;
+      return (
+        <span
+          className={`rounded-full px-2 py-1 text-xs font-medium ${
+            inStock ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+          }`}
+        >
+          {inStock ? "Yes" : "No"}
+        </span>
+      );
     },
   },
   {
@@ -154,6 +165,20 @@ export const productTableColumns: ColumnDef<ProductsDataType>[] = [
     enableHiding: false,
     cell: ({ row }) => {
       const product = row.original;
+
+      const parseTags = (tags: string | string[]) => {
+        if (Array.isArray(tags)) return tags;
+        if (typeof tags === "string") {
+          try {
+            return JSON.parse(tags);
+          } catch {
+            return tags.split(",").map((tag) => tag.trim());
+          }
+        }
+        return [];
+      };
+      const tags = parseTags(product.tags);
+
       const data = {
         id: product.id,
         title: product.title,
@@ -161,10 +186,10 @@ export const productTableColumns: ColumnDef<ProductsDataType>[] = [
         category: product.category,
         productImage: product.productImage,
         material: product.material,
-        size: product.size,
-        tags: product.tags as string,
+        sizeStocks: product.sizeStocks,
+        tags: tags,
         price: product.price,
-        salePrice: product.salePrice!,
+        salePrice: product.salePrice,
         inStock: product.inStock,
         inventory: product.inventory,
       };

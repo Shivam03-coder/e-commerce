@@ -49,23 +49,23 @@ export default function ProductForm({
 
   async function onSubmit(values: AddProductSchemaType) {
     console.log("🚀 ~ onSubmit ~ values:", values);
-    // try {
-    //   const res = await addProduct(values).unwrap();
-    //   if (res.status === "success") {
-    //     SuccessToast({ title: "Product added successfully" });
-    //     form.reset();
-    //     onClose(false);
-    //   } else {
-    //     ErrorToast({
-    //       title: res.message || "Something went wrong",
-    //     });
-    //   }
-    // } catch (error) {
-    //   console.error("Form submission error", error);
-    //   ErrorToast({
-    //     title: "Failed to submit the form. Please try again.",
-    //   });
-    // }
+    try {
+      const res = await addProduct(values).unwrap();
+      if (res.status === "success") {
+        SuccessToast({ title: "Product added successfully" });
+        form.reset();
+        onClose(false);
+      } else {
+        ErrorToast({
+          title: res.message || "Something went wrong",
+        });
+      }
+    } catch (error) {
+      console.error("Form submission error", error);
+      ErrorToast({
+        title: "Failed to submit the form. Please try again.",
+      });
+    }
   }
 
   return (
@@ -259,11 +259,11 @@ export default function ProductForm({
                       <SelectValue placeholder="Select sizes" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="ONE_SIZE">ONE SIZE</SelectItem>
-                      <SelectItem value="XS_S">XS_S</SelectItem>
-                      <SelectItem value="S_M">S_M</SelectItem>
-                      <SelectItem value="M_L">M_L</SelectItem>
-                      <SelectItem value="L_XL">L_XL</SelectItem>
+                      <SelectItem value="ONE_SIZE">ONE-SIZE</SelectItem>
+                      <SelectItem value="XS_S">XS-S</SelectItem>
+                      <SelectItem value="S_M">SM</SelectItem>
+                      <SelectItem value="M_L">ML</SelectItem>
+                      <SelectItem value="L_XL">LXL</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
