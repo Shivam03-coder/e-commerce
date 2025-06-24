@@ -12,12 +12,11 @@ import type {
 const AdminServices = ApiServices.injectEndpoints({
   endpoints: (build) => ({
     addProducts: build.mutation<ApiResponse, AddProductSchemaType>({
-      query: (prodcutData) => ({
+      query: (productData) => ({
         url: "/admin/product",
         method: "POST",
-        body: prodcutData,
+        body: productData,
       }),
-
       invalidatesTags: [{ type: "Product", id: "LIST" }],
     }),
 
@@ -30,7 +29,9 @@ const AdminServices = ApiServices.injectEndpoints({
         method: "PATCH",
         body: product,
       }),
-      invalidatesTags: [{ type: "Product", id: "LIST" }],
+      invalidatesTags: (_result, _error, { productId }) => [
+        { type: "Product", id: productId },
+      ],
     }),
 
     deleteProducts: build.mutation<ApiResponse, { id: string }>({
@@ -38,8 +39,10 @@ const AdminServices = ApiServices.injectEndpoints({
         url: `/admin/product/${id}`,
         method: "DELETE",
       }),
-
-      invalidatesTags: [{ type: "Product", id: "LIST" }],
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "Product", id },
+        { type: "Product", id: "LIST" },
+      ],
     }),
 
     getProductImageUrl: build.mutation<ProductImageUrlType, FormData>({
@@ -55,6 +58,16 @@ const AdminServices = ApiServices.injectEndpoints({
         url: "/admin/product/details",
         method: "GET",
       }),
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.result.products.map((product) => ({
+                type: "Product" as const,
+                id: product.id,
+              })),
+              { type: "Product", id: "LIST" },
+            ]
+          : [{ type: "Product", id: "LIST" }],
     }),
 
     getCustomerList: build.query<CustomerListType, void>({
@@ -70,7 +83,6 @@ const AdminServices = ApiServices.injectEndpoints({
         url: `/admin/customer/${id}`,
         method: "DELETE",
       }),
-
       invalidatesTags: [{ type: "Customer", id: "LIST" }],
     }),
 
@@ -81,9 +93,7 @@ const AdminServices = ApiServices.injectEndpoints({
       query: ({ featuredProductImage }) => ({
         url: "/admin/featured/product",
         method: "POST",
-        body: {
-          featuredProductImage,
-        },
+        body: { featuredProductImage },
       }),
       invalidatesTags: [{ type: "Featured", id: "LIST" }],
     }),
@@ -116,14 +126,14 @@ const AdminServices = ApiServices.injectEndpoints({
 
 export const {
   useAddProductsMutation,
+  useUpdateProductsMutation,
+  useDeleteProductsMutation,
   useGetProductImageUrlMutation,
   useGetProductsQuery,
-  useDeleteProductsMutation,
-  useUpdateProductsMutation,
   useGetCustomerListQuery,
   useDeleteCustomerMutation,
-  useDeleteFeaturedProductMutation,
-  useGetFeaturedProductQuery,
   useCreateFeaturedProductMutation,
+  useGetFeaturedProductQuery,
+  useDeleteFeaturedProductMutation,
   useGetOrdersDetailsQuery,
 } = AdminServices;

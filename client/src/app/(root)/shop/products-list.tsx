@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Filter, Search, Grid, List } from "lucide-react";
 import type { ProductsDataType } from "@/types/global";
 import ProductCard from "./product-cards";
+import InfiniteScroll from "@/components/ui/infinite-scroll";
 import {
   Select,
   SelectContent,
@@ -19,11 +20,14 @@ interface ProductGridProps {
   products: ProductsDataType[];
 }
 
-const ProductView: React.FC<ProductGridProps> = ({ products }) => {
+const ProductsList: React.FC<ProductGridProps> = ({ products }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("ALL");
   const [sortBy, setSortBy] = useState("name");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+
+  const [page, setPage] = useState(1);
+  const ITEMS_PER_PAGE = 8;
 
   const categories = [
     "ALL",
@@ -58,6 +62,13 @@ const ProductView: React.FC<ProductGridProps> = ({ products }) => {
   };
 
   const filteredProducts = filterAndSortProducts();
+
+  const paginatedProducts = filteredProducts.slice(0, page * ITEMS_PER_PAGE);
+  const hasMore = paginatedProducts.length < filteredProducts.length;
+
+  const loadMore = () => {
+    setPage((prev) => prev + 1);
+  };
 
   return (
     <div className="mx-auto w-full px-4 sm:px-6 lg:px-8">
@@ -149,22 +160,24 @@ const ProductView: React.FC<ProductGridProps> = ({ products }) => {
       </Card>
 
       {filteredProducts?.length > 0 ? (
-        <div
-          className={`mb-12 grid gap-6 ${
-            viewMode === "grid"
-              ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-              : "grid-cols-1 lg:grid-cols-2"
-          }`}
-        >
-          {filteredProducts.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              // @ts-ignore
-              layout={viewMode}
-            />
-          ))}
-        </div>
+        <InfiniteScroll isLoading={false} hasMore={hasMore} next={loadMore}>
+          <div
+            className={`mb-12 grid gap-6 ${
+              viewMode === "grid"
+                ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                : "grid-cols-1 lg:grid-cols-2"
+            }`}
+          >
+            {paginatedProducts.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                // @ts-ignore
+                layout={viewMode}
+              />
+            ))}
+          </div>
+        </InfiniteScroll>
       ) : (
         <Card className="flex flex-col items-center justify-center py-12">
           <div className="text-muted-foreground mb-4 text-lg">
@@ -179,4 +192,4 @@ const ProductView: React.FC<ProductGridProps> = ({ products }) => {
   );
 };
 
-export default ProductView;
+export default ProductsList;

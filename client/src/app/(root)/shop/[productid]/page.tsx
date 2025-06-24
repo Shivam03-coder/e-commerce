@@ -41,7 +41,7 @@ const ProductDetails = ({ params }: ProductDetailsProps) => {
   if (!data?.result?.product) return <div>Product not found</div>;
 
   const product = data.result.product;
-  const tags = JSON.parse(product.tags || "[]") as string[];
+  const tags = product?.tags.split(",");
 
   const handleAddToCart = async (productId: string, quantity: string) => {
     try {

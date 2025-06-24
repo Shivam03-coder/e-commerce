@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { ApiResponse, AsyncHandler, getAuth } from "@src/utils/api.utils";
 import { ShopService } from "@src/services/shop.service";
+import redis from "@src/configs/redis.config";
 
 export class ShopController {
   static getAllProductDetailsHandler = AsyncHandler(
@@ -14,7 +15,7 @@ export class ShopController {
     }
   );
 
-  static getProductDetailsByIdHandler  = AsyncHandler(
+  static getProductDetailsByIdHandler = AsyncHandler(
     async (req: Request, res: Response): Promise<void> => {
       const { productId } = req.params;
       const product = await ShopService.getProductById(parseInt(productId));
@@ -26,7 +27,7 @@ export class ShopController {
     }
   );
 
-  static addToCartHandler  = AsyncHandler(
+  static addToCartHandler = AsyncHandler(
     async (req: Request, res: Response): Promise<void> => {
       const { productId, quantity } = req.query as {
         productId: string;
@@ -34,19 +35,29 @@ export class ShopController {
       };
       const { userId } = await getAuth(req);
 
-      await ShopService.addToCart(
-        userId,
-        parseInt(productId),
-        parseInt(quantity)
-      );
+      const key = `cart:user:${userId}`;
+      const alreadyExists = await redis.sismember(key, productId);
 
-      res
-        .status(200)
-        .json(new ApiResponse("Product added to cart successfully"));
+      if (alreadyExists) {
+        res.status(200).json(new ApiResponse("Product is already in the cart"));
+        return;
+      } else {
+        await ShopService.addToCart(
+          userId,
+          parseInt(productId),
+          parseInt(quantity)
+        );
+        await redis.sadd(key, productId);
+
+        res
+          .status(200)
+          .json(new ApiResponse("Product added to cart successfully"));
+        return;
+      }
     }
   );
 
-  static addReviewHandler  = AsyncHandler(
+  static addReviewHandler = AsyncHandler(
     async (req: Request, res: Response): Promise<void> => {
       const { productId } = req.params;
       const { userId } = await getAuth(req);
@@ -58,7 +69,7 @@ export class ShopController {
     }
   );
 
-  static getAllReviewHandler  = AsyncHandler(
+  static getAllReviewHandler = AsyncHandler(
     async (req: Request, res: Response): Promise<void> => {
       const { productId } = req.params;
       const reviews = await ShopService.getProductReviews(parseInt(productId));

@@ -1,9 +1,9 @@
 "use client";
 import { useGetProductDetailsQuery } from "@/apis/shop-api";
-import ProductView from "./product-view";
+import ProductsList from "./products-list";
 import type { ProductsDataType } from "@/types/global";
-import PaginationSection from "./pagination";
 import Spinner from "@/components/global/spinner";
+import Footer from "./footer";
 
 export default function ProductPage() {
   const { data, isLoading } = useGetProductDetailsQuery();
@@ -25,11 +25,9 @@ export default function ProductPage() {
   }
 
   return (
-    <>
-      <ProductView products={data.result.products as ProductsDataType[]} />
-      <section className="py-4">
-        <PaginationSection />
-      </section>
-    </>
+    <div>
+      <ProductsList products={data.result.products as ProductsDataType[]} />
+      <Footer />
+    </div>
   );
 }

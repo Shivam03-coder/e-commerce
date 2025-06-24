@@ -1,4 +1,5 @@
 import { Prisma, Product, Review } from "@prisma/client";
+import rc from "@src/configs/redis.config";
 import { db } from "@src/db";
 import {
   NotFoundError,

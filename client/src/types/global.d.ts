@@ -13,7 +13,7 @@ export interface ProductsDataType {
   title: string;
   description: string;
   category: ProductCategory;
-  tags?: string;
+  tags: string;
   productImage: string;
   material: MaterialType;
   size: SockSize;

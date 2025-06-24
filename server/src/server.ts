@@ -1,6 +1,7 @@
 import { Response } from "express";
 import App from "./app";
 import { envs } from "./configs/envs.config";
+import rc from "./configs/redis.config";
 const appInstance = new App();
 const expressApp = appInstance.getAppInstance();
 

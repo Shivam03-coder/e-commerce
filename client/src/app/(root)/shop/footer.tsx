@@ -2,41 +2,41 @@ import React from "react";
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-900 py-12 text-white">
+    <footer className="bg-green-100 py-12 text-black">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           <div>
             <div className="mb-4 flex items-center space-x-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-500">
                 <span className="text-lg font-bold text-white">S</span>
               </div>
               <span className="text-xl font-bold">SockShop</span>
             </div>
-            <p className="text-gray-400">
+            <p className="text-gray-700">
               Premium quality socks for every occasion. Comfort meets style in
               every pair.
             </p>
           </div>
           <div>
             <h3 className="mb-4 text-lg font-semibold">Quick Links</h3>
-            <ul className="space-y-2 text-gray-400">
+            <ul className="space-y-2 text-gray-700">
               <li>
-                <a href="#" className="transition-colors hover:text-white">
+                <a href="#" className="transition-colors hover:text-black">
                   About Us
                 </a>
               </li>
               <li>
-                <a href="#" className="transition-colors hover:text-white">
+                <a href="#" className="transition-colors hover:text-black">
                   Contact
                 </a>
               </li>
               <li>
-                <a href="#" className="transition-colors hover:text-white">
+                <a href="#" className="transition-colors hover:text-black">
                   Shipping
                 </a>
               </li>
               <li>
-                <a href="#" className="transition-colors hover:text-white">
+                <a href="#" className="transition-colors hover:text-black">
                   Returns
                 </a>
               </li>
@@ -44,24 +44,24 @@ const Footer = () => {
           </div>
           <div>
             <h3 className="mb-4 text-lg font-semibold">Categories</h3>
-            <ul className="space-y-2 text-gray-400">
+            <ul className="space-y-2 text-gray-700">
               <li>
-                <a href="#" className="transition-colors hover:text-white">
+                <a href="#" className="transition-colors hover:text-black">
                   Ankle Socks
                 </a>
               </li>
               <li>
-                <a href="#" className="transition-colors hover:text-white">
+                <a href="#" className="transition-colors hover:text-black">
                   No Show Socks
                 </a>
               </li>
               <li>
-                <a href="#" className="transition-colors hover:text-white">
+                <a href="#" className="transition-colors hover:text-black">
                   Half Socks
                 </a>
               </li>
               <li>
-                <a href="#" className="transition-colors hover:text-white">
+                <a href="#" className="transition-colors hover:text-black">
                   Athletic Socks
                 </a>
               </li>
@@ -70,9 +70,10 @@ const Footer = () => {
           <div>
             <h3 className="mb-4 text-lg font-semibold">Follow Us</h3>
             <div className="flex space-x-4">
+              {/* Facebook */}
               <a
                 href="#"
-                className="text-gray-400 transition-colors hover:text-white"
+                className="text-gray-700 transition-colors hover:text-black"
               >
                 <span className="sr-only">Facebook</span>
                 <svg
@@ -87,9 +88,11 @@ const Footer = () => {
                   />
                 </svg>
               </a>
+
+              {/* Instagram */}
               <a
                 href="#"
-                className="text-gray-400 transition-colors hover:text-white"
+                className="text-gray-700 transition-colors hover:text-black"
               >
                 <span className="sr-only">Instagram</span>
                 <svg
@@ -104,9 +107,11 @@ const Footer = () => {
                   />
                 </svg>
               </a>
+
+              {/* Twitter */}
               <a
                 href="#"
-                className="text-gray-400 transition-colors hover:text-white"
+                className="text-gray-700 transition-colors hover:text-black"
               >
                 <span className="sr-only">Twitter</span>
                 <svg
@@ -120,7 +125,8 @@ const Footer = () => {
             </div>
           </div>
         </div>
-        <div className="mt-8 border-t border-gray-800 pt-8 text-center text-gray-400">
+
+        <div className="mt-8 border-t border-gray-300 pt-8 text-center text-gray-600">
           <p>&copy; 2024 SockShop. All rights reserved.</p>
         </div>
       </div>

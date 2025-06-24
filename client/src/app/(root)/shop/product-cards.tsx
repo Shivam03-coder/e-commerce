@@ -13,7 +13,7 @@ interface ProductCardProps {
   product: ProductsDataType;
 }
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-  const parsedTags = JSON.parse(product.tags as string);
+  const parsedTags = product?.tags.split(",");
   const hasDiscount = product.price !== product.salePrice;
   const router = useTransitionRouter();
   const discountPercentage = hasDiscount
@@ -27,9 +27,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     try {
       const resp = await addToCart({ productId, quantity }).unwrap();
       SuccessToast({
-        title: "Item added to cart",
-        description:
-          "The product has been successfully added to your shopping cart",
+        title: resp.message,
       });
     } catch (error) {
       ErrorToast({
