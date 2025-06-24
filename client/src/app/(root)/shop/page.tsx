@@ -1,39 +1,35 @@
-// "use client";
-// import { useGetProductDetailsQuery } from "@/apis/shop-api";
-// import ProductView from "./product-view";
-// import type { ProductsDataType } from "@/types/global";
-// import PaginationSection from "./pagination";
-// import Spinner from "@/components/global/spinner";
+"use client";
+import { useGetProductDetailsQuery } from "@/apis/shop-api";
+import ProductView from "./product-view";
+import type { ProductsDataType } from "@/types/global";
+import PaginationSection from "./pagination";
+import Spinner from "@/components/global/spinner";
 
-// export default function ProductPage() {
-//   const { data, isLoading } = useGetProductDetailsQuery();
-//   console.log("🚀 ~ ProductPage ~ data:", data)
+export default function ProductPage() {
+  const { data, isLoading } = useGetProductDetailsQuery();
 
-//   if (isLoading) {
-//     return (
-//       <div className="center min-h-screen w-full">
-//         <Spinner size={69} />
-//       </div>
-//     );
-//   }
+  if (isLoading) {
+    return (
+      <div className="center min-h-screen w-full">
+        <Spinner size={69} />
+      </div>
+    );
+  }
 
-//   return (
-//     <>
-//       <ProductView products={data?.result.products as ProductsDataType[]} />
-//       <section className="py-4">
-//         <PaginationSection />
-//       </section>
-//       ;
-//     </>
-//   );
-// }
+  if (!data?.result) {
+    return (
+      <div className="center min-h-screen w-full">
+        <h1>NO DATA FOUND</h1>
+      </div>
+    );
+  }
 
-import React from 'react'
-
-const page = () => {
   return (
-    <div>page</div>
-  )
+    <>
+      <ProductView products={data.result.products as ProductsDataType[]} />
+      <section className="py-4">
+        <PaginationSection />
+      </section>
+    </>
+  );
 }
-
-export default page

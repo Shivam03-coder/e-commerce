@@ -55,16 +55,6 @@ const AdminServices = ApiServices.injectEndpoints({
         url: "/admin/product/details",
         method: "GET",
       }),
-      providesTags: (res) =>
-        res
-          ? [
-              ...res.result.products.map(({ id }) => ({
-                type: "Product" as const,
-                id,
-              })),
-              { type: "Product", id: "LIST" },
-            ]
-          : [{ type: "Product", id: "LIST" }],
     }),
 
     getCustomerList: build.query<CustomerListType, void>({
