@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -36,19 +35,15 @@ export default function SignInForm() {
 
   async function onSubmit(values: SignInSchemaType) {
     try {
-      const { message, result, status } = await signinUser(values).unwrap();
-      if (status === "success") {
-        setUserValue(JSON.stringify(result));
-        SuccessToast({
-          title: message,
-        });
-        form.reset();
-        router.push("/shop");
-      } else if (status === "failed") {
-        ErrorToast({
-          title: message,
-        });
-      }
+      const { message, result } = await signinUser(values).unwrap();
+      setUserValue(JSON.stringify(result));
+      SuccessToast({
+        title: message,
+      });
+      form.reset();
+      router.push("/shop");
+
+      console.log("PUSH FAILED");
     } catch (err: any) {
       const errorMessage =
         err?.data?.message || err?.message || "An unexpected error occurred";
@@ -98,7 +93,6 @@ export default function SignInForm() {
                   {...field}
                 />
               </FormControl>
-              <FormDescription>Enter your password.</FormDescription>
               <FormMessage />
             </FormItem>
           )}

@@ -50,8 +50,9 @@ class AuthHelper {
     return {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "none" as const,
+      sameSite: "lax" as const,
       maxAge: (days ?? this.defaultDays) * 24 * 60 * 60 * 1000,
+      path: "/",
     };
   }
 

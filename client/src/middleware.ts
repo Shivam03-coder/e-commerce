@@ -2,27 +2,41 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 function getSessionToken(request: NextRequest) {
-  const sessionToken = request.cookies.get("sessionToken")?.value || null;
-  return sessionToken;
+  return (
+    request.cookies.get("accessToken")?.value ||
+    request.cookies.get("refreshToken")?.value ||
+    null
+  );
 }
 
 export function middleware(request: NextRequest) {
-  const sessionToken = getSessionToken(request);
+  const hasToken = Boolean(getSessionToken(request));
   const { pathname } = request.nextUrl;
 
-  if (sessionToken && (pathname === "/sign-in" || pathname === "/sign-up")) {
-    console.log("✅ Logged in. Redirecting to /shop");
-    return NextResponse.redirect(new URL("/shop", request.url));
+  const protectedPaths = ["/shop", "/admin"];
+  const authPaths = ["/sign-in", "/sign-up"];
+
+  console.log("Path:", pathname);
+  console.log("Has token:", hasToken);
+  console.log("Cookies:", request.cookies.getAll());
+
+  if (hasToken && authPaths.some((path) => pathname.startsWith(path))) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/shop";
+    console.log("Redirecting authenticated user from auth page to /shop");
+    return NextResponse.redirect(url);
   }
 
-  if (!sessionToken && pathname.startsWith("/shop")) {
-    console.log("🚨 No credentials. Redirecting to /sign-in");
-    return NextResponse.redirect(new URL("/sign-in", request.url));
+  if (!hasToken && protectedPaths.some((path) => pathname.startsWith(path))) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/sign-in";
+    console.log("Redirecting unauthenticated user to sign-in");
+    return NextResponse.redirect(url);
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/sign-in", "/sign-up", "/shops/:path*", "/admin/:path*", "/shop/:path*"],
+  matcher: ["/sign-in", "/sign-up", "/shop/:path*", "/admin/:path*"],
 };
