@@ -1,3 +1,4 @@
+import redis from "@src/configs/redis.config";
 import { db } from "@src/db";
 import { NotFoundError } from "@src/utils/error.utils";
 
@@ -87,6 +88,12 @@ class CartService {
 
     if (!cart) {
       throw new NotFoundError("Cart not found");
+    }
+    const key = `cart:user:${userId}`;
+    const alreadyExists = await redis.sismember(key, productId);
+
+    if (alreadyExists) {
+      await redis.srem(key, productId);
     }
 
     const deleted = await db.cartItem.deleteMany({

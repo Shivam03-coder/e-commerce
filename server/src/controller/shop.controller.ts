@@ -78,10 +78,4 @@ export class ShopController {
         .json(new ApiResponse("Reviews fetched successfully", reviews));
     }
   );
-
-  static getCartItems = AsyncHandler(
-    async (req: Request, res: Response): Promise<void> => {
-      const { userId } = await getAuth(req);
-    }
-  );
 }
