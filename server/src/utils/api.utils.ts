@@ -19,12 +19,12 @@ export const AsyncHandler = (
 };
 
 export class ApiResponse<T = any> {
-  public success: boolean;
+  public status: "success";
   public message: string;
   public data?: T;
 
-  constructor(message: string, data?: T, success = true) {
-    this.success = success;
+  constructor(message: string, data?: T) {
+    this.status = "success";
     this.message = message;
     this.data = data;
   }
