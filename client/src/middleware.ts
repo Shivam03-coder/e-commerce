@@ -16,10 +16,6 @@ export function middleware(request: NextRequest) {
   const protectedPaths = ["/shop", "/admin"];
   const authPaths = ["/sign-in", "/sign-up"];
 
-  console.log("Path:", pathname);
-  console.log("Has token:", hasToken);
-  console.log("Cookies:", request.cookies.getAll());
-
   if (hasToken && authPaths.some((path) => pathname.startsWith(path))) {
     const url = request.nextUrl.clone();
     url.pathname = "/shop";
