@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import AppImages from "@/constants/images";
@@ -11,8 +11,7 @@ import { useAppSelector } from "@/store";
 const ShopsHeader = () => {
   const router = useTransitionRouter();
   const navs = useAppLinks();
-
-  const { totalItemsInCart } = useAppSelector((state) => state.account);
+  const [temsInCart, setItemsInCart] = useState<number>(0);
 
   return (
     <header className="bg-background sticky top-0 z-40 w-full">
@@ -30,12 +29,12 @@ const ShopsHeader = () => {
           >
             <ShoppingCart className="h-5 w-5" />
             <span className="bg-primary absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full text-xs text-white">
-              {totalItemsInCart || 0}
+              {temsInCart || 0}
             </span>
           </button>
 
           <button>
-            <HeaderSettings />
+            <HeaderSettings setItemsInCart={setItemsInCart} />
           </button>
         </div>
       </nav>

@@ -43,9 +43,10 @@ const ShopServices = ApiServices.injectEndpoints({
         url: `/shop/product/cart?productId=${productId}&quantity=${quantity}`,
         method: "POST",
       }),
-      invalidatesTags: () => [
+      invalidatesTags: (_res, _err, { productId }) => [
         { type: "Carts", id: "LIST" },
         { type: "UserInfo" },
+        { type: "Product", id: productId },
       ],
     }),
 

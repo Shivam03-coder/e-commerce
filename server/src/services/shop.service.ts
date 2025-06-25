@@ -343,4 +343,24 @@ export class ShopService {
       throw new DatabaseError("Failed to fetch favorites");
     }
   }
+
+    static async removeFromCart(userId: string, productId: number) {
+      const cart = await db.cart.findUnique({
+        where: { userId },
+        select: { id: true },
+      });
+  
+      if (!cart) {
+        throw new NotFoundError("Cart not found for user");
+      }
+  
+      const deletedItem = await db.cartItem.deleteMany({
+        where: {
+          cartId: cart.id,
+          productId,
+        },
+      });
+  
+      return deletedItem.count > 0;
+    }
 }
