@@ -1,16 +1,20 @@
+import AppImages from "@/constants/images";
+import Image from "next/image";
 import React from "react";
 
 const Footer = () => {
   return (
-    <footer className="bg-green-100 py-12 text-black">
+    <footer className="bottom-0 w-full bg-green-100 py-12 text-black">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           <div>
             <div className="mb-4 flex items-center space-x-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-500">
-                <span className="text-lg font-bold text-white">S</span>
-              </div>
-              <span className="text-xl font-bold">SockShop</span>
+              <Image
+                alt="app-logo"
+                src={AppImages.logo}
+                width={120}
+                height={50}
+              />
             </div>
             <p className="text-gray-700">
               Premium quality socks for every occasion. Comfort meets style in

@@ -44,7 +44,8 @@ const UserProfile = ({ name }: { name: string }) => {
 
   const handleLogout = async () => {
     try {
-      await logout().unwrap();
+      const res = await logout().unwrap();
+      console.log("🚀 ~ handleLogout ~ res:", res)
       SuccessToast({ title: "Logged out successfully" });
       router.push("/sign-in");
     } catch (error) {

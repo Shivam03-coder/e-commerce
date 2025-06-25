@@ -25,9 +25,6 @@ export default function ProductPage() {
   }
 
   return (
-    <div>
       <ProductsList products={data.result.products as ProductsDataType[]} />
-      <Footer />
-    </div>
   );
 }
