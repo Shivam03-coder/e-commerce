@@ -23,4 +23,6 @@ export const envs = {
   CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME as string,
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY as string,
   CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET as string,
+  RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID as string,
+  RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET as string,
 };

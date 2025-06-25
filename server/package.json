@@ -43,6 +43,7 @@
     "nodemailer": "^6.9.16",
     "pnpm": "^10.7.0",
     "prisma": "^6.9.0",
+    "razorpay": "^2.9.6",
     "request-promise": "^4.2.6",
     "swagger-autogen": "^2.23.7",
     "swagger-ui-express": "^5.0.1",
