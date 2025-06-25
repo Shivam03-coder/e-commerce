@@ -11,6 +11,6 @@ shopRouter
   .post("/product/review/:productId", requireAuth, ShopController.addReviewHandler)
   .get("/product/review/:productId", requireAuth, ShopController.getAllReviewHandler)
   .post("/favourite/:productId", requireAuth, ShopController.toggleFavoriteHandler)
-  .get("/favourite", requireAuth, ShopController.toggleFavoriteHandler)
+  .get("/favourite", requireAuth, ShopController.getUserFavoritesHandler)
 
 export default shopRouter;

@@ -1,3 +1,4 @@
+import { SockSize } from "@prisma/client";
 import redis from "@src/configs/redis.config";
 import { db } from "@src/db";
 import { NotFoundError } from "@src/utils/error.utils";
@@ -35,6 +36,15 @@ class CartService {
           quantity: 1,
         },
       });
+
+      await db.user.update({
+        where: { id: userId },
+        data: {
+          cartProductCount: {
+            increment: 1,
+          },
+        },
+      });
     }
 
     return {
@@ -57,8 +67,18 @@ class CartService {
                 title: true,
                 price: true,
                 productImage: true,
-                size: true,
                 material: true,
+                sizeStocks: {
+                  where: {
+                    stock: {
+                      gt: 0,
+                    },
+                  },
+                  select: {
+                    size: true,
+                    stock: true,
+                  },
+                },
               },
             },
           },
@@ -73,7 +93,11 @@ class CartService {
         price: item.product.price,
         quantity: item.quantity,
         image: item.product.productImage,
-        size: item.product.size,
+        material: item.product.material,
+        availableSizes: item.product.sizeStocks.map((s) => ({
+          size: s.size,
+          stock: s.stock,
+        })),
       }))
     );
 
@@ -89,6 +113,7 @@ class CartService {
     if (!cart) {
       throw new NotFoundError("Cart not found");
     }
+
     const key = `cart:user:${userId}`;
     const alreadyExists = await redis.sismember(key, productId);
 
@@ -106,6 +131,16 @@ class CartService {
     if (deleted.count === 0) {
       throw new NotFoundError("Item not found in cart");
     }
+
+    // 🔽 decrement cartProductCount when item removed
+    await db.user.update({
+      where: { id: userId },
+      data: {
+        cartProductCount: {
+          decrement: 1,
+        },
+      },
+    });
 
     return {
       message: `${deleted.count} item(s) removed from cart`,

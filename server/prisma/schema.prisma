@@ -8,19 +8,21 @@ datasource db {
 }
 
 model User {
-    id              String            @id @default(cuid())
-    name            String?
-    email           String?           @unique
-    password        String
-    phoneNumber     String
-    isTermsAccepted Boolean           @default(false) @map("Terms_conditions")
-    profileImage    String?
-    userAddress     Address[]
-    Cart            Cart[]
-    Review          Review[]
-    Order           Order[]
-    userRole        Role              @default(USER)
-    FavoriteProduct FavoriteProduct[]
+    id                   String            @id @default(cuid())
+    name                 String?
+    email                String?           @unique
+    password             String
+    phoneNumber          String
+    isTermsAccepted      Boolean           @default(false) @map("Terms_conditions")
+    profileImage         String?
+    userAddress          Address[]
+    Cart                 Cart[]
+    Review               Review[]
+    Order                Order[]
+    userRole             Role              @default(USER)
+    cartProductCount     Int?              @default(0)
+    favoriteProductCount Int?              @default(0)
+    favoriteProducts      FavoriteProduct[]
 
     @@map("Users")
 }
@@ -58,7 +60,7 @@ model Product {
     sizeStocks      SizeStock[]
     CartItem        CartItem[]
     Review          Review[]
-    FavoriteProduct FavoriteProduct[]
+    favoriteProducts FavoriteProduct[]
 }
 
 model SizeStock {

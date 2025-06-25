@@ -1,5 +1,4 @@
 import CartService from "@src/services/cart.service";
-import { ShopService } from "@src/services/shop.service";
 import { ApiResponse, AsyncHandler, getAuth } from "@src/utils/api.utils";
 import { Request, Response } from "express";
 
@@ -13,6 +12,7 @@ class CartController {
       res.status(200).json(new ApiResponse("Fetched cart items", items));
     }
   );
+
 
   static removeItemFormCartHandler = AsyncHandler(
     async (req: Request, res: Response): Promise<void> => {

@@ -66,6 +66,24 @@ const ShopServices = ApiServices.injectEndpoints({
       }),
       providesTags: [{ type: "Review", id: "LIST" }],
     }),
+
+    userFavorites: build.query<ReviewListItemType, { productId: number }>({
+      query: ({ productId }) => ({
+        url: `/shop/product/review/${productId}`,
+        method: "GET",
+      }),
+      providesTags: [{ type: "Review", id: "LIST" }],
+    }),
+    
+    toggleFavorite: build.mutation<ApiResponse, { productId: number }>({
+      query: ({ productId }) => ({
+        url: `/shop/favourite/${productId}`,
+        method: "POST",
+      }),
+      invalidatesTags: (_result, _error, { productId }) => [
+        { type: "Product", id: productId },
+      ],
+    }),
   }),
 });
 

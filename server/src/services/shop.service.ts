@@ -8,6 +8,23 @@ import {
 } from "@src/utils/error.utils";
 
 export class ShopService {
+  private static async favouriteProductCount(userId: string) {
+    try {
+      await db.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          favoriteProductCount: {
+            increment: 1,
+          },
+        },
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
   static async getAllProducts() {
     try {
       return await db.product.findMany({
@@ -194,21 +211,27 @@ export class ShopService {
 
   private static async addToFavorites(userId: string, productId: number) {
     try {
-      const favorite = await db.favoriteProduct.create({
-        data: {
-          userId,
-          productId,
-        },
-        include: {
-          product: true,
-        },
-      });
-      return favorite;
+      const favorite = await db.$transaction([
+        db.favoriteProduct.create({
+          data: { userId, productId },
+        }),
+        db.user.update({
+          where: { id: userId },
+          data: {
+            favoriteProductCount: {
+              increment: 1,
+            },
+          },
+        }),
+      ]);
+
+      return favorite[0];
     } catch (error: unknown) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === "P2002") {
-          throw new DatabaseError("Product is already in favorites");
-        }
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2002"
+      ) {
+        throw new DatabaseError("Product is already in favorites");
       }
       throw error;
     }
@@ -225,27 +248,38 @@ export class ShopService {
         },
       });
       return !!favorite;
-    } catch (error: unknown) {
+    } catch {
       throw new DatabaseError("Failed to check favorite status");
     }
   }
-
   private static async removeFromFavorites(userId: string, productId: number) {
     try {
-      const deleted = await db.favoriteProduct.delete({
-        where: {
-          userId_productId: {
-            userId,
-            productId,
+      const result = await db.$transaction([
+        db.favoriteProduct.delete({
+          where: {
+            userId_productId: {
+              userId,
+              productId,
+            },
           },
-        },
-      });
-      return deleted;
+        }),
+        db.user.update({
+          where: { id: userId },
+          data: {
+            favoriteProductCount: {
+              decrement: 1,
+            },
+          },
+        }),
+      ]);
+
+      return result[0]; // return deleted favorite
     } catch (error: unknown) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === "P2025") {
-          throw new DatabaseError("Favorite not found");
-        }
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2025"
+      ) {
+        throw new DatabaseError("Favorite not found");
       }
       throw error;
     }
@@ -261,7 +295,7 @@ export class ShopService {
           message: "Product removed from favorites",
         };
       } else {
-        const favorite = await this.addToFavorites(userId, productId);
+        await this.addToFavorites(userId, productId);
         return {
           message: "Product added to favorites",
         };
