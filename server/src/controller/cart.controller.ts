@@ -22,21 +22,7 @@ class CartController {
       const { userId } = await getAuth(req);
       const { productId } = req.params;
 
-      const { message } = await CartService.removeItem(
-        userId,
-        parseInt(productId)
-      );
-
-      res.status(200).json(new ApiResponse(message));
-    }
-  );
-
-  static increaseItemHandler = AsyncHandler(
-    async (req: Request, res: Response): Promise<void> => {
-      const { userId } = await getAuth(req);
-      const { productId } = req.params;
-
-      const { message } = await CartService.increaseItem(
+      const { message } = await CartService.removeItemFormCart(
         userId,
         parseInt(productId)
       );
@@ -102,47 +88,6 @@ class CartController {
       res
         .status(200)
         .json(new ApiResponse("Product with selected sizes added to cart"));
-    }
-  );
-
-  static removeFromCartHandler = AsyncHandler(
-    async (req: Request, res: Response): Promise<void> => {
-      const { productId } = req.query as { productId: string };
-      const { userId } = await getAuth(req);
-      const key = `cart:user:${userId}`;
-
-      const alreadyExists = await redis.sismember(key, productId);
-
-      if (!alreadyExists) {
-        res.status(404).json(new ApiResponse("Product not found in cart"));
-        return;
-      }
-
-      const removed = await ShopService.removeFromCart(
-        userId,
-        parseInt(productId)
-      );
-      if (!removed) {
-        res
-          .status(500)
-          .json(new ApiResponse("Failed to remove product from cart"));
-        return;
-      }
-
-      await redis.srem(key, productId);
-
-      await db.user.update({
-        where: { id: userId },
-        data: {
-          cartProductCount: {
-            decrement: 1,
-          },
-        },
-      });
-
-      res
-        .status(200)
-        .json(new ApiResponse("Product removed from cart successfully"));
     }
   );
 }

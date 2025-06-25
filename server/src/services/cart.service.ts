@@ -8,54 +8,6 @@ import {
 } from "@src/utils/error.utils";
 
 class CartService {
-  static async increaseItem(userId: string, productId: number) {
-    const cart = await db.cart.findUnique({
-      where: { userId },
-      select: { id: true },
-    });
-
-    if (!cart) {
-      throw new NotFoundError("Cart not found");
-    }
-
-    const existingItem = await db.cartItem.findFirst({
-      where: {
-        cartId: cart.id,
-        productId,
-      },
-    });
-
-    if (existingItem) {
-      await db.cartItem.update({
-        where: { id: existingItem.id },
-        data: {
-          quantity: { increment: 1 },
-        },
-      });
-    } else {
-      await db.cartItem.create({
-        data: {
-          cartId: cart.id,
-          productId,
-          quantity: 1,
-        },
-      });
-
-      await db.user.update({
-        where: { id: userId },
-        data: {
-          cartProductCount: {
-            increment: 1,
-          },
-        },
-      });
-    }
-
-    return {
-      message: "Item added or quantity increased",
-    };
-  }
-
   static async getCartItems(userId: string) {
     const cart = await db.cart.findUnique({
       where: {
@@ -72,14 +24,10 @@ class CartService {
                       gt: 0,
                     },
                   },
-                  select: {
-                    size: true,
-                    stock: true,
-                  },
                 },
               },
             },
-            sizesAndQuantity: true, // Include the size-quantity relations
+            sizesAndQuantity: true, // Include the selected sizes and quantities
           },
         },
       },
@@ -89,37 +37,26 @@ class CartService {
       return [];
     }
 
-    const cartItems = cart.items.flatMap((item) => {
-      // Group all size quantities for this cart item
-      const sizeQuantities = item.sizesAndQuantity.map((sq) => ({
-        size: sq.size,
-        quantity: sq.quantity,
-      }));
-
-      // Calculate total quantity across all sizes
-      const totalQuantity = sizeQuantities.reduce(
-        (sum, sq) => sum + sq.quantity,
+    const cartItems = cart.items.map((item) => ({
+      productId: item.product.id.toString(),
+      name: item.product.title,
+      price: item.product.price,
+      image: item.product.productImage,
+      material: item.product.material,
+      selectedSizes: item.sizesAndQuantity.map((sizeQty) => ({
+        size: sizeQty.size,
+        quantity: sizeQty.quantity,
+      })),
+      totalQuantity: item.sizesAndQuantity.reduce(
+        (sum, sizeQty) => sum + sizeQty.quantity,
         0
-      );
-
-      return {
-        productId: item.product.id.toString(),
-        name: item.product.title,
-        price: item.product.price,
-        quantity: totalQuantity, // Total quantity across all sizes
-        image: item.product.productImage,
-        material: item.product.material,
-        availableSizes: item.product.sizeStocks.map((s) => ({
-          size: s.size,
-          stock: s.stock,
-        })),
-        sizeQuantities, // Include individual size quantities
-      };
-    });
+      ),
+    }));
 
     return cartItems;
   }
-  static async removeItem(userId: string, productId: number) {
+
+  static async removeItemFormCart(userId: string, productId: number) {
     const cart = await db.cart.findUnique({
       where: { userId },
       select: { id: true },
@@ -275,26 +212,6 @@ class CartService {
       }
       throw new DatabaseError("Failed to add product to cart");
     }
-  }
-
-  static async removeFromCart(userId: string, productId: number) {
-    const cart = await db.cart.findUnique({
-      where: { userId },
-      select: { id: true },
-    });
-
-    if (!cart) {
-      throw new NotFoundError("Cart not found for user");
-    }
-
-    const deletedItem = await db.cartItem.deleteMany({
-      where: {
-        cartId: cart.id,
-        productId,
-      },
-    });
-
-    return deletedItem.count > 0;
   }
 }
 

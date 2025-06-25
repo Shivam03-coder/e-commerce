@@ -4,14 +4,12 @@ import { CreditCard } from "lucide-react";
 interface OrderSummaryProps {
   subtotal: number;
   shipping: number;
-  tax: number;
   total: number;
 }
 
 export default function OrderSummary({
   subtotal,
   shipping,
-  tax,
   total,
 }: OrderSummaryProps) {
   return (
@@ -24,14 +22,14 @@ export default function OrderSummary({
         <div className="flex items-center justify-between">
           <span className="text-gray-600">Subtotal</span>
           <span className="font-semibold text-gray-900">
-            ${subtotal.toFixed(2)}
+            ₹{subtotal.toFixed(2)}
           </span>
         </div>
 
         <div className="flex items-center justify-between">
           <span className="text-gray-600">Shipping</span>
           <span className="font-semibold text-gray-900">
-            {shipping === 0 ? "FREE" : `$${shipping.toFixed(2)}`}
+            {shipping === 0 ? "FREE" : `₹${shipping.toFixed(2)}`}
           </span>
         </div>
 
@@ -41,18 +39,11 @@ export default function OrderSummary({
           </div>
         )}
 
-        <div className="flex items-center justify-between">
-          <span className="text-gray-600">Tax</span>
-          <span className="font-semibold text-gray-900">
-            ${tax.toFixed(2)}
-          </span>
-        </div>
-
         <div className="border-t border-gray-200 pt-4">
           <div className="flex items-center justify-between">
             <span className="text-lg font-semibold text-gray-900">Total</span>
             <span className="text-2xl font-bold text-gray-900">
-              ${total.toFixed(2)}
+              ₹{total.toFixed(2)}
             </span>
           </div>
         </div>

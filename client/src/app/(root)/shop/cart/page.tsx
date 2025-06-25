@@ -4,36 +4,55 @@ import { ShoppingBag, ArrowLeft } from "lucide-react";
 import { useGetCartsItemsQuery } from "@/apis/cart-api";
 import { setTotalItemsInCart } from "@/store/app-state/global-state";
 import { useAppDispatch } from "@/store";
-import type { CartItemType } from "@/types/global";
+import type { CartItem, CartItemType } from "@/types/global";
 import ProductCard from "./product-card";
 import OrderSummary from "./order-summary";
-import { useTransitionRouter } from "next-view-transitions";
+import { Link, useTransitionRouter } from "next-view-transitions";
 import useAppLinks from "@/navigations";
+import { Button } from "@/components/ui/button";
 
 function CartPage() {
-  const [cartItems, setCartItems] = useState<CartItemType[]>([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const { data } = useGetCartsItemsQuery();
   const dispatch = useAppDispatch();
   const router = useTransitionRouter();
   const nav = useAppLinks();
+
   useEffect(() => {
     if (data?.result) {
       setCartItems(data.result);
-      dispatch(setTotalItemsInCart(data.result.length));
+      const totalItems = data.result.reduce(
+        (sum, item) => sum + item.totalQuantity,
+        0,
+      );
+      dispatch(setTotalItemsInCart(totalItems));
     }
   }, [data?.result, dispatch]);
 
   const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+    (sum, item) =>
+      sum +
+      item.price *
+        item.selectedSizes.reduce(
+          (sizeSum, size) => sizeSum + size.quantity,
+          0,
+        ),
     0,
   );
+
   const shipping = subtotal > 75 ? 0 : 9.99;
   const tax = subtotal * 0.08;
-  const total = subtotal + shipping + tax;
+  const total = subtotal + shipping;
 
   return (
     <div className="min-h-screen bg-gray-50">
       <main className="max-w-8xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <Button asChild variant="ghost" className="my-5 gap-2 bg-green-200">
+          <Link href="/shop">
+            <ArrowLeft className="h-4 w-4" />
+            <span>Back to Shop</span>
+          </Link>
+        </Button>
         {cartItems.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16">
             <div className="mb-6 rounded-full bg-gray-100 p-6">
@@ -59,7 +78,12 @@ function CartPage() {
               <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
                 <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
                   <h2 className="text-lg font-semibold text-gray-900">
-                    Your Cart ({cartItems.length} items)
+                    Your Cart (
+                    {cartItems.reduce(
+                      (sum, item) => sum + item.totalQuantity,
+                      0,
+                    )}{" "}
+                    items)
                   </h2>
                 </div>
 
@@ -76,7 +100,6 @@ function CartPage() {
               <OrderSummary
                 subtotal={subtotal}
                 shipping={shipping}
-                tax={tax}
                 total={total}
               />
             </div>
