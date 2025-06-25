@@ -5,7 +5,7 @@ export default function ShopsRootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <main className="root">
+    <main className="root bg-green-50 ">
       <ShopsHeader />
       {children}
     </main>

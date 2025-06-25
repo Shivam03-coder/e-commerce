@@ -4,7 +4,7 @@ import { ShoppingBag, ArrowLeft } from "lucide-react";
 import { useGetCartsItemsQuery } from "@/apis/cart-api";
 import { setTotalItemsInCart } from "@/store/app-state/global-state";
 import { useAppDispatch } from "@/store";
-import type { CartItem, CartItemType } from "@/types/global";
+import type { CartItem } from "@/types/global";
 import ProductCard from "./product-card";
 import OrderSummary from "./order-summary";
 import { Link, useTransitionRouter } from "next-view-transitions";
@@ -23,7 +23,7 @@ function CartPage() {
       setCartItems(data.result);
       const totalItems = data.result.reduce(
         (sum, item) => sum + item.totalQuantity,
-        0,
+        0
       );
       dispatch(setTotalItemsInCart(totalItems));
     }
@@ -33,61 +33,58 @@ function CartPage() {
     (sum, item) =>
       sum +
       item.price *
-        item.selectedSizes.reduce(
-          (sizeSum, size) => sizeSum + size.quantity,
-          0,
-        ),
-    0,
+        item.selectedSizes.reduce((sizeSum, size) => sizeSum + size.quantity, 0),
+    0
   );
 
   const shipping = subtotal > 75 ? 0 : 9.99;
-  const tax = subtotal * 0.08;
   const total = subtotal + shipping;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <main className="max-w-8xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <Button asChild variant="ghost" className="my-5 gap-2 bg-green-200">
+    <div className="min-h-screen bg-green-50">
+      <main className="mx-auto max-w-8xl px-4 py-8 sm:px-6 lg:px-8">
+        <Button asChild variant="ghost" className="my-5 gap-2 bg-green-100 hover:bg-green-200">
           <Link href="/shop">
             <ArrowLeft className="h-4 w-4" />
             <span>Back to Shop</span>
           </Link>
         </Button>
+
         {cartItems.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16">
-            <div className="mb-6 rounded-full bg-gray-100 p-6">
-              <ShoppingBag className="h-12 w-12 text-gray-400" />
+          <div className="flex flex-col items-center justify-center rounded-xl bg-white p-12 shadow-md">
+            <div className="mb-6 p-6 rounded-full bg-green-100">
+              <ShoppingBag className="h-12 w-12 text-green-600" />
             </div>
             <h2 className="mb-3 text-2xl font-semibold text-gray-800">
               Your cart is empty
             </h2>
-            <p className="mb-8 max-w-md text-center text-gray-500">
-              Looks like you haven't added any items to your cart yet
+            <p className="mb-8 max-w-md text-center text-gray-600">
+              Looks like you haven't added any items to your cart yet.
             </p>
             <button
               onClick={() => router.push(nav.shop)}
-              className="rounded-lg bg-blue-600 px-8 py-3 font-medium text-white shadow-md transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
+              className="rounded-lg bg-green-600 px-8 py-3 font-medium text-white shadow-md transition-colors hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400"
             >
               Browse Products
             </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-            {/* Cart Items Section */}
+            {/* Cart Items */}
             <div className="lg:col-span-2">
-              <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
-                <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
-                  <h2 className="text-lg font-semibold text-gray-900">
+              <div className="overflow-hidden rounded-xl bg-white shadow-md">
+                <div className="border-b border-green-200 bg-green-100 px-6 py-4">
+                  <h2 className="text-lg font-semibold text-gray-800">
                     Your Cart (
                     {cartItems.reduce(
                       (sum, item) => sum + item.totalQuantity,
-                      0,
+                      0
                     )}{" "}
                     items)
                   </h2>
                 </div>
 
-                <div className="divide-y divide-gray-200">
+                <div className="divide-y divide-green-100">
                   {cartItems.map((item) => (
                     <ProductCard key={item.productId} item={item} />
                   ))}
@@ -95,7 +92,7 @@ function CartPage() {
               </div>
             </div>
 
-            {/* Order Summary Section */}
+            {/* Order Summary */}
             <div className="lg:col-span-1">
               <OrderSummary
                 subtotal={subtotal}
@@ -107,8 +104,7 @@ function CartPage() {
         )}
       </main>
 
-      {/* Footer Padding */}
-      <div className="h-16"></div>
+      <div className="h-16" />
     </div>
   );
 }

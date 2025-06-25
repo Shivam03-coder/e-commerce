@@ -14,7 +14,7 @@ const ShopsHeader = () => {
   const [temsInCart, setItemsInCart] = useState<number>(0);
 
   return (
-    <header className="bg-background sticky top-0 z-40 w-full">
+    <header className=" sticky bg-green-50 top-0 z-40 w-full">
       <nav className="flex items-center justify-between px-8 py-4">
         {/* APP LOGO */}
         <div className="text-lg font-bold">

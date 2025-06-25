@@ -120,7 +120,6 @@ class CartService {
         throw new NotFoundError("Product not found");
       }
 
-      // Validate all orders before processing
       for (const order of orders) {
         const sizeStock = product.sizeStocks.find((s) => s.size === order.size);
         if (!sizeStock) {
@@ -139,7 +138,6 @@ class CartService {
       }
 
       await db.$transaction(async (tx) => {
-        // Find or create cart
         let cart = await tx.cart.findFirst({
           where: { userId },
           include: { items: true },
@@ -152,11 +150,9 @@ class CartService {
           });
         }
 
-        // Find existing cart item for this product
         let cartItem = cart.items.find((item) => item.productId === productId);
 
         if (!cartItem) {
-          // Create new cart item if it doesn't exist
           cartItem = await tx.cartItem.create({
             data: {
               cartId: cart.id,
@@ -165,7 +161,6 @@ class CartService {
           });
         }
 
-        // Add or update size quantities
         for (const order of orders) {
           const existingSizeQuantity =
             await tx.cartItemSizeAndQuantity.findFirst({
@@ -176,7 +171,6 @@ class CartService {
             });
 
           if (existingSizeQuantity) {
-            // Update existing size quantity
             await tx.cartItemSizeAndQuantity.update({
               where: { id: existingSizeQuantity.id },
               data: {
@@ -184,7 +178,6 @@ class CartService {
               },
             });
           } else {
-            // Create new size quantity entry
             await tx.cartItemSizeAndQuantity.create({
               data: {
                 cartItemId: cartItem.id,
@@ -194,7 +187,6 @@ class CartService {
             });
           }
 
-          // Update size stock
           await tx.sizeStock.updateMany({
             where: {
               productId,

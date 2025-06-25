@@ -1,7 +1,6 @@
-import { Prisma, Product, Review, SockSize } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import rc from "@src/configs/redis.config";
 import { db } from "@src/db";
-import { CartItemType } from "@src/types/global.types";
 import {
   NotFoundError,
   ValidationError,
@@ -69,8 +68,6 @@ export class ShopService {
       throw new DatabaseError("Failed to fetch product");
     }
   }
-
-
 
   static async addReview(
     userId: string,
