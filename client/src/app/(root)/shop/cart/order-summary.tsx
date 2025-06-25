@@ -7,7 +7,7 @@ interface OrderSummaryProps {
   total: number;
 }
 
-export default function OrderSummary({
+export default function OrderSummaryCard({
   subtotal,
   shipping,
   total,
@@ -22,14 +22,14 @@ export default function OrderSummary({
         <div className="flex items-center justify-between">
           <span className="text-gray-600">Subtotal</span>
           <span className="font-semibold text-gray-900">
-            ₹{subtotal.toFixed(2)}
+            ${subtotal.toFixed(2)}
           </span>
         </div>
 
         <div className="flex items-center justify-between">
           <span className="text-gray-600">Shipping</span>
           <span className="font-semibold text-gray-900">
-            {shipping === 0 ? "FREE" : `₹${shipping.toFixed(2)}`}
+            {shipping === 0 ? "FREE" : `$${shipping.toFixed(2)}`}
           </span>
         </div>
 
@@ -43,7 +43,7 @@ export default function OrderSummary({
           <div className="flex items-center justify-between">
             <span className="text-lg font-semibold text-gray-900">Total</span>
             <span className="text-2xl font-bold text-gray-900">
-              ₹{total.toFixed(2)}
+              ${total.toFixed(2)}
             </span>
           </div>
         </div>

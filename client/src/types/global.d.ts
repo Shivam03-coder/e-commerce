@@ -131,3 +131,10 @@ export interface CartItem {
   selectedSizes: CartItemSize[];
   totalQuantity: number;
 }
+
+export interface OrderSummary {
+  subtotal: number;
+  shipping: number;
+  total: number;
+  itemCount: number;
+}
