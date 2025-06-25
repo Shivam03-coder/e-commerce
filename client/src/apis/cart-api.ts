@@ -2,6 +2,7 @@
 import ApiServices from "@/store/api-service";
 import type { ApiResponse } from "./types/api";
 import type { CartsItemTypeRes } from "./types/cart";
+import type { SockSize } from "@/types/global";
 
 export const CartsServices = ApiServices.injectEndpoints({
   endpoints: (build) => ({
@@ -45,11 +46,30 @@ export const CartsServices = ApiServices.injectEndpoints({
         { type: "UserInfo" },
       ],
     }),
+
+    addToCart: build.mutation<
+      ApiResponse,
+      { productId: string; orders: Array<{ size: SockSize; quantity: number }> }
+    >({
+      query: ({ productId, orders }) => ({
+        url: `/cart/add`,
+        method: "POST",
+        body: {
+          productId,
+          orders,
+        },
+      }),
+      invalidatesTags: (_res, _err, { productId }) => [
+        { type: "Carts", id: "LIST" },
+        { type: "UserInfo" },
+        { type: "Product", id: productId },
+      ],
+    }),
   }),
 });
 
 export const {
   useGetCartsItemsQuery,
   useIncreaseCartsItemMutation,
-  useRemoveCartsItemMutation,
+  useRemoveCartsItemMutation,useAddToCartMutation
 } = CartsServices;

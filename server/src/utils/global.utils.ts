@@ -1,3 +1,4 @@
+import { SockSize } from "@prisma/client";
 import { ValidationError } from "./error.utils";
 
 export class GlobalUtils {

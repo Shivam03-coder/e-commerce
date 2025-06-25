@@ -1,6 +1,7 @@
-import { Prisma, Product, Review } from "@prisma/client";
+import { Prisma, Product, Review, SockSize } from "@prisma/client";
 import rc from "@src/configs/redis.config";
 import { db } from "@src/db";
+import { CartItemType } from "@src/types/global.types";
 import {
   NotFoundError,
   ValidationError,
@@ -8,23 +9,6 @@ import {
 } from "@src/utils/error.utils";
 
 export class ShopService {
-  private static async favouriteProductCount(userId: string) {
-    try {
-      await db.user.update({
-        where: {
-          id: userId,
-        },
-        data: {
-          favoriteProductCount: {
-            increment: 1,
-          },
-        },
-      });
-    } catch (error) {
-      throw error;
-    }
-  }
-
   static async getAllProducts() {
     try {
       return await db.product.findMany({
@@ -86,80 +70,7 @@ export class ShopService {
     }
   }
 
-  static async addToCart(userId: string, productId: number, quantity: number) {
-    if (!productId || !quantity) {
-      throw new ValidationError("Product ID and quantity are required");
-    }
 
-    if (quantity <= 0) {
-      throw new ValidationError("Quantity must be a positive number");
-    }
-
-    try {
-      const product = await db.product.findUnique({
-        where: { id: productId },
-        select: { id: true, inventory: true, inStock: true },
-      });
-
-      if (!product) {
-        throw new NotFoundError("Product not found");
-      }
-
-      if (!product.inStock || product.inventory < quantity) {
-        throw new ValidationError(
-          product.inStock
-            ? `Only ${product.inventory} items available in stock`
-            : "Product is currently out of stock"
-        );
-      }
-
-      await db.$transaction(async (tx) => {
-        // Find or create cart
-        let cart = await tx.cart.findFirst({
-          where: { userId },
-          include: { items: true },
-        });
-
-        if (!cart) {
-          cart = await tx.cart.create({
-            data: { userId },
-            include: { items: true },
-          });
-        }
-
-        const existingItem = cart.items.find(
-          (item) => item.productId === productId
-        );
-
-        if (existingItem) {
-          // Update quantity
-          await tx.cartItem.update({
-            where: { id: existingItem.id },
-            data: { quantity: existingItem.quantity + quantity },
-          });
-        } else {
-          // Add new item
-          await tx.cartItem.create({
-            data: { cartId: cart.id, productId, quantity },
-          });
-        }
-
-        // Update inventory
-        await tx.product.update({
-          where: { id: productId },
-          data: {
-            inventory: { decrement: quantity },
-            inStock: product.inventory - quantity > 0,
-          },
-        });
-      });
-    } catch (error) {
-      if (error instanceof NotFoundError || error instanceof ValidationError) {
-        throw error;
-      }
-      throw new DatabaseError("Failed to add product to cart");
-    }
-  }
 
   static async addReview(
     userId: string,
@@ -252,6 +163,7 @@ export class ShopService {
       throw new DatabaseError("Failed to check favorite status");
     }
   }
+
   private static async removeFromFavorites(userId: string, productId: number) {
     try {
       const result = await db.$transaction([
@@ -343,24 +255,4 @@ export class ShopService {
       throw new DatabaseError("Failed to fetch favorites");
     }
   }
-
-    static async removeFromCart(userId: string, productId: number) {
-      const cart = await db.cart.findUnique({
-        where: { userId },
-        select: { id: true },
-      });
-  
-      if (!cart) {
-        throw new NotFoundError("Cart not found for user");
-      }
-  
-      const deletedItem = await db.cartItem.deleteMany({
-        where: {
-          cartId: cart.id,
-          productId,
-        },
-      });
-  
-      return deletedItem.count > 0;
-    }
 }

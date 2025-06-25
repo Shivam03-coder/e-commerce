@@ -22,7 +22,7 @@ model User {
     userRole             Role              @default(USER)
     cartProductCount     Int?              @default(0)
     favoriteProductCount Int?              @default(0)
-    favoriteProducts      FavoriteProduct[]
+    favoriteProducts     FavoriteProduct[]
 
     @@map("Users")
 }
@@ -44,22 +44,22 @@ model Address {
 }
 
 model Product {
-    id              Int               @id @default(autoincrement())
-    title           String            @db.VarChar(600)
-    description     String            @db.VarChar(600)
-    category        ProductCategory
-    productImage    String
-    material        MaterialType
-    tags            String
-    price           Float
-    salePrice       Float?
-    inStock         Boolean           @default(true)
-    inventory       Int
-    createdAt       DateTime          @default(now())
-    updatedAt       DateTime          @updatedAt
-    sizeStocks      SizeStock[]
-    CartItem        CartItem[]
-    Review          Review[]
+    id               Int               @id @default(autoincrement())
+    title            String            @db.VarChar(600)
+    description      String            @db.VarChar(600)
+    category         ProductCategory
+    productImage     String
+    material         MaterialType
+    tags             String
+    price            Float
+    salePrice        Float?
+    inStock          Boolean           @default(true)
+    inventory        Int
+    createdAt        DateTime          @default(now())
+    updatedAt        DateTime          @updatedAt
+    sizeStocks       SizeStock[]
+    CartItem         CartItem[]
+    Review           Review[]
     favoriteProducts FavoriteProduct[]
 }
 
@@ -76,21 +76,28 @@ model Cart {
     userId String     @unique
     user   User       @relation(fields: [userId], references: [id])
     items  CartItem[]
-    Order  Order[]
+    orders Order[]
 }
 
 model CartItem {
-    id       String @id @default(cuid())
-    quantity Int    @default(1)
+    id               String                    @id @default(cuid())
+    cartId           String
+    cart             Cart                      @relation(fields: [cartId], references: [id])
+    productId        Int
+    product          Product                   @relation(fields: [productId], references: [id])
+    sizesAndQuantity CartItemSizeAndQuantity[]
+    createdAt        DateTime                  @default(now())
+    updatedAt        DateTime                  @updatedAt
+}
 
-    cartId String
-    cart   Cart   @relation(fields: [cartId], references: [id])
-
-    productId Int
-    product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+model CartItemSizeAndQuantity {
+    id         String   @id @default(cuid())
+    cartItemId String
+    cartItem   CartItem @relation(fields: [cartItemId], references: [id])
+    quantity   Int
+    size       SockSize
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
 }
 
 model FavoriteProduct {

@@ -10,7 +10,7 @@ import {
 import { useAppToasts } from "@/hooks/use-app-toast";
 import { Button } from "@/components/ui/button";
 import Spinner from "@/components/global/spinner";
-import { useTransitionRouter } from "next-view-transitions";
+import { Link, useTransitionRouter } from "next-view-transitions";
 import useAppLinks from "@/navigations";
 
 interface ProductCardProps {
@@ -26,30 +26,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   const [addToFavourite] = useToggleFavoriteMutation();
   const { data: favorites } = useUserFavoritesQuery(null) ?? [];
-  console.log("🚀 ~ favorites:", favorites);
-
-  const [addToCart, { isLoading }] = useAddToCartMutation();
   const { ErrorToast, SuccessToast } = useAppToasts();
   const links = useAppLinks();
 
   const isFavorite =
     favorites?.result.some((fav) => fav.product.id === product.id) || false;
-
-  const handleAddToCart = async (productId: string, quantity: string) => {
-    try {
-      const resp = await addToCart({ productId, quantity }).unwrap();
-      SuccessToast({
-        title: resp.message,
-      });
-    } catch (error) {
-      ErrorToast({
-        title: "Failed to add item to cart",
-        description: "There was an error while adding the product to your cart",
-      });
-      console.log("Error adding to cart:", error);
-      throw error;
-    }
-  };
 
   const handleNavigate = (id: number) => {
     router.push(`${links.shop}/${id}`);
@@ -214,24 +195,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </div>
         </div>
 
-        {/* Add to Cart */}
-        <Button
-          disabled={!product.inStock || isLoading}
-          onClick={(e) => {
-            e.stopPropagation();
-            handleAddToCart(product.id.toString(), "1");
-          }}
-          className="w-full rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 py-2 font-medium text-white shadow-md transition-all hover:from-blue-700 hover:to-blue-600 hover:shadow-lg disabled:opacity-70"
+        <Link
+          href={`${links.shop}/${product.id}`}
+          className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-green-300 px-4 py-2 font-medium text-black shadow-md transition-all hover:shadow-lg"
+          onClick={(e) => e.stopPropagation()}
         >
-          {isLoading ? (
-            <Spinner />
-          ) : (
-            <>
-              <ShoppingCart className="mr-2 h-4 w-4" />
-              {product.inStock ? "Add to Cart" : "Out of Stock"}
-            </>
-          )}
-        </Button>
+          <ShoppingCart className="h-4 w-4" />
+          View Product
+        </Link>
       </div>
     </div>
   );

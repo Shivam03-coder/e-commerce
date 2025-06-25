@@ -34,23 +34,6 @@ const ShopServices = ApiServices.injectEndpoints({
       ],
     }),
 
-    // 🔹 Add to cart
-    addToCart: build.mutation<
-      ApiResponse,
-      { productId: string; quantity: string }
-    >({
-      query: ({ productId, quantity }) => ({
-        url: `/shop/product/cart?productId=${productId}&quantity=${quantity}`,
-        method: "POST",
-      }),
-      invalidatesTags: (_res, _err, { productId }) => [
-        { type: "Carts", id: "LIST" },
-        { type: "UserInfo" },
-        { type: "Product", id: productId },
-      ],
-    }),
-
-    // 🔹 Add product review
     addReview: build.mutation<
       ApiResponse,
       { productId: number; message: string; stars: number }
@@ -105,7 +88,6 @@ const ShopServices = ApiServices.injectEndpoints({
 export const {
   useGetProductDetailsQuery,
   useGetProductDetailsByIdQuery,
-  useAddToCartMutation,
   useAddReviewMutation,
   useGetReviewQuery,
   useToggleFavoriteMutation,

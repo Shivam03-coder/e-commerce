@@ -18,4 +18,7 @@ export type CookieData = {
   days?: number;
 };
 
-
+type AddCartItemType = {
+  productId: string;
+  orders: { size: SockSize; quantity: string }[];
+};

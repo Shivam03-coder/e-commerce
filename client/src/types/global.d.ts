@@ -105,3 +105,8 @@ export interface ReviewListItem {
     name: string;
   };
 }
+
+type AddCartItemType = {
+  productId: string;
+  orders: { size: SockSize; quantity: string }[];
+};
