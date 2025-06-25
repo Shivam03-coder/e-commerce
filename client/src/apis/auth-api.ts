@@ -33,6 +33,7 @@ const AuthServices = ApiServices.injectEndpoints({
         url: "/auth/userinfo",
         method: "GET",
       }),
+      providesTags: ["UserInfo"],
     }),
   }),
 });

@@ -314,7 +314,8 @@ export class ShopService {
         where: {
           userId,
         },
-        include: {
+
+        select: {
           product: {
             select: {
               id: true,

@@ -1,31 +1,39 @@
 "use client";
 import React from "react";
-import { ShoppingCart, Star, Package, Heart } from "lucide-react";
+import { ShoppingCart, Star, Heart } from "lucide-react";
 import type { ProductsDataType } from "@/types/global";
-import { useAddToCartMutation } from "@/apis/shop-api";
+import {
+  useAddToCartMutation,
+  useToggleFavoriteMutation,
+  useUserFavoritesQuery,
+} from "@/apis/shop-api";
 import { useAppToasts } from "@/hooks/use-app-toast";
 import { Button } from "@/components/ui/button";
 import Spinner from "@/components/global/spinner";
 import { useTransitionRouter } from "next-view-transitions";
 import useAppLinks from "@/navigations";
-import parseTags from "@/utils/parse-tags";
 
 interface ProductCardProps {
   product: ProductsDataType;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-  const tags = parseTags(product.tags);
   const hasDiscount = product.price !== product.salePrice;
   const router = useTransitionRouter();
   const discountPercentage = hasDiscount
     ? Math.round(((product.price - product.salePrice!) / product.price) * 100)
     : 0;
 
+  const [addToFavourite] = useToggleFavoriteMutation();
+  const { data: favorites } = useUserFavoritesQuery(null) ?? [];
+  console.log("🚀 ~ favorites:", favorites);
+
   const [addToCart, { isLoading }] = useAddToCartMutation();
   const { ErrorToast, SuccessToast } = useAppToasts();
   const links = useAppLinks();
-  const [isWishlisted, setIsWishlisted] = React.useState(false);
+
+  const isFavorite =
+    favorites?.result.some((fav) => fav.product.id === product.id) || false;
 
   const handleAddToCart = async (productId: string, quantity: string) => {
     try {
@@ -47,9 +55,20 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     router.push(`${links.shop}/${id}`);
   };
 
-  const toggleWishlist = (e: React.MouseEvent) => {
+  const toggleWishlist = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    setIsWishlisted(!isWishlisted);
+    try {
+      const res = await addToFavourite({ productId: product.id }).unwrap();
+      SuccessToast({
+        title: res.message,
+      });
+    } catch (error) {
+      ErrorToast({
+        title: "Failed to update favorites",
+        description: "There was an error while updating your favorites",
+      });
+      console.log("Error updating favorites:", error);
+    }
   };
 
   const getCategoryColor = (category: string) => {
@@ -64,7 +83,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         return "bg-gray-100 text-gray-800";
     }
   };
-
   return (
     <div className="group relative overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:shadow-lg">
       {/* Wishlist Button */}
@@ -74,10 +92,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         aria-label="Add to wishlist"
       >
         <Heart
-          className={`h-5 w-5 ${isWishlisted ? "fill-red-500 text-red-500" : "text-gray-400"}`}
+          className={`h-5 w-5 ${isFavorite ? "fill-red-500 text-red-500" : "text-gray-400"}`}
         />
       </button>
-
       {/* Discount Badge */}
       {hasDiscount && (
         <div className="absolute top-3 left-3 z-10 rounded-full bg-gradient-to-r from-red-500 to-pink-500 px-3 py-1 text-xs font-bold text-white shadow-md">

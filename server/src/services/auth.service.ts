@@ -76,7 +76,7 @@ class AuthServices {
       email: user.email,
       phoneNumber: user.phoneNumber,
       cart: user.cartProductCount,
-      favourite : user.favoriteProductCount
+      favourite: user.favoriteProductCount,
     };
   }
 

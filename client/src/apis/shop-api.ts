@@ -1,10 +1,11 @@
 import ApiServices from "@/store/api-service";
 import type { ProductListType, ProductType } from "./types/admin";
 import type { ApiResponse } from "./types/api";
-import type { ReviewListItemType } from "./types/shop";
+import type { FavouriteListType, ReviewListItemType } from "./types/shop";
 
 const ShopServices = ApiServices.injectEndpoints({
   endpoints: (build) => ({
+    // 🔹 All products list
     getProductDetails: build.query<ProductListType, void>({
       query: () => ({
         url: "/shop/product/details",
@@ -22,14 +23,18 @@ const ShopServices = ApiServices.injectEndpoints({
           : [{ type: "Product", id: "LIST" }],
     }),
 
+    // 🔹 Single product by ID
     getProductDetailsById: build.query<ProductType, { productId: number }>({
       query: ({ productId }) => ({
         url: `/shop/product/details/${productId}`,
         method: "GET",
       }),
-      providesTags: [{ type: "Product", id: "LIST" }],
+      providesTags: (result, error, { productId }) => [
+        { type: "Product", id: productId },
+      ],
     }),
 
+    // 🔹 Add to cart
     addToCart: build.mutation<
       ApiResponse,
       { productId: string; quantity: string }
@@ -40,10 +45,11 @@ const ShopServices = ApiServices.injectEndpoints({
       }),
       invalidatesTags: () => [
         { type: "Carts", id: "LIST" },
-        { type: "Product", id: "LIST" },
+        { type: "UserInfo" },
       ],
     }),
 
+    // 🔹 Add product review
     addReview: build.mutation<
       ApiResponse,
       { productId: number; message: string; stars: number }
@@ -51,46 +57,56 @@ const ShopServices = ApiServices.injectEndpoints({
       query: ({ productId, message, stars }) => ({
         url: `/shop/product/review/${productId}`,
         method: "POST",
-        body: {
-          message,
-          stars,
-        },
+        body: { message, stars },
       }),
-      invalidatesTags: [{ type: "Review", id: "LIST" }],
+      invalidatesTags: (_res, _err, { productId }) => [
+        { type: "Review", id: productId },
+        { type: "Product", id: productId },
+      ],
     }),
 
+    // 🔹 Get reviews by product
     getReview: build.query<ReviewListItemType, { productId: number }>({
       query: ({ productId }) => ({
         url: `/shop/product/review/${productId}`,
         method: "GET",
       }),
-      providesTags: [{ type: "Review", id: "LIST" }],
+      providesTags: (res, err, { productId }) => [
+        { type: "Review", id: productId },
+      ],
     }),
 
-    userFavorites: build.query<ReviewListItemType, { productId: number }>({
-      query: ({ productId }) => ({
-        url: `/shop/product/review/${productId}`,
+    // 🔹 Get all user favorites
+    userFavorites: build.query<FavouriteListType, null>({
+      query: () => ({
+        url: `/shop/favourite/`,
         method: "GET",
       }),
-      providesTags: [{ type: "Review", id: "LIST" }],
+      providesTags: [{ type: "Favourotites" }],
     }),
-    
+
+    // 🔹 Toggle favorite product
     toggleFavorite: build.mutation<ApiResponse, { productId: number }>({
       query: ({ productId }) => ({
         url: `/shop/favourite/${productId}`,
         method: "POST",
       }),
-      invalidatesTags: (_result, _error, { productId }) => [
+      invalidatesTags: (_res, _err, { productId }) => [
         { type: "Product", id: productId },
+        { type: "UserInfo" },
+        { type: "Favourotites" },
       ],
     }),
   }),
+  overrideExisting: false,
 });
 
 export const {
   useGetProductDetailsQuery,
-  useAddToCartMutation,
   useGetProductDetailsByIdQuery,
+  useAddToCartMutation,
   useAddReviewMutation,
   useGetReviewQuery,
+  useToggleFavoriteMutation,
+  useUserFavoritesQuery,
 } = ShopServices;

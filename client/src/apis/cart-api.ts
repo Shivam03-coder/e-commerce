@@ -15,7 +15,7 @@ export const CartsServices = ApiServices.injectEndpoints({
           ? [
               ...result.result.map((item) => ({
                 type: "Carts" as const,
-                id: item.id,
+                id: item.productId,
               })),
               { type: "Carts", id: "LIST" },
             ]
@@ -30,6 +30,7 @@ export const CartsServices = ApiServices.injectEndpoints({
       invalidatesTags: (_, __, { productId }) => [
         { type: "Carts", id: productId },
         { type: "Carts", id: "LIST" },
+        { type: "UserInfo" },
       ],
     }),
 
@@ -41,6 +42,7 @@ export const CartsServices = ApiServices.injectEndpoints({
       invalidatesTags: (_, __, { productId }) => [
         { type: "Carts", id: productId },
         { type: "Carts", id: "LIST" },
+        { type: "UserInfo" },
       ],
     }),
   }),

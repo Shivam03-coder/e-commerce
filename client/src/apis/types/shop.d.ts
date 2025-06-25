@@ -1,6 +1,12 @@
 import type { ApiResponse } from "./api";
-import { ReviewListItem } from "@/types/global";
+import { ReviewListItem, type ProductsDataType } from "@/types/global";
 
 interface ReviewListItemType extends ApiResponse {
   result: ReviewListItem[];
+}
+
+interface FavouriteListType extends ApiResponse {
+  result: {
+    product: ProductsDataType;
+  }[];
 }

@@ -6,5 +6,7 @@ export interface UserType extends ApiResponse {
     name: string;
     email: string;
     phoneNumber: string;
+    favourite: number;
+    cart: number;
   };
 }
