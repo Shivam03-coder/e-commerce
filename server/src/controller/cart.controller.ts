@@ -1,4 +1,5 @@
 import CartService from "@src/services/cart.service";
+import { ShopService } from "@src/services/shop.service";
 import { ApiResponse, AsyncHandler, getAuth } from "@src/utils/api.utils";
 import { Request, Response } from "express";
 

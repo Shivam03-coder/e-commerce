@@ -78,4 +78,28 @@ export class ShopController {
         .json(new ApiResponse("Reviews fetched successfully", reviews));
     }
   );
+  static toggleFavoriteHandler = AsyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+      const { userId } = await getAuth(req);
+      const { productId } = req.params;
+
+      const { message } = await ShopService.toggleFavorite(
+        userId,
+        parseInt(productId)
+      );
+
+      res.status(200).json(new ApiResponse(message));
+    }
+  );
+
+  static getUserFavoritesHandler = AsyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+      const { userId } = await getAuth(req);
+      const favorites = (await ShopService.getUserFavorites(userId)) ?? [];
+
+      res
+        .status(200)
+        .json(new ApiResponse("User Favourite Products Fetched", favorites));
+    }
+  );
 }

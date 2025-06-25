@@ -8,18 +8,19 @@ datasource db {
 }
 
 model User {
-    id              String    @id @default(cuid())
+    id              String            @id @default(cuid())
     name            String?
-    email           String?   @unique
+    email           String?           @unique
     password        String
     phoneNumber     String
-    isTermsAccepted Boolean   @default(false) @map("Terms_conditions")
+    isTermsAccepted Boolean           @default(false) @map("Terms_conditions")
     profileImage    String?
     userAddress     Address[]
     Cart            Cart[]
     Review          Review[]
     Order           Order[]
-    userRole        Role      @default(USER)
+    userRole        Role              @default(USER)
+    FavoriteProduct FavoriteProduct[]
 
     @@map("Users")
 }
@@ -41,22 +42,23 @@ model Address {
 }
 
 model Product {
-    id           Int             @id @default(autoincrement())
-    title        String          @db.VarChar(600)
-    description  String          @db.VarChar(600)
-    category     ProductCategory
-    productImage String
-    material     MaterialType
-    tags         String
-    price        Float
-    salePrice    Float?
-    inStock      Boolean         @default(true)
-    inventory    Int
-    createdAt    DateTime        @default(now())
-    updatedAt    DateTime        @updatedAt
-    sizeStocks   SizeStock[]
-    CartItem     CartItem[]
-    Review       Review[]
+    id              Int               @id @default(autoincrement())
+    title           String            @db.VarChar(600)
+    description     String            @db.VarChar(600)
+    category        ProductCategory
+    productImage    String
+    material        MaterialType
+    tags            String
+    price           Float
+    salePrice       Float?
+    inStock         Boolean           @default(true)
+    inventory       Int
+    createdAt       DateTime          @default(now())
+    updatedAt       DateTime          @updatedAt
+    sizeStocks      SizeStock[]
+    CartItem        CartItem[]
+    Review          Review[]
+    FavoriteProduct FavoriteProduct[]
 }
 
 model SizeStock {
@@ -87,6 +89,18 @@ model CartItem {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+}
+
+model FavoriteProduct {
+    id        String  @id @default(cuid())
+    product   Product @relation(fields: [productId], references: [id])
+    productId Int
+    user      User    @relation(fields: [userId], references: [id])
+    userId    String
+
+    createdAt DateTime @default(now())
+
+    @@unique([userId, productId])
 }
 
 model Review {

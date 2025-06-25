@@ -9,6 +9,8 @@ shopRouter
   .post("/product/cart", requireAuth, ShopController.addToCartHandler)
   .get("/product/details/:productId", requireAuth, ShopController.getProductDetailsByIdHandler)
   .post("/product/review/:productId", requireAuth, ShopController.addReviewHandler)
-  .get("/product/review/:productId", requireAuth, ShopController.getAllReviewHandler);
+  .get("/product/review/:productId", requireAuth, ShopController.getAllReviewHandler)
+  .post("/favourite/:productId", requireAuth, ShopController.toggleFavoriteHandler)
+  .get("/favourite", requireAuth, ShopController.toggleFavoriteHandler)
 
 export default shopRouter;

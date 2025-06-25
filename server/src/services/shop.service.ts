@@ -191,4 +191,121 @@ export class ShopService {
       throw new DatabaseError("Failed to fetch reviews");
     }
   }
+
+  private static async addToFavorites(userId: string, productId: number) {
+    try {
+      const favorite = await db.favoriteProduct.create({
+        data: {
+          userId,
+          productId,
+        },
+        include: {
+          product: true,
+        },
+      });
+      return favorite;
+    } catch (error: unknown) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === "P2002") {
+          throw new DatabaseError("Product is already in favorites");
+        }
+      }
+      throw error;
+    }
+  }
+
+  private static async isFavorited(userId: string, productId: number) {
+    try {
+      const favorite = await db.favoriteProduct.findUnique({
+        where: {
+          userId_productId: {
+            userId,
+            productId,
+          },
+        },
+      });
+      return !!favorite;
+    } catch (error: unknown) {
+      throw new DatabaseError("Failed to check favorite status");
+    }
+  }
+
+  private static async removeFromFavorites(userId: string, productId: number) {
+    try {
+      const deleted = await db.favoriteProduct.delete({
+        where: {
+          userId_productId: {
+            userId,
+            productId,
+          },
+        },
+      });
+      return deleted;
+    } catch (error: unknown) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === "P2025") {
+          throw new DatabaseError("Favorite not found");
+        }
+      }
+      throw error;
+    }
+  }
+
+  static async toggleFavorite(userId: string, productId: number) {
+    try {
+      const isFavorited = await this.isFavorited(userId, productId);
+
+      if (isFavorited) {
+        await this.removeFromFavorites(userId, productId);
+        return {
+          message: "Product removed from favorites",
+        };
+      } else {
+        const favorite = await this.addToFavorites(userId, productId);
+        return {
+          message: "Product added to favorites",
+        };
+      }
+    } catch (error) {
+      if (error instanceof DatabaseError) {
+        throw new DatabaseError(error.message);
+      }
+      throw new ValidationError("Failed to update favorites");
+    }
+  }
+
+  static async getUserFavorites(userId: string) {
+    try {
+      const favorites = await db.favoriteProduct.findMany({
+        where: {
+          userId,
+        },
+        include: {
+          product: {
+            select: {
+              id: true,
+              title: true,
+              description: true,
+              category: true,
+              tags: true,
+              productImage: true,
+              material: true,
+              price: true,
+              salePrice: true,
+              inStock: true,
+              inventory: true,
+              sizeStocks: true,
+              _count: { select: { Review: true } },
+            },
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+      return favorites;
+    } catch (error: unknown) {
+      throw new DatabaseError("Failed to fetch favorites");
+    }
+  }
 }
