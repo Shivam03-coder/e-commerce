@@ -33,9 +33,7 @@ const ShopsHeader = () => {
             </span>
           </button>
 
-          <button>
-            <HeaderSettings setItemsInCart={setItemsInCart} />
-          </button>
+          <HeaderSettings setItemsInCart={setItemsInCart} />
         </div>
       </nav>
     </header>

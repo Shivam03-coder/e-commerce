@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { Avatar, AvatarFallback } from "../ui/avatar";
-import { LogOut } from "lucide-react";
+import { Heart, ListOrdered, LogOut, User } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useGetUserInfoQuery, useUserLogoutMutation } from "@/apis/auth-api";
 import { useAppToasts } from "@/hooks/use-app-toast";
-import { useTransitionRouter } from "next-view-transitions";
+import { Link, useTransitionRouter } from "next-view-transitions";
 
 const HeaderSettings = ({
   setItemsInCart,
@@ -20,7 +20,6 @@ const HeaderSettings = ({
   setItemsInCart: (product: number) => void;
 }) => {
   const { data, isLoading } = useGetUserInfoQuery();
-  console.log("🚀 ~ data:", data)
 
   useEffect(() => {
     if (data?.result?.cart != null) {
@@ -45,13 +44,17 @@ const UserProfile = ({ name }: { name: string }) => {
   const handleLogout = async () => {
     try {
       const res = await logout().unwrap();
-      console.log("🚀 ~ handleLogout ~ res:", res)
+      console.log("🚀 ~ handleLogout ~ res:", res);
       SuccessToast({ title: "Logged out successfully" });
       router.push("/sign-in");
     } catch (error) {
       ErrorToast({ title: "Failed to logout" });
       console.error("Logout error:", error);
     }
+  };
+
+  const handleGotoUserProfilePage = () => {
+    router.push("/profile");
   };
 
   return (
@@ -70,6 +73,21 @@ const UserProfile = ({ name }: { name: string }) => {
         <DropdownMenuItem onClick={handleLogout}>
           <LogOut className="mr-2 h-4 w-4" />
           <span>Log out</span>
+          <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handleGotoUserProfilePage}>
+          <User className="mr-2 h-4 w-4" />
+          <span>User Profile</span>
+          <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handleLogout}>
+          <ListOrdered className="mr-2 h-4 w-4" />
+          <span>Orders</span>
+          <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handleLogout}>
+          <Heart className="mr-2 h-4 w-4" />
+          <span>Favourite</span>
           <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
         </DropdownMenuItem>
       </DropdownMenuContent>
