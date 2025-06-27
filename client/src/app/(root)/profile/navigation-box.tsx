@@ -31,7 +31,7 @@ const NavigationBox = () => {
   ];
 
   return (
-    <nav className="w-full max-w-[250px] rounded-none border border-green-200 bg-white shadow-sm">
+    <nav className="w-full col-span-1 max-w-full lg:max-w-[250px] rounded-none border border-green-200 bg-white shadow-sm">
       <div className="p-4">
         <h3 className="text-lg font-medium">Account Settings</h3>
       </div>
