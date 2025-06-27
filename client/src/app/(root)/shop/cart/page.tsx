@@ -75,7 +75,7 @@ function CartPage() {
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
             {/* Cart Items Section */}
             <div className="lg:col-span-2">
-              <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
+              <div className="overflow-hidden border border-gray-200 bg-green-50">
                 <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
                   <h2 className="text-lg font-semibold text-gray-900">
                     Your Cart (

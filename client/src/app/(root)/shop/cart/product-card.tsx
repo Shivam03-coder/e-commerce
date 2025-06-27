@@ -49,7 +49,7 @@ export default function ProductCard({ item }: ProductCardProps) {
   };
 
   return (
-    <div className="group relative overflow-hidden p-6 transition-all hover:border-indigo-200 hover:shadow-md">
+    <div className="group relative overflow-hidden p-6 transition-all">
       <div className="flex items-start gap-4">
         {/* Product Image */}
         <div className="flex-shrink-0 overflow-hidden rounded-lg border-2 border-indigo-100">
