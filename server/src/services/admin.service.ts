@@ -21,6 +21,8 @@ export class AdminService {
       tags,
     } = productData;
 
+
+
     const product = await db.product.create({
       data: {
         title,
@@ -206,7 +208,7 @@ static async updateProduct(id: number, productData: ProductType) {
           select: {
             items: {
               select: {
-                quantity: true,
+                sizesAndQuantity: true,
                 product: {
                   select: {
                     id: true,
@@ -241,7 +243,7 @@ static async updateProduct(id: number, productData: ProductType) {
         name: item.product.title,
         price: item.product.price,
         image: item.product.productImage,
-        quantity: item.quantity,
+        // quantity: item.quantity,
       })),
     }));
   }

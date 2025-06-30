@@ -8,5 +8,7 @@ export interface UserType extends ApiResponse {
     phoneNumber: string;
     favourite: number;
     cart: number;
+    address: string;
+    profileImage: string;
   };
 }

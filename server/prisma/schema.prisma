@@ -15,7 +15,7 @@ model User {
     phoneNumber          String
     isTermsAccepted      Boolean           @default(false) @map("Terms_conditions")
     profileImage         String?
-    userAddress          Address[]
+    userAddress          Address?
     Cart                 Cart[]
     Review               Review[]
     Order                Order[]
@@ -28,18 +28,17 @@ model User {
 }
 
 model Address {
-    id         String   @id @default(cuid())
-    address    String
-    city       String
-    state      String?
-    country    String
-    pincode    String
-    note       String?
-    isSelected Boolean  @default(false)
-    createdAt  DateTime @default(now())
-    updatedAt  DateTime @updatedAt
+    id               String   @id @default(cuid())
+    address          String
+    city             String
+    state            String?
+    country          String
+    pincode          String
+    formattedaddress String? 
+    createdAt        DateTime @default(now())
+    updatedAt        DateTime @updatedAt
 
-    userId String
+    userId String @unique
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 

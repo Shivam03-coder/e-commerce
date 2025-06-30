@@ -42,11 +42,20 @@ class AuthServices {
           password: hashedPassword,
           phoneNumber,
           isTermsAccepted: isAccepted,
+          profileImage:
+            "https://res.cloudinary.com/ddggctwjl/image/upload/v1751012126/yore3vhb6yh1ti5ymahm.jpg",
         },
         select: {
           id: true,
         },
       });
+
+      const formatAddress = () => {
+        if (!address) return null;
+        return [address, city, countryandstate[1], countryandstate[0], pincode]
+          .filter(Boolean)
+          .join(", ");
+      };
 
       await tx.address.create({
         data: {
@@ -56,6 +65,7 @@ class AuthServices {
           country: countryandstate[0],
           state: countryandstate[1],
           userId: newUser.id,
+          formattedaddress: formatAddress(),
         },
       });
 
@@ -64,20 +74,45 @@ class AuthServices {
   }
 
   static async getUserInfo(userId: string) {
-    const user = await db.user.findFirst({
-      where: { id: userId },
-    });
+    try {
+      const user = await db.user.findFirst({
+        where: { id: userId },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phoneNumber: true,
+          cartProductCount: true,
+          favoriteProductCount: true,
+          profileImage: true,
+          userAddress: {
+            select: {
+              formattedaddress: true,
+            },
+          },
+        },
+      });
 
-    if (!user) throw new NotFoundError("User not found");
+      if (!user) {
+        throw new NotFoundError("User not found");
+      }
 
-    return {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      phoneNumber: user.phoneNumber,
-      cart: user.cartProductCount,
-      favourite: user.favoriteProductCount,
-    };
+      return {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        cart: user.cartProductCount,
+        favourite: user.favoriteProductCount,
+        profileImage: user.profileImage,
+        address: user.userAddress?.formattedaddress,
+      };
+    } catch (error) {
+      if (error instanceof NotFoundError) {
+        throw error;
+      }
+      throw new DatabaseError("Failed to fetch user information");
+    }
   }
 
   static async forgotPassword(email: string, newPassword: string) {
