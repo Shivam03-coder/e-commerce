@@ -9,7 +9,7 @@ import { Link, useTransitionRouter } from "next-view-transitions";
 import useAppLinks from "@/navigations";
 import { Button } from "@/components/ui/button";
 import ProductCard from "./product-card";
-import OrderSummaryCard from "./order-summary";
+import OrderSummaryCard from "./payment-card";
 import { useLocalStorage } from "usehooks-ts";
 
 function CartPage() {
@@ -18,7 +18,6 @@ function CartPage() {
   const dispatch = useAppDispatch();
   const router = useTransitionRouter();
   const nav = useAppLinks();
-  
 
   useEffect(() => {
     if (data?.result) {

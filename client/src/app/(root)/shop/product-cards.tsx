@@ -3,13 +3,10 @@ import React from "react";
 import { ShoppingCart, Star, Heart } from "lucide-react";
 import type { ProductsDataType } from "@/types/global";
 import {
-  useAddToCartMutation,
   useToggleFavoriteMutation,
   useUserFavoritesQuery,
 } from "@/apis/shop-api";
 import { useAppToasts } from "@/hooks/use-app-toast";
-import { Button } from "@/components/ui/button";
-import Spinner from "@/components/global/spinner";
 import { Link, useTransitionRouter } from "next-view-transitions";
 import useAppLinks from "@/navigations";
 

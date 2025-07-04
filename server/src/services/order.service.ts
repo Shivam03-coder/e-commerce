@@ -7,6 +7,9 @@ class OrderService {
     cartId: string;
     customerId: string;
     totalAmount: number;
+    name: string;
+    email: string;
+    phoneNumber: string;
   }) {
     const { cartId, customerId, totalAmount } = data;
 
@@ -32,10 +35,17 @@ class OrderService {
     });
 
     return {
-      order: createdOrder,
-      razorpayOrder,
+      orderId: createdOrder.rozarPayOrderId,
+      totalAmount: createdOrder.totalAmount,
+      user: {
+        name: "",
+        email: "",
+        contact: "",
+      },
     };
   }
+
+  static async paymentVerification() {}
 }
 
 export default OrderService;

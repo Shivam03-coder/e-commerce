@@ -15,14 +15,21 @@ import { Link, useTransitionRouter } from "next-view-transitions";
 
 interface HeaderSettingsProps {
   setItemsInCart?: (count: number) => void;
+  setWishList?: (count: number) => void;
 }
 
-const HeaderSettings = ({ setItemsInCart }: HeaderSettingsProps) => {
+const HeaderSettings = ({
+  setItemsInCart,
+  setWishList,
+}: HeaderSettingsProps) => {
   const { data, isLoading } = useGetUserInfoQuery();
 
   useEffect(() => {
     if (data?.result?.cart != null && setItemsInCart) {
       setItemsInCart(data.result.cart);
+    }
+    if (data?.result?.favourite != null && setWishList) {
+      setWishList(data.result.favourite);
     }
   }, [data?.result?.cart, setItemsInCart]);
 

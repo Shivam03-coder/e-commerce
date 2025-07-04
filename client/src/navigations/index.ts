@@ -9,6 +9,7 @@ const useAppLinks = () => {
     featured: `${basePath}/featured`,
     shop: `/shop`,
     cart: `/shop/cart`,
+    wishlist : `/shop/wishlist`
   };
 };
 

@@ -63,10 +63,19 @@ const ShopServices = ApiServices.injectEndpoints({
     // 🔹 Get all user favorites
     userFavorites: build.query<FavouriteListType, null>({
       query: () => ({
-        url: `/shop/favourite/`,
+        url: `/shop/favourite`,
         method: "GET",
       }),
-      providesTags: [{ type: "Favourotites" }],
+      providesTags: (res) =>
+        res
+          ? [
+              ...res.result.map(({ product }) => ({
+                type: "Favourite" as const,
+                id: product.id,
+              })),
+              { type: "Favourite", id: "LIST" },
+            ]
+          : [{ type: "Favourite", id: "LIST" }],
     }),
 
     // 🔹 Toggle favorite product
@@ -78,7 +87,7 @@ const ShopServices = ApiServices.injectEndpoints({
       invalidatesTags: (_res, _err, { productId }) => [
         { type: "Product", id: productId },
         { type: "UserInfo" },
-        { type: "Favourotites" },
+        { type: "Favourite", id: productId },
       ],
     }),
   }),

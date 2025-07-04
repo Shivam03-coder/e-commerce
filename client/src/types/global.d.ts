@@ -111,14 +111,13 @@ type AddCartItemType = {
   orders: { size: SockSize; quantity: string }[];
 };
 
-
 interface CartItemSize {
-  size: string; 
+  size: string;
   quantity: number;
 }
 
 interface AvailableSize {
-  size: string; 
+  size: string;
   stock: number;
 }
 
@@ -126,7 +125,7 @@ export interface CartItem {
   productId: string;
   name: string;
   price: number;
-  image: string; 
+  image: string;
   material: string;
   selectedSizes: CartItemSize[];
   totalQuantity: number;
