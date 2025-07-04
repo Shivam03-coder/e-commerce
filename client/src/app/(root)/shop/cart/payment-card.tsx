@@ -1,7 +1,10 @@
 "use client";
 import { useState } from "react";
 import Script from "next/script";
-import { useCreateOrderMutation } from "@/apis/order-api";
+import {
+  useCreateOrderMutation,
+  useVerifyPaymentMutation,
+} from "@/apis/order-api";
 import { useAppToasts } from "@/hooks/use-app-toast";
 import { useReadLocalStorage } from "usehooks-ts";
 import AppImages from "@/constants/images";
@@ -18,37 +21,48 @@ export default function OrderSummaryCard({
   total,
 }: OrderSummaryProps) {
   const [paymentSuccess, setPaymentSuccess] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [createOrder] = useCreateOrderMutation();
   const { ErrorToast, SuccessToast } = useAppToasts();
+  const [verifyPayment, { isLoading }] = useVerifyPaymentMutation();
   const localCurrentCartId = useReadLocalStorage("user_cart_id") as string;
 
   const handlePayment = async () => {
-    setLoading(true);
-    setError(null);
-
     try {
-      const res = await createOrder({
+      const createdOrder = await createOrder({
         cartId: localCurrentCartId,
         totalAmount: total,
       }).unwrap();
 
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY,
-        amount: res.result.totalAmount,
+        amount: createdOrder.result.totalAmount,
         currency: "INR",
         name: "NIDHIRA",
         image: AppImages.logo,
         description: "Premium Plan",
-        order_id: res.result.orderId,
-        handler: function (response: any) {
-          setPaymentSuccess(true);
+        order_id: createdOrder.result.orderId,
+        handler: async function (response: any) {
+          try {
+            const payment = await verifyPayment({
+              ...response,
+              orderId: createdOrder.result.orderId,
+            }).unwrap();
+
+            SuccessToast({
+              title: payment.message,
+            });
+            setPaymentSuccess(true);
+          } catch (error) {
+            ErrorToast({
+              title: "Paymnet failed",
+            });
+          }
         },
         prefill: {
-          name: res.result.user.name,
-          email: res.result.user.email,
-          contact: res.result.user.contact,
+          name: createdOrder.result.user.name,
+          email: createdOrder.result.user.email,
+          contact: createdOrder.result.user.contact,
         },
         theme: {
           color: "#16a34a",
@@ -59,7 +73,6 @@ export default function OrderSummaryCard({
       rzp.open();
     } catch (err) {
       setError("Payment failed. Please try again.");
-      setLoading(false);
     }
   };
 
@@ -167,12 +180,12 @@ export default function OrderSummaryCard({
 
               <button
                 onClick={handlePayment}
-                disabled={loading}
+                disabled={isLoading}
                 className={`flex w-full items-center justify-center ${
-                  loading ? "bg-green-400" : "bg-green-600 hover:bg-green-700"
+                  isLoading ? "bg-green-400" : "bg-green-600 hover:bg-green-700"
                 } rounded-lg px-4 py-3 font-medium text-white transition duration-200`}
               >
-                {loading ? (
+                {isLoading ? (
                   <>
                     <svg
                       className="mr-3 -ml-1 h-5 w-5 animate-spin text-white"

@@ -7,5 +7,6 @@ const orderRouter = Router();
 orderRouter.use(requireAuth);
 
 orderRouter.post("/:cartId", OrderController.createOrderHandler);
+orderRouter.post("/verify", OrderController.verifyPaymentHandler);
 
 export default orderRouter;
