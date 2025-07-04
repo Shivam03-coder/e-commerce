@@ -137,7 +137,7 @@ class CartService {
         }
       }
 
-      await db.$transaction(async (tx) => {
+      const cartId = await db.$transaction(async (tx) => {
         let cart = await tx.cart.findFirst({
           where: { userId },
           include: { items: true },
@@ -197,7 +197,13 @@ class CartService {
             },
           });
         }
+
+        return cart.id;
       });
+
+      return {
+        cartId,
+      };
     } catch (error) {
       if (error instanceof NotFoundError || error instanceof ValidationError) {
         throw error;

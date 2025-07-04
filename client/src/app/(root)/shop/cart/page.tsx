@@ -5,11 +5,12 @@ import { useGetCartsItemsQuery } from "@/apis/cart-api";
 import { setTotalItemsInCart } from "@/store/app-state/global-state";
 import { useAppDispatch } from "@/store";
 import type { CartItem } from "@/types/global";
-import ProductCard from "./product-card";
-import OrderSummary from "./order-summary";
 import { Link, useTransitionRouter } from "next-view-transitions";
 import useAppLinks from "@/navigations";
 import { Button } from "@/components/ui/button";
+import ProductCard from "./product-card";
+import OrderSummaryCard from "./order-summary";
+import { useLocalStorage } from "usehooks-ts";
 
 function CartPage() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -17,6 +18,7 @@ function CartPage() {
   const dispatch = useAppDispatch();
   const router = useTransitionRouter();
   const nav = useAppLinks();
+  
 
   useEffect(() => {
     if (data?.result) {
@@ -97,7 +99,7 @@ function CartPage() {
 
             {/* Order Summary Section */}
             <div className="lg:col-span-1">
-              <OrderSummary
+              <OrderSummaryCard
                 subtotal={subtotal}
                 shipping={shipping}
                 total={total}

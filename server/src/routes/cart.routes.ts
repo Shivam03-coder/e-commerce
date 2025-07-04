@@ -3,11 +3,11 @@ import { requireAuth } from "@src/middleware/auth.middleware";
 import CartController from "@src/controller/cart.controller";
 
 const cartRouter = Router();
+cartRouter.use(requireAuth);
 
 cartRouter
-  .get("/details", requireAuth, CartController.getCartItemsHandler)
-  .post("/remove/:productId", requireAuth, CartController.removeItemFormCartHandler)
-  .post("/add", requireAuth, CartController.addToCartHandler)
-
+  .get("/details", CartController.getCartItemsHandler)
+  .post("/remove/:productId", CartController.removeItemFormCartHandler)
+  .post("/add", CartController.addToCartHandler);
 
 export default cartRouter;

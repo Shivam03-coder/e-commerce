@@ -1,6 +1,11 @@
 "use client";
+import { useCreateOrderMutation } from "@/apis/order-api";
+import Spinner from "@/components/global/spinner";
+import { Button } from "@/components/ui/button";
+import { useAppToasts } from "@/hooks/use-app-toast";
 import { CreditCard } from "lucide-react";
 import { useTransitionRouter } from "next-view-transitions";
+import { useReadLocalStorage } from "usehooks-ts";
 
 interface OrderSummaryProps {
   subtotal: number;
@@ -14,8 +19,38 @@ export default function OrderSummaryCard({
   total,
 }: OrderSummaryProps) {
   const router = useTransitionRouter();
+
+  const { ErrorToast, SuccessToast } = useAppToasts();
+  const localCurrentCartId = useReadLocalStorage("user_cart_id") as string;
+  const [createOrder, { isLoading }] = useCreateOrderMutation();
+
+  async function handleOrderCreation() {
+    if (!localCurrentCartId) {
+      ErrorToast({ title: "Cart ID not found in local storage." });
+      return;
+    }
+
+    try {
+      const res = await createOrder({
+        cartId: localCurrentCartId,
+        totalAmount: total,
+      }).unwrap();
+
+      SuccessToast({
+        title: res?.message ?? "Order created successfully!",
+      });
+
+      router.push("/payment");
+    } catch (error) {
+      ErrorToast({
+        title: "Order creation failed",
+        description: (error as Error)?.message ?? undefined,
+      });
+    }
+  }
+
   return (
-    <div className="sticky top-8 rounded-2xl border border-gray-100 bg-white shadow-sm">
+    <div className="sticky top-8 rounded-none border border-gray-100 bg-white shadow-none">
       <div className="border-b border-gray-100 p-6">
         <h2 className="text-xl font-semibold text-gray-900">Order Summary</h2>
       </div>
@@ -52,13 +87,20 @@ export default function OrderSummaryCard({
       </div>
 
       <div className="border-t border-gray-100 p-6">
-        <button
-          onClick={() => router.push("/shop/payment")}
+        <Button
+          onClick={handleOrderCreation}
           className="flex w-full transform items-center justify-center space-x-2 rounded-xl bg-green-300 py-4 text-lg font-semibold text-black shadow-lg transition-all duration-200 hover:scale-[1.02] hover:from-blue-700 hover:to-purple-700 hover:shadow-xl"
         >
-          <CreditCard className="h-5 w-5" />
-          <span>Proceed to payment</span>
-        </button>
+          {isLoading ? (
+            <Spinner />
+          ) : (
+            <>
+              {" "}
+              <CreditCard className="h-5 w-5" />
+              <span>Proceed to payment</span>
+            </>
+          )}
+        </Button>
 
         <div className="mt-4 text-center">
           <div className="flex items-center justify-center space-x-4 text-sm text-gray-500">

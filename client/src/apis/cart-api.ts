@@ -1,8 +1,8 @@
 // carts-service.ts
 import ApiServices from "@/store/api-service";
 import type { ApiResponse } from "./types/api";
-import type { CartsItemTypeRes } from "./types/cart";
-import type { SockSize } from "@/types/global";
+import type { AddCartItemTypeRes, CartsItemTypeRes } from "./types/cart";
+import type { AddCartItemType, SockSize } from "@/types/global";
 
 export const CartsServices = ApiServices.injectEndpoints({
   endpoints: (build) => ({
@@ -48,7 +48,7 @@ export const CartsServices = ApiServices.injectEndpoints({
     }),
 
     addToCart: build.mutation<
-      ApiResponse,
+      AddCartItemTypeRes,
       { productId: string; orders: Array<{ size: SockSize; quantity: number }> }
     >({
       query: ({ productId, orders }) => ({
@@ -71,5 +71,6 @@ export const CartsServices = ApiServices.injectEndpoints({
 export const {
   useGetCartsItemsQuery,
   useIncreaseCartsItemMutation,
-  useRemoveCartsItemMutation,useAddToCartMutation
+  useRemoveCartsItemMutation,
+  useAddToCartMutation,
 } = CartsServices;

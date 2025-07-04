@@ -31,81 +31,82 @@ class CartController {
     }
   );
 
-static addToCartHandler = AsyncHandler(
-  async (req: Request, res: Response): Promise<void> => {
-    const { userId } = await getAuth(req);
-    const { productId, orders } = req.body as {
-      productId: string;
-      orders: Array<{ size: SockSize; quantity: number }>;
-    };
+  static addToCartHandler = AsyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+      const { userId } = await getAuth(req);
+      const { productId, orders } = req.body as {
+        productId: string;
+        orders: Array<{ size: SockSize; quantity: number }>;
+      };
 
-    if (!productId || !orders || !Array.isArray(orders)) {
-      res.status(400).json(new ApiResponse("Invalid request format"));
-      return;
-    }
-
-    if (orders.length === 0) {
-      res
-        .status(400)
-        .json(new ApiResponse("At least one size/quantity must be provided"));
-      return;
-    }
-
-    for (const order of orders) {
-      if (
-        !order.size ||
-        order.quantity == null ||
-        isNaN(Number(order.quantity)) ||
-        Number(order.quantity) <= 0
-      ) {
-        res
-          .status(400)
-          .json(
-            new ApiResponse(
-              "Each order must include valid size and positive quantity"
-            )
-          );
+      if (!productId || !orders || !Array.isArray(orders)) {
+        res.status(400).json(new ApiResponse("Invalid request format"));
         return;
       }
-    }
 
-    const redisKey = `cart:user:${userId}:${productId}`;
-    await redis.sadd(redisKey, JSON.stringify(orders));
+      if (orders.length === 0) {
+        res
+          .status(400)
+          .json(new ApiResponse("At least one size/quantity must be provided"));
+        return;
+      }
 
-    const existingCartItem = await db.cartItem.findFirst({
-      where: {
-        cart: {
-          userId,
-        },
-        productId: parseInt(productId),
-      },
-    });
+      for (const order of orders) {
+        if (
+          !order.size ||
+          order.quantity == null ||
+          isNaN(Number(order.quantity)) ||
+          Number(order.quantity) <= 0
+        ) {
+          res
+            .status(400)
+            .json(
+              new ApiResponse(
+                "Each order must include valid size and positive quantity"
+              )
+            );
+          return;
+        }
+      }
 
-    await CartService.addToCart(
-      userId,
-      parseInt(productId),
-      orders.map((o) => ({
-        size: o.size,
-        quantity: Number(o.quantity),
-      }))
-    );
+      const redisKey = `cart:user:${userId}:${productId}`;
+      await redis.sadd(redisKey, JSON.stringify(orders));
 
-    if (!existingCartItem) {
-      await db.user.update({
-        where: { id: userId },
-        data: {
-          cartProductCount: {
-            increment: 1,
+      const existingCartItem = await db.cartItem.findFirst({
+        where: {
+          cart: {
+            userId,
           },
+          productId: parseInt(productId),
         },
       });
+
+      const { cartId } = await CartService.addToCart(
+        userId,
+        parseInt(productId),
+        orders.map((o) => ({
+          size: o.size,
+          quantity: Number(o.quantity),
+        }))
+      );
+
+      if (!existingCartItem) {
+        await db.user.update({
+          where: { id: userId },
+          data: {
+            cartProductCount: {
+              increment: 1,
+            },
+          },
+        });
+      }
+
+      res
+        .status(200)
+        .json(
+          new ApiResponse("Product with selected sizes added to cart", cartId)
+        );
     }
-
-    res
-      .status(200)
-      .json(new ApiResponse("Product with selected sizes added to cart"));
-  }
-);
-
+  );
 }
 export default CartController;
