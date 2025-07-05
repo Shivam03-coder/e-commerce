@@ -71,10 +71,11 @@ model SizeStock {
 }
 
 model Cart {
-    id     String     @id @default(cuid())
-    userId String     @unique
-    user   User       @relation(fields: [userId], references: [id])
-    items  CartItem[]
+    id         String     @id @default(cuid())
+    userId     String     @unique
+    user       User       @relation(fields: [userId], references: [id])
+    cartStatus CartStatus @default(PENDING)
+    items      CartItem[]
     orders Order[]
 }
 
@@ -107,15 +108,15 @@ model CartItemSizeAndQuantity {
 
 model Order {
     id              String        @id @default(cuid())
-    cartId          String
     rozarPayOrderId String?
-    cart            Cart          @relation(fields: [cartId], references: [id])
     orderStatus     OrderStatus   @default(PENDING)
     paymentStatus   PaymentStatus @default(PENDING)
     totalAmount     Float
     customerId      String
     paymentId       String?
     orderDate       DateTime      @default(now())
+    cartId          String
+    cart            Cart          @relation(fields: [cartId], references: [id])
     orderUpdateDate DateTime      @updatedAt
     customer        User          @relation(fields: [customerId], references: [id])
 }
@@ -194,4 +195,9 @@ enum PaymentStatus {
 enum Role {
     USER
     ADMIN
+}
+
+enum CartStatus {
+    ORDERED
+    PENDING
 }

@@ -11,6 +11,9 @@ importers:
       bullmq:
         specifier: ^5.56.1
         version: 5.56.1
+      nodemailer:
+        specifier: ^7.0.4
+        version: 7.0.4
 
 packages:
 
@@ -105,6 +108,10 @@ packages:
   node-gyp-build-optional-packages@5.2.2:
     resolution: {integrity: sha512-s+w+rBWnpTMwSFbaE0UXsRlg7hU4FjekKU4eyAih5T8nJuNZT1nNsskXpxmeqSK9UzkBl6UgRlnKc8hz8IEqOw==}
     hasBin: true
+
+  nodemailer@7.0.4:
+    resolution: {integrity: sha512-9O00Vh89/Ld2EcVCqJ/etd7u20UhME0f/NToPfArwPEe1Don1zy4mAIz6ariRr7mJ2RDxtaDzN0WJVdVXPtZaw==}
+    engines: {node: '>=6.0.0'}
 
   redis-errors@1.2.0:
     resolution: {integrity: sha512-1qny3OExCf0UvUV/5wpYKf2YwPcOqXzkwKKSmKHiE6ZMQs5heeE/c8eXK+PNllPvmjgAbfnsbpkGZWy8cBpn9w==}
@@ -222,6 +229,8 @@ snapshots:
     dependencies:
       detect-libc: 2.0.4
     optional: true
+
+  nodemailer@7.0.4: {}
 
   redis-errors@1.2.0: {}
 

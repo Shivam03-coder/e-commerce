@@ -10,7 +10,6 @@ import useAppLinks from "@/navigations";
 import { Button } from "@/components/ui/button";
 import ProductCard from "./product-card";
 import OrderSummaryCard from "./payment-card";
-import { useLocalStorage } from "usehooks-ts";
 
 function CartPage() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -30,7 +29,11 @@ function CartPage() {
     }
   }, [data?.result, dispatch]);
 
-  const subtotal = cartItems.reduce(
+  const filteredCartItems = cartItems.filter(
+    (item) => item.cartStatus === "PENDING",
+  );
+
+  const subtotal = filteredCartItems.reduce(
     (sum, item) =>
       sum +
       item.price *
@@ -42,7 +45,6 @@ function CartPage() {
   );
 
   const shipping = subtotal > 75 ? 0 : 9.99;
-  const tax = subtotal * 0.08;
   const total = subtotal + shipping;
 
   return (
@@ -54,7 +56,7 @@ function CartPage() {
             <span>Back to Shop</span>
           </Link>
         </Button>
-        {cartItems.length === 0 ? (
+        {filteredCartItems.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16">
             <div className="mb-6 rounded-full bg-gray-100 p-6">
               <ShoppingBag className="h-12 w-12 text-gray-400" />
@@ -80,7 +82,7 @@ function CartPage() {
                 <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
                   <h2 className="text-lg font-semibold text-gray-900">
                     Your Cart (
-                    {cartItems.reduce(
+                    {filteredCartItems.reduce(
                       (sum, item) => sum + item.totalQuantity,
                       0,
                     )}{" "}
@@ -89,7 +91,7 @@ function CartPage() {
                 </div>
 
                 <div className="divide-y divide-gray-200">
-                  {cartItems.map((item) => (
+                  {filteredCartItems.map((item) => (
                     <ProductCard key={item.productId} item={item} />
                   ))}
                 </div>

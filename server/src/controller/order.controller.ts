@@ -43,14 +43,34 @@ class OrderController {
 
   static verifyPaymentHandler = AsyncHandler(
     async (req: Request, res: Response): Promise<void> => {
-      const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
-        req.body;
-
-      console.log(req.body);
+      const {
+        razorpay_order_id,
+        razorpay_payment_id,
+        razorpay_signature,
+        cartId,
+      } = req.body;
 
       if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
         throw new NotFoundError("Missing payment details");
       }
+
+      const existingCart = await db.cart.update({
+        where: {
+          id: cartId,
+        },
+        data: {
+          cartStatus: "ORDERED",
+        },
+      });
+
+      await db.user.update({
+        where: {
+          id: existingCart.userId,
+        },
+        data: {
+          cartProductCount: 0,
+        },
+      });
 
       const order = await db.order.findFirst({
         where: { rozarPayOrderId: razorpay_order_id },

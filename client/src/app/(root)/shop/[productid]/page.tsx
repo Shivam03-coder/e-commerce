@@ -37,11 +37,6 @@ const ProductDetails = ({ params }: ProductDetailsProps) => {
 
   const [addToCart, { isLoading: isProductAddingToCart }] =
     useAddToCartMutation();
-  useEffect(() => {
-    if (!localCurrentCartId && currentCartId) {
-      setLocalCurrentCartId(currentCartId);
-    }
-  }, [currentCartId, localCurrentCartId]);
 
   if (isLoading)
     return (
@@ -82,7 +77,10 @@ const ProductDetails = ({ params }: ProductDetailsProps) => {
           },
         ],
       }).unwrap();
-      setCurrentCartId(res.result);
+
+      if (!localCurrentCartId && res.result) {
+        setLocalCurrentCartId(res.result);
+      }
       SuccessToast({
         title: res.message,
       });

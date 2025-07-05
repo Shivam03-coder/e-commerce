@@ -8,6 +8,9 @@ import {
 import { useAppToasts } from "@/hooks/use-app-toast";
 import { useReadLocalStorage } from "usehooks-ts";
 import AppImages from "@/constants/images";
+import { useGetCartsItemsQuery } from "@/apis/cart-api";
+import { useGetUserInfoQuery } from "@/apis/auth-api";
+import { useTransitionRouter } from "next-view-transitions";
 
 interface OrderSummaryProps {
   subtotal: number;
@@ -26,6 +29,9 @@ export default function OrderSummaryCard({
   const [createOrder] = useCreateOrderMutation();
   const { ErrorToast, SuccessToast } = useAppToasts();
   const localCurrentCartId = useReadLocalStorage("user_cart_id") as string;
+  const { refetch: refetchCart } = useGetCartsItemsQuery();
+  const { refetch: refetchUser } = useGetUserInfoQuery();
+  const router = useTransitionRouter();
 
   const handlePayment = async () => {
     setIsLoading(true);
@@ -54,7 +60,10 @@ export default function OrderSummaryCard({
               {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(response),
+                body: JSON.stringify({
+                  ...response,
+                  cartId: localCurrentCartId,
+                }),
               },
             );
 
@@ -67,6 +76,9 @@ export default function OrderSummaryCard({
                 description:
                   "Your order has been placed successfully. Check your email for details! 📧",
               });
+              refetchCart();
+              refetchUser();
+              router.push("/shop");
             }
           } catch (error: any) {
             console.log("Verification error:", error);
