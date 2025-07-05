@@ -1,7 +1,12 @@
 import type {
   CustomerType,
+  MaterialType,
+  OrderStatus,
   OrdersType,
+  PaymentStatus,
+  ProductCategory,
   ProductsDataType,
+  SockSize,
 } from "@/types/global";
 import type { ApiResponse } from "./api";
 
@@ -35,5 +40,54 @@ export interface ProductFeaturedType extends ApiResponse {
 }
 
 export interface OrdersListType extends ApiResponse {
-  result: OrdersType[];
+  result: Order[];
+}
+
+interface Address {
+  street?: string;
+  city: string;
+  state: string;
+  country: string;
+  pincode: string;
+  formattedAddress: string;
+}
+
+interface Customer {
+  id: string;
+  name: string;
+  email: string;
+  phoneNumber: string;
+  address: Address | null;
+}
+
+interface SizeQuantity {
+  size: SockSize;
+  quantity: number;
+}
+
+interface GroupedItem {
+  title: string;
+  price: number;
+  category: ProductCategory;
+  material: MaterialType;
+  image: string;
+  sizes: SizeQuantity[];
+}
+
+export interface Order {
+  id: string;
+  rozarPayOrderId: string;
+  status: OrderStatus;
+  paymentStatus: PaymentStatus;
+  date: string;
+  updatedAt: string;
+  total: number;
+  customer: Customer;
+  items: GroupedItem[];
+}
+
+interface ApiResponse {
+  message: string;
+  result: Order[];
+  status: "success" | "error";
 }

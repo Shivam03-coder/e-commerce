@@ -1,4 +1,9 @@
-import { MaterialType, ProductCategory, SockSize } from "@prisma/client";
+import {
+  $Enums,
+  MaterialType,
+  ProductCategory,
+  SockSize,
+} from "@prisma/client";
 import { db } from "@src/db";
 import CloudinaryService from "@src/libs/cloudinary";
 import { ProductType } from "@src/types/admin.types";
@@ -238,42 +243,65 @@ export class AdminService {
       },
     });
 
-    return orders.map((order) => ({
-      id: order.id,
-      rozarPayOrderId: order.rozarPayOrderId,
-      status: order.orderStatus,
-      paymentStatus: order.paymentStatus,
-      date: order.orderDate,
-      updatedAt: order.orderUpdateDate,
-      total: order.totalAmount,
-      customer: {
-        id: order.customer.id,
-        name: order.customer.name,
-        email: order.customer.email,
-        phoneNumber: order.customer.phoneNumber,
-        address: order.customer.userAddress
-          ? {
-              street: order.customer.userAddress.address,
-              city: order.customer.userAddress.city,
-              state: order.customer.userAddress.state,
-              country: order.customer.userAddress.country,
-              pincode: order.customer.userAddress.pincode,
-              formattedAddress: order.customer.userAddress.formattedaddress,
-            }
-          : null,
-      },
-      items: order.OrderedItem.map((item) => ({
-        id: item.id,
-        title: item.title,
-        price: item.price,
-        size: item.size,
-        quantity: item.quantity,
-        image: item.productImage,
-        category: item.category,
-        material: item.material,
-        addedAt: item.createdAt,
-      })),
-    }));
+    return orders.map((order) => {
+      interface GroupedItem {
+        title: string;
+        price: number;
+        category: $Enums.ProductCategory;
+        material: $Enums.MaterialType;
+        image: string;
+        sizes: Array<{
+          size: $Enums.SockSize;
+          quantity: number;
+        }>;
+      }
+
+      const groupedItems: Record<string, GroupedItem> = {};
+
+      order.OrderedItem.forEach((item) => {
+        if (!groupedItems[item.title]) {
+          groupedItems[item.title] = {
+            title: item.title,
+            price: item.price,
+            category: item.category,
+            material: item.material,
+            image: item.productImage,
+            sizes: [],
+          };
+        }
+        groupedItems[item.title].sizes.push({
+          size: item.size,
+          quantity: item.quantity,
+        });
+      });
+
+      return {
+        id: order.id,
+        rozarPayOrderId: order.rozarPayOrderId,
+        status: order.orderStatus,
+        paymentStatus: order.paymentStatus,
+        date: order.orderDate,
+        updatedAt: order.orderUpdateDate,
+        total: order.totalAmount,
+        customer: {
+          id: order.customer.id,
+          name: order.customer.name,
+          email: order.customer.email,
+          phoneNumber: order.customer.phoneNumber,
+          address: order.customer.userAddress
+            ? {
+                street: order.customer.userAddress.address,
+                city: order.customer.userAddress.city,
+                state: order.customer.userAddress.state,
+                country: order.customer.userAddress.country,
+                pincode: order.customer.userAddress.pincode,
+                formattedAddress: order.customer.userAddress.formattedaddress,
+              }
+            : null,
+        },
+        items: Object.values(groupedItems),
+      };
+    });
   }
 
   static async getProductImageUrl(req: any) {
