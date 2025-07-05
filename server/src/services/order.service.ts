@@ -44,10 +44,6 @@ class OrderService {
       },
     };
   }
-
-  static async paymentVerification() {
-
-  }
 }
 
 export default OrderService;

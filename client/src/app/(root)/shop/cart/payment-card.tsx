@@ -21,42 +21,66 @@ export default function OrderSummaryCard({
   total,
 }: OrderSummaryProps) {
   const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Added loading state
   const [error, setError] = useState<string | null>(null);
   const [createOrder] = useCreateOrderMutation();
   const { ErrorToast, SuccessToast } = useAppToasts();
-  const [verifyPayment, { isLoading }] = useVerifyPaymentMutation();
   const localCurrentCartId = useReadLocalStorage("user_cart_id") as string;
 
   const handlePayment = async () => {
+    setIsLoading(true);
+    setError(null);
+
     try {
       const createdOrder = await createOrder({
         cartId: localCurrentCartId,
         totalAmount: total,
       }).unwrap();
 
+      const amountInPaise = Math.round(total * 100);
+
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY,
-        amount: createdOrder.result.totalAmount,
+        amount: amountInPaise,
         currency: "INR",
         name: "NIDHIRA",
         image: AppImages.logo,
         description: "Premium Plan",
-        order_id: createdOrder.result.orderId,
+        order_id: (createdOrder.result.orderId as string) ?? "",
         handler: async function (response: any) {
           try {
-            const payment = await verifyPayment({
-              ...response,
-              orderId: createdOrder.result.orderId,
-            }).unwrap();
+            const payment = await fetch(
+              "http://localhost:5030/api/v1/orders/verify",
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(response),
+              },
+            );
 
-            SuccessToast({
-              title: payment.message,
-            });
-            setPaymentSuccess(true);
-          } catch (error) {
+            const result = await payment.json();
+            console.log(result);
+            if (result.status === "success") {
+              setPaymentSuccess(true);
+              SuccessToast({
+                title: "🎉 Payment Successful!",
+                description:
+                  "Your order has been placed successfully. Check your email for details! 📧",
+              });
+            }
+          } catch (error: any) {
+            console.log("Verification error:", error);
+            const message =
+              error?.data?.message ||
+              error?.error ||
+              "Payment verification failed. Please try again.";
+
             ErrorToast({
-              title: "Paymnet failed",
+              title: "⚠️ Payment Failed",
+              description: message,
             });
+          } finally {
+            setIsLoading(false);
           }
         },
         prefill: {
@@ -70,9 +94,22 @@ export default function OrderSummaryCard({
       };
 
       const rzp = new (window as any).Razorpay(options);
+      rzp.on("payment.failed", function (response: any) {
+        ErrorToast({
+          title: "❌ Payment Failed",
+          description:
+            response.error.description || "Payment could not be processed",
+        });
+        setIsLoading(false);
+      });
       rzp.open();
-    } catch (err) {
+    } catch (err: any) {
+      setIsLoading(false);
       setError("Payment failed. Please try again.");
+      ErrorToast({
+        title: "❌ Payment Error",
+        description: err?.message || "Failed to initiate payment",
+      });
     }
   };
 
@@ -108,10 +145,13 @@ export default function OrderSummaryCard({
                 </svg>
               </div>
               <h3 className="mb-1 text-lg font-medium text-gray-900">
-                Payment Successful!
+                🎉 Payment Successful!
               </h3>
               <p className="text-sm text-gray-500">
-                Thank you for your purchase.
+                Thank you for your purchase. Your order is being processed.
+              </p>
+              <p className="mt-2 text-sm text-gray-500">
+                A confirmation has been sent to your email. 📧
               </p>
             </div>
           ) : (
@@ -207,7 +247,7 @@ export default function OrderSummaryCard({
                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                       ></path>
                     </svg>
-                    Processing...
+                    Processing Payment...
                   </>
                 ) : (
                   `Pay ₹${total.toFixed(2)}`

@@ -4,9 +4,8 @@ import OrderController from "@src/controller/order.controller";
 
 const orderRouter = Router();
 
-orderRouter.use(requireAuth);
-
-orderRouter.post("/:cartId", OrderController.createOrderHandler);
-orderRouter.post("/verify", OrderController.verifyPaymentHandler);
+orderRouter
+  .post("/verify", OrderController.verifyPaymentHandler)
+  .post("/:cartId", requireAuth, OrderController.createOrderHandler);
 
 export default orderRouter;

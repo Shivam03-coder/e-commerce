@@ -4,6 +4,7 @@ import { ApiResponse, AsyncHandler, getAuth } from "@src/utils/api.utils";
 import { Request, Response } from "express";
 import crypto from "crypto";
 import { envs } from "@src/configs/envs.config";
+import { NotFoundError, ValidationError } from "@src/utils/error.utils";
 class OrderController {
   static createOrderHandler = AsyncHandler(
     async (req: Request, res: Response): Promise<void> => {
@@ -42,19 +43,20 @@ class OrderController {
 
   static verifyPaymentHandler = AsyncHandler(
     async (req: Request, res: Response): Promise<void> => {
-      const {
-        razorpay_order_id,
-        razorpay_payment_id,
-        razorpay_signature,
-        orderId,
-      } = req.body;
+      const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+        req.body;
+
+      console.log(req.body);
 
       if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-        res
-          .status(400)
-          .json({ success: false, message: "Missing payment details" });
-        return;
+        throw new NotFoundError("Missing payment details");
       }
+
+      const order = await db.order.findFirst({
+        where: { rozarPayOrderId: razorpay_order_id },
+      });
+
+      if (!order) throw new NotFoundError("Order not found");
 
       const body = `${razorpay_order_id}|${razorpay_payment_id}`;
 
@@ -67,15 +69,14 @@ class OrderController {
 
       if (!isAuthentic) {
         console.error("❌ Razorpay signature verification failed");
-        res.status(400).json({ success: false, message: "Invalid signature" });
-        return;
+        throw new ValidationError("Invalid signature");
       }
 
       console.log("✅ Razorpay payment verified successfully");
 
       await db.order.update({
         where: {
-          id: orderId,
+          id: order.id,
         },
         data: {
           rozarPayOrderId: razorpay_order_id,
@@ -85,10 +86,7 @@ class OrderController {
         },
       });
 
-      res.status(200).json({
-        success: true,
-        message: "Payment verified successfully",
-      });
+      res.status(200).json(new ApiResponse("Payment verified successfully"));
     }
   );
 }
