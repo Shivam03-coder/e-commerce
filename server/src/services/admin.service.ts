@@ -21,8 +21,6 @@ export class AdminService {
       tags,
     } = productData;
 
-
-
     const product = await db.product.create({
       data: {
         title,
@@ -90,58 +88,58 @@ export class AdminService {
     });
   }
 
-static async updateProduct(id: number, productData: ProductType) {
-  const {
-    title,
-    description,
-    category,
-    productImage,
-    material,
-    price,
-    salePrice,
-    inStock,
-    inventory,
-    tags,
-    sizeStock,
-  } = productData;
+  static async updateProduct(id: number, productData: ProductType) {
+    const {
+      title,
+      description,
+      category,
+      productImage,
+      material,
+      price,
+      salePrice,
+      inStock,
+      inventory,
+      tags,
+      sizeStock,
+    } = productData;
 
-  return await db.$transaction(async (tx) => {
-    // 1. Update the product
-    const updatedProduct = await tx.product.update({
-      where: { id },
-      data: {
-        title,
-        description,
-        category,
-        tags: JSON.stringify(tags),
-        productImage,
-        material,
-        price,
-        salePrice,
-        inStock: inStock !== undefined ? inStock : inventory > 0,
-        inventory,
-      },
-    });
-
-    // 2. Remove existing sizeStock entries
-    await tx.sizeStock.deleteMany({
-      where: { productId: id },
-    });
-
-    // 3. Add updated sizeStock entries
-    if (Array.isArray(sizeStock) && sizeStock.length > 0) {
-      await tx.sizeStock.createMany({
-        data: sizeStock.map((item) => ({
-          productId: id,
-          size: item.size,
-          stock: item.stock,
-        })),
+    return await db.$transaction(async (tx) => {
+      // 1. Update the product
+      const updatedProduct = await tx.product.update({
+        where: { id },
+        data: {
+          title,
+          description,
+          category,
+          tags: JSON.stringify(tags),
+          productImage,
+          material,
+          price,
+          salePrice,
+          inStock: inStock !== undefined ? inStock : inventory > 0,
+          inventory,
+        },
       });
-    }
 
-    return updatedProduct;
-  });
-}
+      // 2. Remove existing sizeStock entries
+      await tx.sizeStock.deleteMany({
+        where: { productId: id },
+      });
+
+      // 3. Add updated sizeStock entries
+      if (Array.isArray(sizeStock) && sizeStock.length > 0) {
+        await tx.sizeStock.createMany({
+          data: sizeStock.map((item) => ({
+            productId: id,
+            size: item.size,
+            stock: item.stock,
+          })),
+        });
+      }
+
+      return updatedProduct;
+    });
+  }
 
   static async getCustomers() {
     return await db.user.findMany({
@@ -197,34 +195,43 @@ static async updateProduct(id: number, productData: ProductType) {
     const orders = await db.order.findMany({
       select: {
         id: true,
+        rozarPayOrderId: true,
+        orderStatus: true,
+        paymentStatus: true,
+        totalAmount: true,
+        orderDate: true,
+        orderUpdateDate: true,
         customer: {
           select: {
             id: true,
             name: true,
             email: true,
-          },
-        },
-        cart: {
-          select: {
-            items: {
+            phoneNumber: true,
+            userAddress: {
               select: {
-                sizesAndQuantity: true,
-                product: {
-                  select: {
-                    id: true,
-                    title: true,
-                    price: true,
-                    productImage: true,
-                  },
-                },
+                address: true,
+                city: true,
+                state: true,
+                country: true,
+                pincode: true,
+                formattedaddress: true,
               },
             },
           },
         },
-        orderStatus: true,
-        orderDate: true,
-        paymentStatus: true,
-        totalAmount: true,
+        OrderedItem: {
+          select: {
+            id: true,
+            title: true,
+            price: true,
+            size: true,
+            quantity: true,
+            productImage: true,
+            category: true,
+            material: true,
+            createdAt: true,
+          },
+        },
       },
       orderBy: {
         orderDate: "desc",
@@ -233,17 +240,38 @@ static async updateProduct(id: number, productData: ProductType) {
 
     return orders.map((order) => ({
       id: order.id,
-      customer: order.customer,
+      rozarPayOrderId: order.rozarPayOrderId,
       status: order.orderStatus,
       paymentStatus: order.paymentStatus,
       date: order.orderDate,
+      updatedAt: order.orderUpdateDate,
       total: order.totalAmount,
-      products: order.cart.items.map((item) => ({
-        id: item.product.id,
-        name: item.product.title,
-        price: item.product.price,
-        image: item.product.productImage,
-        // quantity: item.quantity,
+      customer: {
+        id: order.customer.id,
+        name: order.customer.name,
+        email: order.customer.email,
+        phoneNumber: order.customer.phoneNumber,
+        address: order.customer.userAddress
+          ? {
+              street: order.customer.userAddress.address,
+              city: order.customer.userAddress.city,
+              state: order.customer.userAddress.state,
+              country: order.customer.userAddress.country,
+              pincode: order.customer.userAddress.pincode,
+              formattedAddress: order.customer.userAddress.formattedaddress,
+            }
+          : null,
+      },
+      items: order.OrderedItem.map((item) => ({
+        id: item.id,
+        title: item.title,
+        price: item.price,
+        size: item.size,
+        quantity: item.quantity,
+        image: item.productImage,
+        category: item.category,
+        material: item.material,
+        addedAt: item.createdAt,
       })),
     }));
   }
