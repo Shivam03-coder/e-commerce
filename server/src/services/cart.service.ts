@@ -8,66 +8,53 @@ import {
 } from "@src/utils/error.utils";
 
 class CartService {
-static async getCartItems(userId: string) {
-  try {
+  static async getCartItems(userId: string) {
     const cart = await db.cart.findUnique({
-      where: { userId },
-      select: {
-        cartStatus: true,
+      where: {
+        userId,
+      },
+      include: {
         items: {
           include: {
             product: {
               include: {
                 sizeStocks: {
-                  where: { stock: { gt: 0 } },
+                  where: {
+                    stock: {
+                      gt: 0,
+                    },
+                  },
                 },
               },
             },
-            sizesAndQuantity: true,
+            sizesAndQuantity: true, // Include the selected sizes and quantities
           },
         },
       },
     });
 
-    if (!cart?.cartStatus) {
+    if (!cart) {
       return [];
     }
 
-    return cart.items.map((item) => {
-      const availableSizes = new Set(
-        item.product.sizeStocks.map((stock) => stock.size)
-      );
+    const cartItems = cart.items.map((item) => ({
+      productId: item.product.id.toString(),
+      name: item.product.title,
+      price: item.product.price,
+      image: item.product.productImage,
+      material: item.product.material,
+      selectedSizes: item.sizesAndQuantity.map((sizeQty) => ({
+        size: sizeQty.size,
+        quantity: sizeQty.quantity,
+      })),
+      totalQuantity: item.sizesAndQuantity.reduce(
+        (sum, sizeQty) => sum + sizeQty.quantity,
+        0
+      ),
+    }));
 
-      const validSizes = item.sizesAndQuantity.filter((sizeQty) =>
-        availableSizes.has(sizeQty.size)
-      );
-
-      return {
-        cartStatus: cart.cartStatus,
-        productId: item.product.id.toString(),
-        name: item.product.title,
-        price: item.product.price,
-        image: item.product.productImage,
-        material: item.product.material,
-        selectedSizes: validSizes.map((sizeQty) => ({
-          size: sizeQty.size,
-          quantity: sizeQty.quantity,
-        })),
-        totalQuantity: validSizes.reduce(
-          (sum, sizeQty) => sum + sizeQty.quantity,
-          0
-        ),
-        isAvailable: validSizes.length > 0,
-      };
-    });
-  } catch (error) {
-    console.error("Error fetching cart items:", error);
-    throw new Error("Failed to retrieve cart items");
+    return cartItems;
   }
-}
-
-
-  // Type definitions (should be in your types file)
 
   static async removeItemFormCart(userId: string, productId: number) {
     const cart = await db.cart.findUnique({

@@ -129,7 +129,6 @@ export interface CartItem {
   material: string;
   selectedSizes: CartItemSize[];
   totalQuantity: number;
-  cartStatus: "ORDERED" | "PENDING";
 }
 
 export interface OrderSummary {

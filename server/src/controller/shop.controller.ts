@@ -1,9 +1,6 @@
 import { Request, Response } from "express";
 import { ApiResponse, AsyncHandler, getAuth } from "@src/utils/api.utils";
 import { ShopService } from "@src/services/shop.service";
-import redis from "@src/configs/redis.config";
-import { db } from "@src/db";
-import { SockSize } from "@prisma/client";
 
 export class ShopController {
   static getAllProductDetailsHandler = AsyncHandler(

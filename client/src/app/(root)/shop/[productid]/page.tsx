@@ -51,7 +51,6 @@ const ProductDetails = ({ params }: ProductDetailsProps) => {
   const product = data.result.product;
   const tags = parseTags(product.tags);
 
-  // Get available stock for selected size
   const selectedSizeStock = selectedSize
     ? (product.sizeStocks?.find((size) => size.size === selectedSize)?.stock ??
       0)
@@ -78,9 +77,7 @@ const ProductDetails = ({ params }: ProductDetailsProps) => {
         ],
       }).unwrap();
 
-      if (!localCurrentCartId && res.result) {
-        setLocalCurrentCartId(res.result);
-      }
+      setLocalCurrentCartId(res.result);
       SuccessToast({
         title: res.message,
       });

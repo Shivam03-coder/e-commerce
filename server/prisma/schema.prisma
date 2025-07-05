@@ -71,12 +71,10 @@ model SizeStock {
 }
 
 model Cart {
-    id         String     @id @default(cuid())
-    userId     String     @unique
-    user       User       @relation(fields: [userId], references: [id])
-    cartStatus CartStatus @default(PENDING)
-    items      CartItem[]
-    orders Order[]
+    id     String     @id @default(cuid())
+    userId String     @unique
+    user   User       @relation(fields: [userId], references: [id])
+    items  CartItem[]
 }
 
 model CartItem {
@@ -115,10 +113,28 @@ model Order {
     customerId      String
     paymentId       String?
     orderDate       DateTime      @default(now())
-    cartId          String
-    cart            Cart          @relation(fields: [cartId], references: [id])
     orderUpdateDate DateTime      @updatedAt
     customer        User          @relation(fields: [customerId], references: [id])
+    OrderedItem     OrderedItem[]
+}
+
+model OrderedItem {
+    id           String          @id @default(cuid())
+    title        String
+    price        Float
+    size         SockSize
+    quantity     Int
+    productImage String
+    category     ProductCategory
+    material     MaterialType
+
+    orderId String
+    order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([orderId], name: "order_index")
 }
 
 model FavoriteProduct {
@@ -195,9 +211,4 @@ enum PaymentStatus {
 enum Role {
     USER
     ADMIN
-}
-
-enum CartStatus {
-    ORDERED
-    PENDING
 }

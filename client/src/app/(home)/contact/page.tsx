@@ -26,11 +26,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-interface ContactPageProps {
-  onBack?: () => void;
-}
-
-export default function ContactPage({ onBack }: ContactPageProps) {
+export default function ContactPage() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",

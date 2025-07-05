@@ -1,4 +1,9 @@
-import { MaterialType, ProductCategory, SockSize } from "@prisma/client";
+import {
+  $Enums,
+  MaterialType,
+  ProductCategory,
+  SockSize,
+} from "@prisma/client";
 
 declare global {
   namespace Express {
@@ -22,3 +27,15 @@ type AddCartItemType = {
   productId: string;
   orders: { size: SockSize; quantity: string }[];
 };
+
+export interface cartItem {
+  sizeAndQuantity: {
+    quantity: number;
+    size: $Enums.SockSize;
+  }[];
+  title: string;
+  category: $Enums.ProductCategory;
+  productImage: string;
+  price: number;
+  material: $Enums.MaterialType;
+}

@@ -29,11 +29,7 @@ function CartPage() {
     }
   }, [data?.result, dispatch]);
 
-  const filteredCartItems = cartItems.filter(
-    (item) => item.cartStatus === "PENDING",
-  );
-
-  const subtotal = filteredCartItems.reduce(
+  const subtotal = cartItems.reduce(
     (sum, item) =>
       sum +
       item.price *
@@ -56,7 +52,7 @@ function CartPage() {
             <span>Back to Shop</span>
           </Link>
         </Button>
-        {filteredCartItems.length === 0 ? (
+        {cartItems.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16">
             <div className="mb-6 rounded-full bg-gray-100 p-6">
               <ShoppingBag className="h-12 w-12 text-gray-400" />
@@ -82,7 +78,7 @@ function CartPage() {
                 <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
                   <h2 className="text-lg font-semibold text-gray-900">
                     Your Cart (
-                    {filteredCartItems.reduce(
+                    {cartItems.reduce(
                       (sum, item) => sum + item.totalQuantity,
                       0,
                     )}{" "}
@@ -91,7 +87,7 @@ function CartPage() {
                 </div>
 
                 <div className="divide-y divide-gray-200">
-                  {filteredCartItems.map((item) => (
+                  {cartItems.map((item) => (
                     <ProductCard key={item.productId} item={item} />
                   ))}
                 </div>

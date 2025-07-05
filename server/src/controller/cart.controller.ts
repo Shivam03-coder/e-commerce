@@ -2,7 +2,6 @@ import { SockSize } from "@prisma/client";
 import redis from "@src/configs/redis.config";
 import { db } from "@src/db";
 import CartService from "@src/services/cart.service";
-import { AddCartItemType } from "@src/types/global.types";
 import { ApiResponse, AsyncHandler, getAuth } from "@src/utils/api.utils";
 import { Request, Response } from "express";
 
