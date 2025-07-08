@@ -3,9 +3,8 @@ import type { NextRequest } from "next/server";
 
 function getSessionToken(request: NextRequest) {
   return (
-    request.cookies.get("accessToken")?.value ||
-    request.cookies.get("refreshToken")?.value ||
-    null
+    request.cookies.get("accessToken")?.value &&
+    request.cookies.get("refreshToken")?.value
   );
 }
 

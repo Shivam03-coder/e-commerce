@@ -6,12 +6,12 @@ const FeatureSection = () => {
     <section className="py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-20 text-center">
-          <span className="mb-4 inline-flex items-center gap-2 rounded-full bg-green-100 px-4 py-2 text-sm font-semibold text-green-800">
+          <span className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-sm font-semibold text-primary">
             <Zap className="h-4 w-4" />
             Premium Quality
           </span>
           <h2 className="mb-5 text-4xl font-bold text-gray-900 md:text-5xl">
-            Why Choose <span className="text-green-600">SockCo</span>?
+            Why Choose <span className="text-primary">SockCo</span>?
           </h2>
           <p className="mx-auto max-w-3xl text-xl text-gray-600 md:text-2xl md:leading-relaxed">
             We're committed to providing the highest quality socks with

@@ -6,7 +6,7 @@ export default function ShopsRootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <main className="root relative bg-green-50">
+    <main className="root relative bg-gray-100">
       <ShopsHeader />
       {children}
       <Footer />

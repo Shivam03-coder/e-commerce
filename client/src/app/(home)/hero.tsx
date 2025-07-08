@@ -12,7 +12,7 @@ const HeroSection = () => {
             <div className="text-center lg:text-left">
               <h1 className="mb-6 text-4xl leading-tight font-bold text-gray-900 lg:text-5xl">
                 Walk Through Life With
-                <span className="block text-green-600">Elegance Beneath</span>
+                <span className="text-primary block">Elegance Beneath</span>
               </h1>
               <p className="mb-8 text-xl leading-relaxed text-gray-600">
                 Where luxury meets comfort - premium socks crafted from the
@@ -22,7 +22,7 @@ const HeroSection = () => {
 
               {/* CTA Buttons */}
               <div className="flex flex-col justify-center gap-4 sm:flex-row lg:justify-start">
-                <button className="focus:ring-opacity-50 transform rounded-full bg-green-600 px-8 py-4 text-lg font-semibold text-white shadow-lg transition-all hover:scale-105 hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:outline-none">
+                <button className="focus:ring-opacity-50 bg-primary transform rounded-full px-8 py-4 text-lg font-semibold text-black shadow-lg transition-all hover:scale-105 hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:outline-none">
                   Discover Your Perfect Pair
                 </button>
                 <button className="focus:ring-opacity-50 rounded-full border-2 border-gray-300 px-8 py-4 text-lg font-semibold text-gray-700 transition-all hover:border-green-600 hover:text-green-600 focus:ring-2 focus:ring-green-500 focus:outline-none">

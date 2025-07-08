@@ -8,10 +8,10 @@ import Footer from "./footer";
 
 function App() {
   return (
-    <div className="min-h-screen bg-green-50">
+    <div className="min-h-screen">
       <HeroSection />
       <FeatureSection />
-      <ProductsSection />
+      {/* <ProductsSection /> */}
       <Testimonials />
       <About />
       <Footer />

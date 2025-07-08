@@ -10,6 +10,7 @@ import useAppLinks from "@/navigations";
 import { Button } from "@/components/ui/button";
 import ProductCard from "./product-card";
 import OrderSummaryCard from "./payment-card";
+import BackButton from "@/components/global/back-button";
 
 function CartPage() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -44,14 +45,9 @@ function CartPage() {
   const total = subtotal + shipping;
 
   return (
-    <div className="min-h-screen bg-green-50">
+    <div className="min-h-screen">
       <main className="max-w-8xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <Button asChild variant="ghost" className="my-5 gap-2 bg-green-200">
-          <Link href="/shop">
-            <ArrowLeft className="h-4 w-4" />
-            <span>Back to Shop</span>
-          </Link>
-        </Button>
+        <BackButton />
         {cartItems.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16">
             <div className="mb-6 rounded-full bg-gray-100 p-6">
@@ -65,7 +61,7 @@ function CartPage() {
             </p>
             <button
               onClick={() => router.push(nav.shop)}
-              className="rounded-lg bg-green-600 px-8 py-3 font-medium text-white shadow-md transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
+              className="bg-primary rounded-lg px-8 py-3 font-medium text-white shadow-md transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
             >
               Browse Products
             </button>
@@ -74,7 +70,7 @@ function CartPage() {
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
             {/* Cart Items Section */}
             <div className="lg:col-span-2">
-              <div className="overflow-hidden border border-gray-200 bg-green-50">
+              <div className="overflow-hidden border border-gray-200 bg-primary/10">
                 <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
                   <h2 className="text-lg font-semibold text-gray-900">
                     Your Cart (

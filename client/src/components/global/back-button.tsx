@@ -12,7 +12,7 @@ const BackButton = ({
   title?: string;
 }) => {
   return (
-    <Button asChild variant="ghost" className="my-5 gap-2 max-w-[200px] bg-green-200">
+    <Button asChild variant="ghost" className="my-5 gap-2 max-w-[200px] ">
       <Link href={href}>
         <ArrowLeft className="h-4 w-4" />
         <span>{title}</span>

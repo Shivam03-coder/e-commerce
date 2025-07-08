@@ -101,7 +101,7 @@ export default function OrderSummaryCard({
           contact: createdOrder.result.user.contact,
         },
         theme: {
-          color: "#16a34a",
+          color: "#EAA64D",
         },
       };
 
@@ -126,14 +126,14 @@ export default function OrderSummaryCard({
   };
 
   return (
-    <div className="bg-gradient-to-br from-green-50 to-emerald-50">
+    <div className="">
       <Script
         src="https://checkout.razorpay.com/v1/checkout.js"
         strategy="lazyOnload"
       />
 
-      <div className="w-full max-w-md overflow-hidden rounded-none border border-green-100 bg-white shadow-none">
-        <div className="bg-green-600 p-6 text-white">
+      <div className="w-full max-w-md overflow-hidden rounded-none border border-primary bg-white shadow-none">
+        <div className="bg-primary p-6 text-black">
           <h1 className="text-2xl font-bold">Order Summary</h1>
           <p className="opacity-90">Complete your purchase</p>
         </div>
@@ -141,9 +141,9 @@ export default function OrderSummaryCard({
         <div className="p-6">
           {paymentSuccess ? (
             <div className="py-8 text-center">
-              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
+              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/20">
                 <svg
-                  className="h-6 w-6 text-green-600"
+                  className="h-6 w-6 text-primary"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -183,7 +183,7 @@ export default function OrderSummaryCard({
                 </div>
               </div>
 
-              <div className="mb-6 border-l-4 border-green-400 bg-green-50 p-4">
+              <div className="mb-6 border-l-4 border-primary bg-primary/20 p-4">
                 <div className="flex">
                   <div className="flex-shrink-0">
                     <svg
@@ -199,7 +199,7 @@ export default function OrderSummaryCard({
                     </svg>
                   </div>
                   <div className="ml-3">
-                    <p className="text-sm text-green-700">
+                    <p className="text-sm text-black">
                       You'll be redirected to Razorpay's secure payment gateway
                       to complete your transaction.
                     </p>
@@ -234,8 +234,8 @@ export default function OrderSummaryCard({
                 onClick={handlePayment}
                 disabled={isLoading}
                 className={`flex w-full items-center justify-center ${
-                  isLoading ? "bg-green-400" : "bg-green-600 hover:bg-green-700"
-                } rounded-lg px-4 py-3 font-medium text-white transition duration-200`}
+                  isLoading ? "bg-primary/100" : "bg-primary/70 hover:bg-primary/80"
+                } rounded-lg px-4 py-3 font-medium text-black transition duration-200`}
               >
                 {isLoading ? (
                   <>

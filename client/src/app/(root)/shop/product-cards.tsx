@@ -180,9 +180,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             <div
               className={`h-full ${
                 product.inventory > 50
-                  ? "bg-green-500"
+                  ? "bg-primary"
                   : product.inventory > 20
-                    ? "bg-amber-500"
+                    ? "bg-amber-800"
                     : "bg-red-500"
               }`}
               style={{
@@ -194,7 +194,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
         <Link
           href={`${links.shop}/${product.id}`}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-green-300 px-4 py-2 font-medium text-black shadow-md transition-all hover:shadow-lg"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 font-medium text-black shadow-md transition-all hover:shadow-lg"
           onClick={(e) => e.stopPropagation()}
         >
           <ShoppingCart className="h-4 w-4" />

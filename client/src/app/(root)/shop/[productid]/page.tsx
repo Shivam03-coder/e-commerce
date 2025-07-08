@@ -1,7 +1,7 @@
 "use client";
 
 import { useGetProductDetailsByIdQuery } from "@/apis/shop-api";
-import React, { use, useEffect, useState } from "react";
+import React, { use, useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ShoppingCart } from "lucide-react";
@@ -12,7 +12,7 @@ import { Link } from "next-view-transitions";
 import parseTags from "@/utils/parse-tags";
 import type { SockSize } from "@/types/global";
 import { useAddToCartMutation } from "@/apis/cart-api";
-import { useLocalStorage, useReadLocalStorage } from "usehooks-ts";
+import { useLocalStorage } from "usehooks-ts";
 
 interface ProductDetailsProps {
   params: Promise<{
@@ -25,16 +25,10 @@ const ProductDetails = ({ params }: ProductDetailsProps) => {
   const { data, isLoading, error } = useGetProductDetailsByIdQuery({
     productId: productid,
   });
-  const [currentCartId, setCurrentCartId] = useState<string | null>(null);
   const [_, setLocalCurrentCartId] = useLocalStorage("user_cart_id", "");
-  const localCurrentCartId = useReadLocalStorage("user_cart_id");
-
   const [selectedSize, setSelectedSize] = useState<SockSize | null>(null);
-
   const [quantity, setQuantity] = useState(1);
-
   const { ErrorToast, SuccessToast } = useAppToasts();
-
   const [addToCart, { isLoading: isProductAddingToCart }] =
     useAddToCartMutation();
 

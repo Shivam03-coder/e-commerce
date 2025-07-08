@@ -25,13 +25,11 @@ export default function ProductCard({ item }: ProductCardProps) {
     }
   };
 
-  // Calculate total price for this product
   const totalPrice = item.selectedSizes.reduce(
     (sum, sizeItem) => sum + item.price * sizeItem.quantity,
     0,
   );
 
-  // Format price with Indian Rupee symbol
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-IN", {
       style: "currency",
@@ -40,7 +38,6 @@ export default function ProductCard({ item }: ProductCardProps) {
     }).format(price);
   };
 
-  // Format size display (convert ONE_SIZE to OS, S_M to SM, etc.)
   const formatSize = (size: string) => {
     return size
       .split("_")
@@ -51,7 +48,6 @@ export default function ProductCard({ item }: ProductCardProps) {
   return (
     <div className="group relative overflow-hidden p-6 transition-all">
       <div className="flex items-start gap-4">
-        {/* Product Image */}
         <div className="flex-shrink-0 overflow-hidden rounded-lg border-2 border-indigo-100">
           <img
             src={item.image}
